@@ -23,11 +23,11 @@ export class PasswordRecoveryPage {
     this.navCtrl = navCtrl;
 
     this.resetForm = formBuilder.group({
-        key: ['', Validators.compose([Validators.required, Validators.pattern('[a-zA-Z]*'), Validators.minLength(8), Validators.maxLength(30)])]
+        key: ['', Validators.compose([Validators.required])]
     });
 
     this.generateKeyForm = formBuilder.group({
-        username: ['', Validators.compose([Validators.required, Validators.pattern('[a-zA-Z]*'), Validators.minLength(8), Validators.maxLength(30)])]
+        username: ['', Validators.compose([Validators.required])]
     });
   }
 
@@ -47,11 +47,11 @@ export class PasswordRecoveryPage {
 
   generateKey(value){
     if(this.generateKeyForm.valid) {
-      console.log("FORM GENERAR KEY ES VALIDO");
+      // console.log("FORM GENERAR KEY ES VALIDO");
+      this.showAlert("Clave Generada", "En instantes recibirá por correo electrónico la clave para resetear la contraseña.");
     }else{
       console.log("FORM GENERAR KEY NO ES VALIDO")
     }
-    // this.showAlert("Clave Generada", "En instantes recibirá por correo electrónico la clave para resetear la contraseña.");
   }
 
   resetPass(value){
