@@ -2,5 +2,11 @@
   "name": "rotoplas",
   "app_id": "fe9e41f9",
   "type": "ionic-angular",
-  "integrations": {}
+  "integrations": {},
+  "proxies": [
+    {
+      "path": "/api",
+      "proxyUrl": "https://rotoplasoperarios.herokuapp.com/api/rutinas"
+    }
+  ]
 }
