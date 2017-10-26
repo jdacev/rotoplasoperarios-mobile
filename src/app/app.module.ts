@@ -11,6 +11,7 @@ import { LoginPage } from '../pages/login/login';
 
 //servicios
 import { UsersProvider } from '../providers/users/users';
+import { AuthService } from '../providers/auth-service/auth-service';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { UsersProvider } from '../providers/users/users';
     SplashScreen,
     AlertController,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    UsersProvider
+    UsersProvider,
+    AuthService
   ]
 })
 export class AppModule {}

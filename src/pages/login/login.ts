@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, MenuController } from 'ionic-angular';
+import { AuthService } from "../../providers/auth-service/auth-service";
 
 /**
  * Generated class for the LoginPage page.
@@ -15,7 +16,15 @@ import { IonicPage, NavController, NavParams, MenuController } from 'ionic-angul
 })
 export class LoginPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private menuCtrl:MenuController) {
+  usercreds = {
+       name: '',
+       password: ''
+  };
+
+  constructor(public navCtrl: NavController,
+              public navParams: NavParams,
+              private menuCtrl:MenuController,
+              public authservice: AuthService) {
   }
 
   ionViewDidLoad() {
@@ -32,9 +41,15 @@ export class LoginPage {
     this.menuCtrl.enable(true);
   }
 
-  login(){
-    this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular,
-                                       //sino va a poder vovler al login despues de loguearse
+  login(user){
+    this.authservice.authenticate(user.name, user.password).then(data => {
+            if(data) {
+              console.log("EN LOGIN LOGUEADO")
+              this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
+            }else{
+              console.log("EN LOGIN NO ME LOGUEEEE")
+            }
+    });
   }
 
   forgotPassword(){

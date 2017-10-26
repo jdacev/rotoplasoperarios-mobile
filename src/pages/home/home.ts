@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams, NavController } from 'ionic-angular';
 import { UsersProvider } from "../../providers/users/users";
+import { AuthService } from "../../providers/auth-service/auth-service";
+
 
 @IonicPage()
 @Component({
@@ -11,18 +13,19 @@ export class HomePage {
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-              private _usersService : UsersProvider) {
+              private _usersService : UsersProvider,
+              public authservice: AuthService) {
 
-      this._usersService.traerAlgo().subscribe(data =>{
-
-        console.log(data);
-
-        if(data.error){
-          console.log("ERROR RECIBIENDO DATA")
-        }else{
-          console.log("DATA RECIBIDA");
-        }
-      })
+      // this._usersService.traerAlgo().subscribe(data =>{
+      //
+      //   console.log(data);
+      //
+      //   if(data.error){
+      //     console.log("ERROR RECIBIENDO DATA")
+      //   }else{
+      //     console.log("DATA RECIBIDA");
+      //   }
+      // })
 
   }
 

@@ -20,17 +20,17 @@
 
     <ion-item>
       <ion-label floating>Username</ion-label>
-      <ion-input type="text"></ion-input>
+      <ion-input type="text" [(ngModel)] = "usercreds.name"></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label floating>Password</ion-label>
-      <ion-input type="password"></ion-input>
+      <ion-input type="password" [(ngModel)] = "usercreds.password"></ion-input>
     </ion-item>
 
   </ion-list>
 
-  <button ion-button block (click)="login()">Login</button>
+  <button ion-button block (click)="login(usercreds)">Login</button>
   <button ion-button clear color="primary" icon-left (click)="forgotPassword()">Olvidé la contraseña</button>
 
 

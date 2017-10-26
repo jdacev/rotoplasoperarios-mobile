@@ -6,7 +6,7 @@
   "proxies": [
     {
       "path": "/api",
-      "proxyUrl": "https://rotoplasoperarios.herokuapp.com/api/rutinas"
+      "proxyUrl": "http://gatalent-test.grupoassa.com/token"
     }
   ]
 }
