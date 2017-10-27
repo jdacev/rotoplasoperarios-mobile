@@ -1,0 +1,69 @@
+<ion-header>
+
+  <ion-navbar color="dark">
+    <ion-title>
+      Crear Ticket
+    </ion-title>
+
+    <ion-buttons end>
+      <button ion-button icon-only menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <h5 class="titulo">
+    Información PTAR
+  </h5>
+
+  <ion-item>
+    <ion-label><b>Nombre PTAR</b></ion-label>
+    <ion-input disabled text-right type="text" [(ngModel)]="ptarName"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label><b>Fecha de Apertura</b></ion-label>
+    <ion-datetime text-right disabled displayFormat="DD/MM/YYYY" [(ngModel)]="ptarDate"></ion-datetime>
+  </ion-item>
+
+  <ion-item>
+    <ion-label><b>Tipo de Ticket</b></ion-label>
+    <ion-input disabled text-right type="text" [(ngModel)]="ticketType"></ion-input>
+  </ion-item>
+
+  <br>
+
+  <h5 class="titulo">
+    Observaciones
+  </h5>
+
+  <ion-item>
+    <ion-label><b>Descripción</b></ion-label>
+    <ion-textarea rows="4" type="text" [(ngModel)]="description"></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label style="white-space: normal"><b>Tipo de Servicio de Agua</b></ion-label>
+    <ion-select style="width: 50%" [(ngModel)]="serviceType">
+      <ion-option value="alta">Alta</ion-option>
+      <ion-option value="media">Media</ion-option>
+      <ion-option value="baja">Baja</ion-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-row>
+    <ion-col text-right>
+      <button ion-button color="primary">Enviar</button>
+    </ion-col>
+
+    <ion-col text-left>
+      <button ion-button color="primary" (click)="cancel()">Cancelar</button>
+    </ion-col>
+  </ion-row>
+
+</ion-content>

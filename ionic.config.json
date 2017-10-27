@@ -2,7 +2,9 @@
   "name": "rotoplas",
   "app_id": "fe9e41f9",
   "type": "ionic-angular",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "proxies": [
     {
       "path": "/api",

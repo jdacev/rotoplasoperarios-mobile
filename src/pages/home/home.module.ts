@@ -4,7 +4,7 @@ import { HomePage } from '../home/home';
 
 @NgModule({
   declarations: [
-    HomePage    
+    HomePage
   ],
   imports: [
     IonicPageModule.forChild(HomePage),
