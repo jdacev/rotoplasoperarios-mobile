@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http, Headers } from '@angular/http';
 import { AlertController } from 'ionic-angular';
 import 'rxjs/add/operator/map';
+import { URL_SERVICIOS } from "../../config/url.services";
 
 @Injectable()
 export class AuthService {
@@ -17,7 +18,7 @@ export class AuthService {
   }
 
   storeUserCredentials(token) {
-    window.localStorage.setItem('currentUser', token);
+    localStorage.setItem('currentUser', JSON.stringify(token));
     this.useCredentials(token);
 
   }
@@ -29,7 +30,7 @@ export class AuthService {
 
   loadUserCredentials() {
     var token = window.localStorage.getItem('currentUser');
-    this.useCredentials(token);
+    this.useCredentials(JSON.parse(token));
   }
 
   destroyUserCredentials() {
@@ -40,19 +41,23 @@ export class AuthService {
 
   authenticate(username, password) {
     // var creds = "name=" + user.name + "&password=" + user.password;
-    var creds = "grant_type=password&username=" + username + "&password=" + encodeURIComponent(password);
+    var creds = "user=" + username + "&pass=" + encodeURIComponent(password);
+    // var creds = {
+    //   'user': username,
+    //   'pass': password
+    // }
     var headers = new Headers();
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
 
     return new Promise(resolve => {
-        this.http.post('http://travelrequestsback.grupoassa.com/token', creds, {headers: headers}).subscribe(data => {
-            if(data.json().access_token){
+        this.http.post('http://localhost:8100/aaa', creds, {headers: headers}).subscribe(data => {
+            if(data.json().status == 'success'){  //ESTA PARTE DEBERIA CAMBIAR TAMBIEN SEGUN LO QUE RECIBA
                 console.log("ME LOGUEE")
-                this.storeUserCredentials(data.json().access_token);
+                this.storeUserCredentials(data.json().data);   //CAMBIAR ESTO POR EL TOKEN
                 resolve(true);
             }
             else{
-              console.log("NO ME LOGUEE UNA MIERDA")
+              console.log("NO ME LOGUEE")
               resolve(false);
             }
         }, error =>{

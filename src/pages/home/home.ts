@@ -26,6 +26,9 @@ export class HomePage {
       //     console.log("DATA RECIBIDA");
       //   }
       // })
+      this.authservice.loadUserCredentials();
+      var data = this.authservice.AuthToken;
+      console.log(data);
 
   }
 
