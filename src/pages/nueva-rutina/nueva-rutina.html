@@ -1,0 +1,86 @@
+<ion-header>
+
+  <ion-navbar color="dark">
+    <ion-title>
+      Crear Rutina
+    </ion-title>
+
+    <ion-buttons end>
+      <button ion-button icon-only menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <h5 class="titulo">
+    Tipo de Rutina
+  </h5>
+
+  <ion-item>
+    <ion-label><b>Rutina</b></ion-label>
+    <ion-select [(ngModel)]="tipoRutina" cancelText="Cancelar" okText="Aceptar">
+      <ion-option value="diaria">Diaria</ion-option>
+      <ion-option value="semanal">Semanal</ion-option>
+      <ion-option value="mensual">Mensual</ion-option>
+      <ion-option value="trimestral">Trimestral</ion-option>
+    </ion-select>
+  </ion-item>
+
+  <h5 class="titulo">
+    Información PTAR
+  </h5>
+
+  <ion-item>
+    <ion-label><b>Nombre PTAR</b></ion-label>
+    <ion-input disabled text-right type="text" [(ngModel)]="ptarName"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label><b>Determinante</b></ion-label>
+    <ion-input disabled text-right type="text" [(ngModel)]="determinante"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label><b>Fecha de Rutina</b></ion-label>
+    <ion-datetime text-right disabled displayFormat="DD/MM/YYYY" [(ngModel)]="ptarDate"></ion-datetime>
+  </ion-item>
+
+  <br>
+
+  <h5 class="titulo">
+    Informe de Rutina
+  </h5>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col col-4>
+        <ion-item>
+          <ion-label stacked>m3</ion-label>
+          <ion-input type="number" min="0"></ion-input>
+        </ion-item>
+      </ion-col>
+      <ion-col col-8>
+        <ion-item>
+          <ion-label stacked>Observaciones</ion-label>
+          <ion-textarea rows="4" type="text" [(ngModel)]="description"></ion-textarea>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-row>
+    <ion-col text-right>
+      <button ion-button color="primary" (click)="cancel()">Cancelar</button>
+    </ion-col>
+
+    <ion-col text-left>
+      <button ion-button color="primary">Enviar</button>
+    </ion-col>
+  </ion-row>
+
+</ion-content>

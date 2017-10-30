@@ -25,6 +25,10 @@ export class LoginPage {
               public navParams: NavParams,
               private menuCtrl:MenuController,
               public authservice: AuthService) {
+
+    if(this.authservice.isLoggedin){
+      this.navCtrl.setRoot('HomePage');
+    }
   }
 
   ionViewDidLoad() {

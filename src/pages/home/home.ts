@@ -35,7 +35,7 @@ export class HomePage {
   }
 
   irAPagina(pagina:string){
-    this.navCtrl.push('NuevoTicketPage');
+    this.navCtrl.push(pagina);
   }
 
 }
