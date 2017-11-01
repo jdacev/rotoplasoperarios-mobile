@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavParams, NavController } from 'ionic-angular';
+import { IonicPage, NavParams, NavController, AlertController } from 'ionic-angular';
 import { UsersProvider } from "../../providers/users/users";
 import { AuthService } from "../../providers/auth-service/auth-service";
+
 
 
 @IonicPage()
@@ -10,6 +11,8 @@ import { AuthService } from "../../providers/auth-service/auth-service";
   templateUrl: 'home.html'
 })
 export class HomePage {
+
+  images = [];
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -26,6 +29,8 @@ export class HomePage {
       //     console.log("DATA RECIBIDA");
       //   }
       // })
+
+
       this.authservice.loadUserCredentials();
       var data = this.authservice.AuthToken;
       console.log(data);

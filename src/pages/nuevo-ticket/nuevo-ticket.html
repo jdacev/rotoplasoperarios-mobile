@@ -56,14 +56,44 @@
     </ion-select>
   </ion-item>
 
-  <ion-row>
-    <ion-col text-right>
-      <button ion-button color="primary">Enviar</button>
-    </ion-col>
+  <br>
 
-    <ion-col text-left>
-      <button ion-button color="primary" (click)="cancel()">Cancelar</button>
-    </ion-col>
-  </ion-row>
+  <h5 class="titulo">
+    Fotografías (Evidencias)
+  </h5>
+
+  <ion-grid>
+
+    <ion-row>
+
+      <ion-col col-3 *ngFor="let image of images">
+        <ion-thumbnail>
+          <img [src]="image" alt="">
+        </ion-thumbnail>
+      </ion-col>
+
+      <ion-col col-3>
+        <ion-fab>
+          <button ion-fab mini color="danger" (click)="capturar()"><ion-icon name="add"></ion-icon></button>
+        </ion-fab>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+
+  <br><br><br>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col text-right>
+        <button ion-button color="primary">Enviar</button>
+      </ion-col>
+
+      <ion-col text-left>
+        <button ion-button color="primary" (click)="cancel()">Cancelar</button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
 </ion-content>

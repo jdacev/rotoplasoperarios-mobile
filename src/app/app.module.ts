@@ -9,6 +9,10 @@ import { HttpModule } from "@angular/http";
 import { MyApp } from './app.component';
 import { LoginPage } from '../pages/login/login';
 
+//plugins
+import { Camera } from '@ionic-native/camera';
+import { File } from '@ionic-native/file';
+
 //servicios
 import { UsersProvider } from '../providers/users/users';
 import { AuthService } from '../providers/auth-service/auth-service';
@@ -34,7 +38,9 @@ import { AuthService } from '../providers/auth-service/auth-service';
     AlertController,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     UsersProvider,
-    AuthService
+    AuthService,
+    Camera,
+    File
   ]
 })
 export class AppModule {}

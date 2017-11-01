@@ -46,6 +46,9 @@ export class LoginPage {
   }
 
   login(user){
+    this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
+
+    
     this.authservice.authenticate(user.name, user.password).then(data => {
             if(data) {
               console.log("EN LOGIN LOGUEADO")
@@ -54,6 +57,7 @@ export class LoginPage {
               console.log("EN LOGIN NO ME LOGUEEEE")
             }
     });
+    
   }
 
   forgotPassword(){
