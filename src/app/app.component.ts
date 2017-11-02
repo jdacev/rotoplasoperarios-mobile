@@ -54,7 +54,7 @@ export class MyApp {
           this.authservice.logout();
           this.menuCtrl.close();
           let nav = this.appCtrl.getRootNav();
-          nav.setRoot(LoginPage);
+          nav.setRoot('LoginPage');
         }
       }, 'Cancel']
     });

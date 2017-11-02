@@ -7,7 +7,6 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { HttpModule } from "@angular/http";
 
 import { MyApp } from './app.component';
-import { LoginPage } from '../pages/login/login';
 
 //plugins
 import { Camera } from '@ionic-native/camera';
@@ -19,8 +18,7 @@ import { AuthService } from '../providers/auth-service/auth-service';
 
 @NgModule({
   declarations: [
-    MyApp,
-    LoginPage
+    MyApp
   ],
   imports: [
     BrowserModule,
@@ -29,8 +27,7 @@ import { AuthService } from '../providers/auth-service/auth-service';
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    MyApp,
-    LoginPage
+    MyApp
   ],
   providers: [
     StatusBar,
