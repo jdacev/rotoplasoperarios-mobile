@@ -15,7 +15,6 @@ import { AuthService } from "../../providers/auth-service/auth-service";
   templateUrl: 'login.html',
 })
 export class LoginPage {
-
   usercreds = {
        name: '',
        password: ''
@@ -26,9 +25,10 @@ export class LoginPage {
               private menuCtrl:MenuController,
               public authservice: AuthService) {
 
-    if(this.authservice.isLoggedin){
-      this.navCtrl.setRoot('HomePage');
-    }
+    // authservice.loadUserCredentials();
+    // if(this.authservice.isLoggedin && this.authservice.AuthToken){
+    //   this.navCtrl.setRoot('HomePage');
+    // }
   }
 
   ionViewDidLoad() {
@@ -46,18 +46,16 @@ export class LoginPage {
   }
 
   login(user){
-    this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
+    // this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
 
-    
+
     this.authservice.authenticate(user.name, user.password).then(data => {
-            if(data) {
-              console.log("EN LOGIN LOGUEADO")
-              this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
-            }else{
-              console.log("EN LOGIN NO ME LOGUEEEE")
-            }
+      if(data) {
+        this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
+      }else{
+      }
     });
-    
+
   }
 
   forgotPassword(){

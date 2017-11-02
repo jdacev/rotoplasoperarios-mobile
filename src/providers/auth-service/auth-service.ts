@@ -24,8 +24,13 @@ export class AuthService {
   }
 
   useCredentials(token) {
-    this.isLoggedin = true;
-    this.AuthToken = token;
+    if(token){
+      this.isLoggedin = true;
+      this.AuthToken = token;
+    }else{
+      this.isLoggedin = false;
+      this.AuthToken = null;
+    }
   }
 
   loadUserCredentials() {
@@ -40,7 +45,6 @@ export class AuthService {
   }
 
   authenticate(username, password) {
-    // var creds = "name=" + user.name + "&password=" + user.password;
     var creds = "user=" + username + "&pass=" + encodeURIComponent(password);
     // var creds = {
     //   'user': username,
@@ -50,18 +54,18 @@ export class AuthService {
     headers.append('Content-Type', 'application/x-www-form-urlencoded');
 
     return new Promise(resolve => {
-        this.http.post('http://localhost:8100/aaa', creds, {headers: headers}).subscribe(data => {
-            if(data.json().status == 'success'){  //ESTA PARTE DEBERIA CAMBIAR TAMBIEN SEGUN LO QUE RECIBA
-                console.log("ME LOGUEE")
-                this.storeUserCredentials(data.json().data);   //CAMBIAR ESTO POR EL TOKEN
+        this.http.post(URL_SERVICIOS + '/login', creds, {headers: headers}).subscribe(response => {
+            var data = response.json().data
+            if(data.activoc__c == "true"){  //ESTA PARTE DEBERIA CAMBIAR TAMBIEN SEGUN LO QUE RECIBA
+                this.storeUserCredentials(data);   //CAMBIAR ESTO POR EL TOKEN
                 resolve(true);
             }
             else{
-              console.log("NO ME LOGUEE")
+              this.showAlert("Error al iniciar sesión", "El usuario se encuentra inactivo");
               resolve(false);
             }
         }, error =>{
-          this.showAlert("Error al iniciar sesión", "Usuario o password incorrecta. Intente nuevamente");
+          this.showAlert("Error al iniciar sesión", error.json().message);
         });
     });
   }

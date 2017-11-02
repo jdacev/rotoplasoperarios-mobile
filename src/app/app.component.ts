@@ -15,7 +15,7 @@ export class MyApp {
   loginPage = LoginPage;
   homePage = HomePage;
 
-  rootPage:any = LoginPage;
+  rootPage:any;
 
   constructor(platform: Platform,
               statusBar: StatusBar,
@@ -30,6 +30,13 @@ export class MyApp {
       statusBar.styleDefault();
       splashScreen.hide();
     });
+
+    authservice.loadUserCredentials();
+    if(this.authservice.isLoggedin && this.authservice.AuthToken){
+      this.goToPage('HomePage')
+    }else{
+      this.goToPage('LoginPage')
+    }
   }
 
   goToPage(pagina:any){
