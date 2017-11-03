@@ -14,6 +14,7 @@ export class MyApp {
 
   loginPage = LoginPage;
   homePage = HomePage;
+  userData = null;
 
   rootPage:any;
 
@@ -33,6 +34,7 @@ export class MyApp {
 
     authservice.loadUserCredentials();
     if(this.authservice.isLoggedin && this.authservice.AuthToken){
+      this.userData = this.authservice.AuthToken
       this.goToPage('HomePage')
     }else{
       this.goToPage('LoginPage')
@@ -51,9 +53,9 @@ export class MyApp {
       buttons: [{
         text: 'Ok',
         handler: data => {
-          this.authservice.logout();
           this.menuCtrl.close();
           let nav = this.appCtrl.getRootNav();
+          this.authservice.logout();
           nav.setRoot('LoginPage');
         }
       }, 'Cancel']
