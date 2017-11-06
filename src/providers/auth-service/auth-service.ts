@@ -125,6 +125,7 @@ export class AuthService {
             }
         }, error =>{
           this.showAlert("Error al iniciar sesión", error.json().message);
+          resolve(false);
         });
     });
   }
