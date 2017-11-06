@@ -57,8 +57,61 @@ export class AuthService {
         this.http.post(URL_SERVICIOS + '/login', creds, {headers: headers}).subscribe(response => {
             var data = response.json().data
             if(data.activoc__c == "true"){  //ESTA PARTE DEBERIA CAMBIAR TAMBIEN SEGUN LO QUE RECIBA
+
+              var plantas = [{
+                              'id': 1,
+                              'name': 'Planta 1'
+                            },
+                            {
+                              'id': 2,
+                              'name': 'Planta 2'
+                            },{
+                              'id': 3,
+                              'name': 'Planta 3'
+                            }]
+
+              if(plantas.length == 0){
+                  this.showAlert("Sin Plantas Asignadas","El usuario no se encuentra asignado a ninguna planta. Comuníquese con su supervisor.");
+              }else if(plantas.length == 1){  //SI TENGO UNA SOLA PLANTA VOY DIRECTAMENTE A HOME
+
                 this.storeUserCredentials(data);   //CAMBIAR ESTO POR EL TOKEN
                 resolve(true);
+
+              }else if(plantas.length > 1){
+                  let alert = this.alertCtrl.create();
+                  alert.setTitle('Selección de Planta');
+
+                  // Now we add the radio buttons
+                  for(let i=0; i< plantas.length; i++) {
+                      let check;
+                      if(i == 0){
+                        check = true
+                      }
+                      else{
+                        check = false;
+                      }
+
+                      alert.addInput({
+                        type: 'radio',
+                        label: plantas[i].name,
+                        value: plantas[i].id.toString(),
+                        checked: check
+                      });
+                  }
+
+
+                  alert.addButton({
+                    text: 'Seleccionar',
+                    handler: selected => {
+                      this.storeUserCredentials(data);   //CAMBIAR ESTO POR EL TOKEN
+                      resolve(true);
+                    }
+                  });
+                  alert.addButton('Cancelar');
+                  alert.present();
+              }
+
+
             }
             else{
               this.showAlert("Error al iniciar sesión", "El usuario se encuentra inactivo");

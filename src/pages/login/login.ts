@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, MenuController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, MenuController, AlertController } from 'ionic-angular';
 import { AuthService } from "../../providers/auth-service/auth-service";
 
 /**
@@ -23,6 +23,7 @@ export class LoginPage {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private menuCtrl:MenuController,
+              private alertCtrl: AlertController,
               public authservice: AuthService) {
 
     // authservice.loadUserCredentials();
