@@ -30,7 +30,8 @@
 
   </ion-list>
 
-  <button ion-button block (click)="login(usercreds)">Login</button>
+  <button ion-button block (click)="login(usercreds)" *ngIf="!loading">Login</button>
+  <button ion-button block disabled *ngIf="loading"><ion-spinner></ion-spinner></button>
   <button ion-button clear color="primary" icon-left (click)="forgotPassword()">Olvidé la contraseña</button>
 
 

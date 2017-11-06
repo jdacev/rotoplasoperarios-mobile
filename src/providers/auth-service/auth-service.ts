@@ -107,7 +107,13 @@ export class AuthService {
                       resolve(true);
                     }
                   });
-                  alert.addButton('Cancelar');
+                  alert.addButton({
+                    text: 'Cancelar',
+                    handler: selected => {
+                      resolve(false);
+                    }
+                  });
+                  // alert.addButton('Cancelar');
                   alert.present();
               }
 
