@@ -72,6 +72,7 @@ export class AuthService {
 
               if(plantas.length == 0){
                   this.showAlert("Sin Plantas Asignadas","El usuario no se encuentra asignado a ninguna planta. Comuníquese con su supervisor.");
+                  resolve(false);
               }else if(plantas.length == 1){  //SI TENGO UNA SOLA PLANTA VOY DIRECTAMENTE A HOME
 
                 this.storeUserCredentials(data);   //CAMBIAR ESTO POR EL TOKEN
@@ -125,6 +126,7 @@ export class AuthService {
             }
         }, error =>{
           this.showAlert("Error al iniciar sesión", error.json().message);
+          resolve(false);
         });
     });
   }
