@@ -33,19 +33,19 @@ export class NuevaRutinaPage {
 
   getActividades(id: number){
     console.log(id);
-    this.rutinasProv.getActividadesPorRutina(id).subscribe(data =>{
-
-      // console.log("data: " + data.data[0].name);
-
-      if(data.status != 'success'){
-        console.log("ERROR RECIBIENDO DATA")
-      }else{
-        this.activities = data.data;
-        console.log(this.activities);
-      }
-    }, error =>{
-        console.log("Error: " + error);
-    })
+    // this.rutinasProv.getActividadesPorRutina(id).subscribe(data =>{
+    //
+    //   // console.log("data: " + data.data[0].name);
+    //
+    //   if(data.status != 'success'){
+    //     console.log("ERROR RECIBIENDO DATA")
+    //   }else{
+    //     this.activities = data.data;
+    //     console.log(this.activities);
+    //   }
+    // }, error =>{
+    //     console.log("Error: " + error);
+    // })
   }
 
   test(){
