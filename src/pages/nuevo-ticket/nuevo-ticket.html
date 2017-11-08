@@ -1,15 +1,15 @@
 <ion-header>
+  <ion-navbar hideBackButton color="dark">
 
-  <ion-navbar color="dark">
-    <ion-title>
-      Crear Ticket
-    </ion-title>
-
-    <ion-buttons end>
+    <ion-buttons left>
       <button ion-button icon-only menuToggle>
         <ion-icon name="menu"></ion-icon>
       </button>
     </ion-buttons>
+
+    <ion-title>
+      Crear Oportunidad C
+    </ion-title>
 
   </ion-navbar>
 
@@ -50,9 +50,10 @@
   <ion-item>
     <ion-label style="white-space: normal"><b>Tipo de Servicio de Agua</b></ion-label>
     <ion-select style="width: 50%" [(ngModel)]="serviceType">
-      <ion-option value="alta">Alta</ion-option>
-      <ion-option value="media">Media</ion-option>
-      <ion-option value="baja">Baja</ion-option>
+      <ion-option value="1">No envía agua</ion-option>
+      <ion-option value="2">Envía Agua Residual Tratada</ion-option>
+      <ion-option value="3">Envía Agua Potable</ion-option>
+      <ion-option value="4">No Aplica</ion-option>
     </ion-select>
   </ion-item>
 
@@ -87,7 +88,7 @@
   <ion-grid>
     <ion-row>
       <ion-col text-right>
-        <button ion-button color="primary">Enviar</button>
+        <button ion-button color="primary" (click)="create()" [disabled]="!description || !serviceType">Crear</button>
       </ion-col>
 
       <ion-col text-left>

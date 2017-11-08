@@ -1,15 +1,15 @@
 <ion-header>
+  <ion-navbar hideBackButton color="dark">
 
-  <ion-navbar color="dark">
-    <ion-title>
-      Crear Rutina
-    </ion-title>
-
-    <ion-buttons end>
+    <ion-buttons left>
       <button ion-button icon-only menuToggle>
         <ion-icon name="menu"></ion-icon>
       </button>
     </ion-buttons>
+
+    <ion-title>
+      Crear Rutina
+    </ion-title>
 
   </ion-navbar>
 
@@ -90,10 +90,21 @@
       </ion-col>
 
       <ion-col text-left>
-        <button ion-button color="primary">Enviar</button>
+        <button ion-button color="primary">Crear</button>
       </ion-col>
     </ion-row>
 
   </div>
+
+  <ion-row>
+
+    <ion-col text-right>
+      <button ion-button color="primary">Crear</button>
+    </ion-col>
+    <ion-col text-left>
+      <button ion-button color="primary" (click)="cancel()">Cancelar</button>
+    </ion-col>
+  </ion-row>
+
 
 </ion-content>

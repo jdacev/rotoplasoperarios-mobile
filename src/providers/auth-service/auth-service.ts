@@ -55,8 +55,8 @@ export class AuthService {
 
     return new Promise(resolve => {
         this.http.post(URL_SERVICIOS + '/login', creds, {headers: headers}).subscribe(response => {
-            var data = response.json().data
-            if(data.activoc__c == "true"){  //ESTA PARTE DEBERIA CAMBIAR TAMBIEN SEGUN LO QUE RECIBA
+            var data = response.json()
+            if(data.activoc__c == true){  //ESTA PARTE DEBERIA CAMBIAR TAMBIEN SEGUN LO QUE RECIBA
 
               var plantas = [{
                               'id': 1,
