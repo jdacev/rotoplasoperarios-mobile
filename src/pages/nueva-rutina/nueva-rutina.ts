@@ -12,7 +12,7 @@ export class NuevaRutinaPage {
   ptarName:string;
   ptarDate:string;
   determinante:number;
-  activities;
+  activities = [];
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,

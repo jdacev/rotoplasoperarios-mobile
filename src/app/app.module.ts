@@ -16,6 +16,7 @@ import { File } from '@ionic-native/file';
 import { UsersProvider } from '../providers/users/users';
 import { AuthService } from '../providers/auth-service/auth-service';
 import { RutinasProvider } from '../providers/rutinas/rutinas';
+import { TicketsProvider } from '../providers/tickets/tickets';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { RutinasProvider } from '../providers/rutinas/rutinas';
     AuthService,
     Camera,
     File,
-    RutinasProvider
+    RutinasProvider,
+    TicketsProvider
   ]
 })
 export class AppModule {}

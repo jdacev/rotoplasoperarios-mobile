@@ -22,4 +22,9 @@ export class RutinasProvider {
               .map(resp => resp.json())
   }
 
+  getRutinasUsuario(idPlanta: number, idUsuario: string){
+    return this.http.get(URL_SERVICIOS + '/rutinasusuario/' + idPlanta + '/' + idUsuario)
+              .map(resp => resp.json())
+  }
+
 }

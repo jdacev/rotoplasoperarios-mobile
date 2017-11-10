@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-navbar hideBackButton color="dark">
+
+    <ion-buttons left>
+      <button ion-button icon-only menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+
+    <ion-title>
+      Oportunidades C
+    </ion-title>
+
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding-top>
+
+  <ion-list>
+
+    <ion-item class="fondoNuevo" (click)="irAPagina('NuevoTicketPage')">
+      <button detail-none ion-item class="fondoNuevo">
+        <ion-icon name="briefcase" isActive="false" item-start></ion-icon>
+        Oportunidades C
+        <button color="primary" item-right ion-button style="width:40%">Nuevo</button>
+      </button>
+    </ion-item>
+
+    <ion-item>
+      <button detail-none ion-item (click)="toggleLista()">
+        <ion-icon name="list" padding-right></ion-icon>
+        <ion-icon [name]="listaAbierta ? 'arrow-dropdown' : 'arrow-dropright'" isActive="false" item-end></ion-icon>
+        Mis Oportunidades C
+      </button>
+    </ion-item>
+
+    <div *ngIf="listaAbierta">
+
+      <ion-item *ngIf="ticketList.length == 0">
+        <ion-label padding-left>No hay oportunidades c</ion-label>
+      </ion-item>
+
+      <ion-item *ngFor="let ticket of ticketList">
+        <ion-label padding-left>{{ticket.casenumber}}</ion-label>
+      </ion-item>
+    </div>
+
+  </ion-list>
+
+</ion-content>
