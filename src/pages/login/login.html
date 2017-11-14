@@ -1,38 +1,36 @@
-<!--
-  Generated template for the LoginPage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
 
-  <ion-navbar color="dark">
-    <ion-title>Iniciar Sesión</ion-title>
+  <ion-navbar color="blueRotoplas">
+    <ion-title text-center>Inicio de Sesión</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content>
-  <img src="assets/images/rotoplas-logo.png" padding>
+  <img src="assets/rotoplas-logo.PNG" padding>
 
   <ion-list>
 
     <ion-item>
-      <ion-label floating>Username</ion-label>
+      <ion-label floating>Usuario</ion-label>
       <ion-input type="text" [(ngModel)] = "usercreds.name"></ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-label floating>Password</ion-label>
+      <ion-label floating>Contraseña</ion-label>
       <ion-input type="password" [(ngModel)] = "usercreds.password"></ion-input>
     </ion-item>
 
   </ion-list>
 
-  <button ion-button block (click)="login(usercreds)" *ngIf="!loading">Login</button>
-  <button ion-button block disabled *ngIf="loading"><ion-spinner></ion-spinner></button>
-  <button ion-button clear color="primary" icon-left (click)="forgotPassword()">Olvidé la contraseña</button>
+  <div text-center>
+    <button ion-button [disabled]="!usercreds.name || !usercreds.password" (click)="login(usercreds)" class="loginButton" *ngIf="!loading">Iniciar Sesión</button>
+    <button ion-button disabled class="loginButton" *ngIf="loading"><ion-spinner></ion-spinner></button>
+  </div>
+  <div text-center>
+    <button ion-button clear color="primary" icon-left (click)="forgotPassword()">Olvidé la contraseña</button>
+  </div>
 
 
 

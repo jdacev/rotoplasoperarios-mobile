@@ -43,6 +43,8 @@ export class MyApp {
 
   goToPage(pagina:any){
     this.rootPage = pagina;
+    this.appCtrl.navPop();
+    this.menuCtrl.toggle();
   }
 
   logout(){

@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
+import { TicketsProvider } from "../../providers/tickets/tickets";
+import { AuthService } from "../../providers/auth-service/auth-service";
 
 @IonicPage()
 @Component({
@@ -10,6 +12,7 @@ import { File } from '@ionic-native/file';
 })
 export class NuevoTicketPage {
 
+  description: string;
   ptarName:string;
   ptarDate:string;
   ticketType:string;
@@ -19,10 +22,13 @@ export class NuevoTicketPage {
               public navParams: NavParams,
               private camera: Camera,
               private file: File,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController,
+              private ticketsProv: TicketsProvider,
+              private authservice: AuthService) {
     this.ptarName = "asdasd";
     this.ptarDate = new Date().toISOString();
     this.ticketType = "Interno";
+    this.description = "";
   }
 
   ionViewDidLoad() {
@@ -128,6 +134,10 @@ private createFileName() {
    }, error => {
      this.presentToast("ERROR: " + error);
    });
+  }
+
+  createTicket(){
+    //this.ticketsProv.createTicket(this.description, this.ptarDate, this.authservice.AuthToken.planta.id, this.authservice.AuthToken.usuario.usuarioapp__c)
   }
 
 }
