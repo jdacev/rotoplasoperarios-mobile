@@ -137,7 +137,7 @@ private createFileName() {
   }
 
   createTicket(){
-    this.ticketsProv.createTicket(this.description, this.ptarDate, this.authservice.AuthToken.planta.id, this.authservice.AuthToken.usuario.usuarioapp__c)
+    //this.ticketsProv.createTicket(this.description, this.ptarDate, this.authservice.AuthToken.planta.id, this.authservice.AuthToken.usuario.usuarioapp__c)
   }
 
 }
