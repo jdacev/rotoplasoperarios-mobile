@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-navbar hideBackButton color="dark">
+  <ion-navbar hideBackButton color="blueRotoplas">
 
     <ion-buttons left>
       <button ion-button icon-only menuToggle>
@@ -7,7 +7,7 @@
       </button>
     </ion-buttons>
 
-    <ion-title>
+    <ion-title text-center style="padding-right:60px">
       Oportunidades C
     </ion-title>
 
@@ -42,7 +42,8 @@
       </ion-item>
 
       <ion-item *ngFor="let ticket of ticketList">
-        <ion-label padding-left>{{ticket.casenumber}}</ion-label>
+        <h2 padding-left>{{ticket.casenumber}}</h2>
+        <p padding-left>{{ticket.description}}</p>
       </ion-item>
     </div>
 

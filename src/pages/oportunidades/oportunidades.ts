@@ -51,11 +51,11 @@ export class OportunidadesPage {
   getTicketsUsuario(){
     this.ticketsProv.getTicketsUsuario(this.authservice.AuthToken.planta.id, this.authservice.AuthToken.usuario.usuarioapp__c).subscribe(data =>{
 
-      if(data.status != 'success'){
-        console.log("ERROR RECIBIENDO DATA")
-      }else{
+      // if(data.status != 'success'){
+      //   console.log("ERROR RECIBIENDO DATA")
+      // }else{
         this.ticketList = data.data;
-      }
+      // }
     }, error =>{
         console.log("Error: " + error);
     })
