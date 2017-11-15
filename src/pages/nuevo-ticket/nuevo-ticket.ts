@@ -16,6 +16,7 @@ export class NuevoTicketPage {
   ptarName:string;
   ptarDate:string;
   ticketType:string;
+  serviceType:string;
   images = [];
 
   constructor(public navCtrl: NavController,
@@ -29,6 +30,7 @@ export class NuevoTicketPage {
     this.ptarDate = new Date().toISOString();
     this.ticketType = "Interno";
     this.description = "";
+    this.serviceType = "";
   }
 
   ionViewDidLoad() {
@@ -137,7 +139,26 @@ private createFileName() {
   }
 
   createTicket(){
-    //this.ticketsProv.createTicket(this.description, this.ptarDate, this.authservice.AuthToken.planta.id, this.authservice.AuthToken.usuario.usuarioapp__c)
+    var data = {
+      'description' : this.description,
+      'enviaagua__c' : this.serviceType,
+      "origin": this.ticketType,
+      'idplanta__c': this.authservice.AuthToken.planta.sfid,
+      'operadorapp__c': this.authservice.AuthToken.usuario.sfid,
+      'reason': 'Calidad/Proceso',
+      'descripciondefalla__c' : 'Tuberia PVC',
+      'motivodedesestabilizacion__c': 'Falla de equipos'
+    }
+    // console.log(data);
+    this.ticketsProv.createTicket(data).then(response=>{
+      if(response){
+        this.navCtrl.pop();
+      }else{
+
+      }
+    }, error=>{
+
+    });
   }
 
 }
