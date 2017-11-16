@@ -18,6 +18,12 @@ export class NuevoTicketPage {
   ticketType:string;
   serviceType:string;
   images = [];
+  motivoSeleccionado:any;
+  descripcionSeleccionada: any;
+  motivoDesestabilizacionSeleccionado : any;
+  motivos;
+  descripcionesMotivos;
+  motivosDesestabilizacion;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -26,11 +32,14 @@ export class NuevoTicketPage {
               private alertCtrl: AlertController,
               private ticketsProv: TicketsProvider,
               private authservice: AuthService) {
-    this.ptarName = "asdasd";
+    this.ptarName = this.authservice.AuthToken.planta.name;
     this.ptarDate = new Date().toISOString();
     this.ticketType = "Interno";
     this.description = "";
     this.serviceType = "";
+    this.motivoSeleccionado = null;
+    this.descripcionSeleccionada = null;
+    this.getMotivosOportunidades();
   }
 
   ionViewDidLoad() {
@@ -138,16 +147,51 @@ private createFileName() {
    });
   }
 
+  getMotivosOportunidades(){
+    this.ticketsProv.getMotivosOportunidades().subscribe(response =>{
+      this.motivos = response.data;
+    }, error =>{
+
+    })
+  }
+
+  getDescripcionMotivos(motivo){
+    if(motivo){
+      this.ticketsProv.getDescripcionMotivos(motivo.sfid).subscribe(response =>{
+        this.descripcionesMotivos =  response.data;
+        this.motivosDesestabilizacion = null;
+        this.descripcionSeleccionada = null;
+        this.motivoDesestabilizacionSeleccionado = null;
+      }, error=>{
+
+      })
+    }
+  }
+
+  getMotivosDesestabilizacion(descripcion){
+    if(descripcion){
+      this.ticketsProv.getMotivosDesestabilizacion(descripcion.sfid).subscribe(response =>{
+        this.motivosDesestabilizacion =  response.data;
+        this.motivoDesestabilizacionSeleccionado = null;
+
+      }, error=>{
+        this.motivoDesestabilizacionSeleccionado = null;
+        this.motivosDesestabilizacion = null;
+      })
+    }
+  }
+
   createTicket(){
+
     var data = {
       'description' : this.description,
       'enviaagua__c' : this.serviceType,
       "origin": this.ticketType,
       'idplanta__c': this.authservice.AuthToken.planta.sfid,
       'operadorapp__c': this.authservice.AuthToken.usuario.sfid,
-      'reason': 'Calidad/Proceso',
-      'descripciondefalla__c' : 'Tuberia PVC',
-      'motivodedesestabilizacion__c': 'Falla de equipos'
+      'reason': this.motivoSeleccionado.name,
+      'descripciondefalla__c' : this.descripcionSeleccionada.name,
+      'motivodedesestabilizacion__c': this.motivoDesestabilizacionSeleccionado ? this.motivoDesestabilizacionSeleccionado.name : null
     }
     // console.log(data);
     this.ticketsProv.createTicket(data).then(response=>{

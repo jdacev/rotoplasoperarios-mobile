@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { RutinasProvider } from "../../providers/rutinas/rutinas";
+import { AuthService } from "../../providers/auth-service/auth-service";
 
 @IonicPage()
 @Component({
@@ -16,8 +17,9 @@ export class NuevaRutinaPage {
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-              private rutinasProv: RutinasProvider) {
-    this.ptarName = "Planta nro 1";
+              private rutinasProv: RutinasProvider,
+              private authservice: AuthService) {
+    this.ptarName = this.authservice.AuthToken.planta.name;
     this.ptarDate = new Date().toISOString();
     this.determinante = 123;
     this.activities = [];

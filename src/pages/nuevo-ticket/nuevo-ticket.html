@@ -39,6 +39,37 @@
   <br>
 
   <h5 class="titulo">
+    Motivos
+  </h5>
+
+  <ion-item>
+    <ion-label style="white-space: normal"><b>Motivo</b></ion-label>
+    <ion-select style="width: 50%" [(ngModel)]="motivoSeleccionado" (ionChange)="getDescripcionMotivos(motivoSeleccionado)">
+      <ion-option *ngFor="let motivo of motivos" [value]="motivo">{{motivo.name}}</ion-option>
+    </ion-select>
+  </ion-item>
+
+  <br>
+
+  <ion-item>
+    <ion-label style="white-space: normal"><b>Descripción</b></ion-label>
+    <ion-select [disabled]="!descripcionesMotivos" style="width: 50%" [(ngModel)]="descripcionSeleccionada" (ionChange)="getMotivosDesestabilizacion(descripcionSeleccionada)">
+      <ion-option *ngFor="let descripcion of descripcionesMotivos" [value]="descripcion">{{descripcion.name}}</ion-option>
+    </ion-select>
+  </ion-item>
+
+  <br>
+
+  <ion-item>
+    <ion-label style="white-space: normal"><b>Motivo de Desestabilización</b></ion-label>
+    <ion-select [disabled]="!motivosDesestabilizacion" style="width: 50%" [(ngModel)]="motivoDesestabilizacionSeleccionado">
+      <ion-option *ngFor="let motivo of motivosDesestabilizacion" [value]="motivo">{{motivo.name}}</ion-option>
+    </ion-select>
+  </ion-item>
+
+  <br>
+
+  <h5 class="titulo">
     Observaciones
   </h5>
 
@@ -88,7 +119,7 @@
   <ion-grid>
     <ion-row>
       <ion-col text-right>
-        <button ion-button color="primary" (click)="createTicket()" [disabled]="!description || !serviceType">Crear</button>
+        <button ion-button color="primary" (click)="createTicket()" [disabled]="!description || !serviceType || !motivoSeleccionado || !descripcionSeleccionada || (motivosDesestabilizacion && !motivoDesestabilizacionSeleccionado)">Crear</button>
       </ion-col>
 
       <ion-col text-left>

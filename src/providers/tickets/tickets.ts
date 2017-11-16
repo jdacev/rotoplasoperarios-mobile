@@ -24,6 +24,21 @@ export class TicketsProvider {
               .map(resp => resp.json())
   }
 
+  getMotivosOportunidades(){
+    return this.http.get(URL_SERVICIOS + '/motivosoportunidades')
+              .map(resp => resp.json())
+  }
+
+  getDescripcionMotivos(id){
+    return this.http.get(URL_SERVICIOS + '/descripcionmotivos/' + id)
+              .map(resp => resp.json())
+  }
+
+  getMotivosDesestabilizacion(id){
+    return this.http.get(URL_SERVICIOS + '/motivosdesestabilizaciones/' + id)
+              .map(resp => resp.json())
+  }
+
   createTicket(data){
     // var data = {
     //   'description' : description,
