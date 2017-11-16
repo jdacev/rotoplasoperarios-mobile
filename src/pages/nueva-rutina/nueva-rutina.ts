@@ -14,6 +14,7 @@ export class NuevaRutinaPage {
   ptarDate:string;
   determinante:number;
   activities = [];
+  tipoRutinas = [];
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -23,6 +24,7 @@ export class NuevaRutinaPage {
     this.ptarDate = new Date().toISOString();
     this.determinante = 123;
     this.activities = [];
+    this.getTipoRutinas();
   }
 
   ionViewDidLoad() {
@@ -33,21 +35,28 @@ export class NuevaRutinaPage {
     this.navCtrl.pop();
   }
 
+  getTipoRutinas(){
+    this.rutinasProv.getTipoRutinas().subscribe(data=>{
+      this.tipoRutinas = data.data;
+    }, error=>{
+
+    })
+  }
+
   getActividades(id: number){
-    console.log(id);
-    // this.rutinasProv.getActividadesPorRutina(id).subscribe(data =>{
-    //
-    //   // console.log("data: " + data.data[0].name);
-    //
-    //   if(data.status != 'success'){
-    //     console.log("ERROR RECIBIENDO DATA")
-    //   }else{
-    //     this.activities = data.data;
-    //     console.log(this.activities);
-    //   }
-    // }, error =>{
-    //     console.log("Error: " + error);
-    // })
+    // console.log(id);
+
+/*
+    this.rutinasProv.getPreguntasTipoRutina(id).subscribe(data =>{
+      // console.log("data: " + data.data[0].name);
+        this.activities = data.data;
+        console.log(this.activities);
+    }, error =>{
+        this.activities = [];
+        console.log("Error: " + error);
+    })
+*/
+
   }
 
   test(){

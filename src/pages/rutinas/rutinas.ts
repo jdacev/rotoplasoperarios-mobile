@@ -48,7 +48,7 @@ export class RutinasPage {
   }
 
   getRutinasUsuario(){
-    this.rutinasProv.getRutinasUsuario(1, this.authservice.AuthToken.usuario.usuarioapp__c).subscribe(data =>{
+    this.rutinasProv.getRutinasUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
 
       if(data.status != 'success'){
         console.log("ERROR RECIBIENDO DATA")

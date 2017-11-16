@@ -17,6 +17,10 @@
 
 <ion-content padding-top>
 
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <ion-list>
 
     <ion-item class="fondoNuevo" (click)="irAPagina('NuevoTicketPage')">

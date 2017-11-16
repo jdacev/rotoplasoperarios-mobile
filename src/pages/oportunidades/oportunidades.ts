@@ -34,6 +34,16 @@ export class OportunidadesPage {
 
   }
 
+  doRefresh(refresher) {
+    // console.log('Begin async operation', refresher);
+
+    setTimeout(() => {
+      // console.log('Async operation has ended');
+      this.getTicketsUsuario();
+      refresher.complete();
+    }, 2000);
+  }
+
   toggleLista(){
     console.log(this.listaAbierta)
     if (this.listaAbierta) {
