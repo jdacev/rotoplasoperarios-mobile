@@ -29,7 +29,8 @@ import { TicketsProvider } from '../providers/tickets/tickets';
     IonicModule.forRoot(MyApp, {
             scrollPadding: false,
             scrollAssist: true,
-            autoFocusAssist: false
+            autoFocusAssist: false,
+            platforms:{ios:{statusbarPadding:true}}
         })
   ],
   bootstrap: [IonicApp],
