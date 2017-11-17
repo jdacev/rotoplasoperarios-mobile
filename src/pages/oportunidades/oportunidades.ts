@@ -34,6 +34,16 @@ export class OportunidadesPage {
 
   }
 
+  doRefresh(refresher) {
+    // console.log('Begin async operation', refresher);
+
+    setTimeout(() => {
+      // console.log('Async operation has ended');
+      this.getTicketsUsuario();
+      refresher.complete();
+    }, 2000);
+  }
+
   toggleLista(){
     console.log(this.listaAbierta)
     if (this.listaAbierta) {
@@ -49,7 +59,7 @@ export class OportunidadesPage {
   }
 
   getTicketsUsuario(){
-    this.ticketsProv.getTicketsUsuario(this.authservice.AuthToken.planta.id, this.authservice.AuthToken.usuario.usuarioapp__c).subscribe(data =>{
+    this.ticketsProv.getTicketsUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
 
       // if(data.status != 'success'){
       //   console.log("ERROR RECIBIENDO DATA")

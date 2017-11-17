@@ -17,6 +17,10 @@
 
 <ion-content padding-top>
 
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <ion-list>
 
     <ion-item class="fondoNuevo" (click)="irAPagina('NuevoTicketPage')">
@@ -42,8 +46,8 @@
       </ion-item>
 
       <ion-item *ngFor="let ticket of ticketList">
-        <h2 padding-left>{{ticket.casenumber}}</h2>
-        <p padding-left>{{ticket.description}}</p>
+        <h2 padding-left>{{ticket.reason}}</h2>
+        <p padding-left>Estado: {{!ticket.status ? 'Abierta' : ticket.status}}</p>
       </ion-item>
     </div>
 

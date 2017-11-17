@@ -17,13 +17,18 @@ export class RutinasProvider {
     console.log('Hello RutinasProvider Provider');
   }
 
-  getActividadesPorRutina(id: number){
+  getPreguntasTipoRutina(id: number){
     return this.http.get(URL_SERVICIOS + '/preguntastiporutina/' + id)
               .map(resp => resp.json())
   }
 
   getRutinasUsuario(idPlanta: number, idUsuario: string){
     return this.http.get(URL_SERVICIOS + '/rutinasusuario/' + idPlanta + '/' + idUsuario)
+              .map(resp => resp.json())
+  }
+
+  getTipoRutinas(){
+    return this.http.get(URL_SERVICIOS + '/tiporutinas')
               .map(resp => resp.json())
   }
 

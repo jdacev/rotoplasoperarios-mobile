@@ -24,10 +24,7 @@
   <ion-item>
     <ion-label><b>Rutina</b></ion-label>
     <ion-select [(ngModel)]="tipoRutina" (ionChange)="getActividades(tipoRutina)" cancelText="Cancelar" okText="Aceptar">
-      <ion-option value="1">Diaria</ion-option>
-      <ion-option value="2">Semanal</ion-option>
-      <ion-option value="3">Mensual</ion-option>
-      <ion-option value="4">Trimestral</ion-option>
+      <ion-option *ngFor="let tipo of tipoRutinas" [value]="tipo.sfid">{{tipo.nombre__c}}</ion-option>
     </ion-select>
   </ion-item>
 
@@ -84,7 +81,7 @@
 
     </ion-slides>
 
-    <ion-row>
+    <!-- <ion-row>
       <ion-col text-right>
         <button ion-button color="primary" (click)="cancel()">Cancelar</button>
       </ion-col>
@@ -92,7 +89,7 @@
       <ion-col text-left>
         <button ion-button color="primary">Crear</button>
       </ion-col>
-    </ion-row>
+    </ion-row> -->
 
   </div>
 

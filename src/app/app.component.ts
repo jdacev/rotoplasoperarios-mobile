@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Platform, App, MenuController, AlertController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { Keyboard } from '@ionic-native/keyboard';
 
 import { AuthService } from "../providers/auth-service/auth-service";
 
@@ -24,10 +25,12 @@ export class MyApp {
               private menuCtrl: MenuController,
               public appCtrl : App,
               private alertCtrl: AlertController,
-              public authservice: AuthService) {
+              public authservice: AuthService,
+              private keyboard: Keyboard) {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
+      keyboard.disableScroll(false);
       statusBar.styleDefault();
       splashScreen.hide();
     });

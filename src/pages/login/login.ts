@@ -51,7 +51,7 @@ export class LoginPage {
     // this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
 
     this.loading = true;
-    this.authservice.authenticate(user.name, user.password).then(data => {
+    this.authservice.authenticate(user.name.toLowerCase(), user.password).then(data => {
       if(data) {
         this.loading = false;
         this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
