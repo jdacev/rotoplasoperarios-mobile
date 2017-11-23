@@ -23,7 +23,7 @@
       <button detail-none ion-item class="fondoNuevo">
         <ion-icon name="briefcase" isActive="false" item-start></ion-icon>
         Rutinas
-        <button color="primary" item-right ion-button style="width:40%">Nuevo</button>
+        <button color="blueRotoplas" item-right ion-button style="width:40%">Nuevo</button>
       </button>
     </ion-item>
 
@@ -42,7 +42,8 @@
       </ion-item>
 
       <ion-item *ngFor="let rutina of rutinasList">
-        <ion-label padding-left>{{ticket.casenumber}}</ion-label>
+        <h2 padding-left>{{rutina.name}}</h2>
+        <p padding-left>Tipo: {{rutina.idtiporutina__c}}</p>
       </ion-item>
     </div>
 

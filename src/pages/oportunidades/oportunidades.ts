@@ -30,7 +30,7 @@ export class OportunidadesPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad OportunidadesPage');
+    // console.log('ionViewDidLoad OportunidadesPage');
 
   }
 
@@ -45,7 +45,7 @@ export class OportunidadesPage {
   }
 
   toggleLista(){
-    console.log(this.listaAbierta)
+    // console.log(this.listaAbierta)
     if (this.listaAbierta) {
         this.listaAbierta = false;
     } else {

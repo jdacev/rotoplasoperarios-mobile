@@ -14,7 +14,7 @@ import { URL_SERVICIOS } from "../../config/url.services";
 export class RutinasProvider {
 
   constructor(public http: Http) {
-    console.log('Hello RutinasProvider Provider');
+    // console.log('Hello RutinasProvider Provider');
   }
 
   getPreguntasTipoRutina(id: number){

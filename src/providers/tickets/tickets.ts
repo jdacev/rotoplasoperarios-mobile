@@ -16,7 +16,7 @@ export class TicketsProvider {
 
   constructor(public http: Http,
               private alertCtrl: AlertController) {
-    console.log('Hello TicketsProvider Provider');
+    // console.log('Hello TicketsProvider Provider');
   }
 
   getTicketsUsuario(idPlanta: number, idUsuario: string){
