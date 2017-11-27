@@ -151,18 +151,26 @@ private createFileName() {
    });
   }
 
+  ordenar(item1, item2){
+    return (item1 < item2 ? -1 : (item1 === item2 ? 0 : 1));
+  }
+
   getMotivosOportunidades(){
     this.ticketsProv.getMotivosOportunidades().subscribe(response =>{
-      this.motivos = response.data;
+
+      // this.motivos = response.data;
+      this.motivos = response.data.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
     }, error =>{
 
     })
   }
 
+
+
   getDescripcionMotivos(motivo){
     if(motivo){
       this.ticketsProv.getDescripcionMotivos(motivo.sfid).subscribe(response =>{
-        this.descripcionesMotivos =  response.data;
+        this.descripcionesMotivos =  response.data.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
         this.motivosDesestabilizacion = null;
         this.descripcionSeleccionada = null;
         this.motivoDesestabilizacionSeleccionado = null;
@@ -175,7 +183,7 @@ private createFileName() {
   getMotivosDesestabilizacion(descripcion){
     if(descripcion){
       this.ticketsProv.getMotivosDesestabilizacion(descripcion.sfid).subscribe(response =>{
-        this.motivosDesestabilizacion =  response.data;
+        this.motivosDesestabilizacion = response.data.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
         this.motivoDesestabilizacionSeleccionado = null;
 
       }, error=>{
@@ -187,7 +195,7 @@ private createFileName() {
 
   getClientesPlanta(){
     this.ticketsProv.getClientesPlanta(this.authservice.AuthToken.planta.sfid).subscribe(response =>{
-      this.clientes = response.data
+      this.clientes = response.data.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
 
     }, error=>{
 
