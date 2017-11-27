@@ -98,16 +98,17 @@ export class NuevaRutinaPage {
       'actividadrutina__c': listaActividades
     }
     console.log(data)
-    // console.log(data);
-    // this.rutinasProv.crearRutina(data).then(response=>{
-    //   if(response){
-    //     this.navCtrl.pop();
-    //   }else{
-    //
-    //   }
-    // }, error=>{
-    //
-    // });
+
+    console.log(data);
+    this.rutinasProv.crearRutina(data).then(response=>{
+      if(response){
+        this.navCtrl.pop();
+      }else{
+
+      }
+    }, error=>{
+
+    });
   }
 
 }

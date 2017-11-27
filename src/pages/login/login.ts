@@ -57,6 +57,7 @@ export class LoginPage {
         this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
       }else{
         this.loading = false;
+        this.usercreds.password = "";
       }
     });
 

@@ -25,7 +25,7 @@ export class OportunidadesPage {
               private ticketsProv: TicketsProvider,
               private authservice: AuthService) {
 
-    this.listaAbierta = false;
+    this.listaAbierta = true;
     this.getTicketsUsuario();
   }
 

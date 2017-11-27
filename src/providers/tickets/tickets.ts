@@ -34,6 +34,11 @@ export class TicketsProvider {
               .map(resp => resp.json())
   }
 
+  getClientesPlanta(idPlanta:string){
+    return this.http.get(URL_SERVICIOS + '/clientesPlanta/' + idPlanta)
+              .map(resp => resp.json())
+  }
+
   getMotivosDesestabilizacion(id){
     return this.http.get(URL_SERVICIOS + '/motivosdesestabilizaciones/' + id)
               .map(resp => resp.json())

@@ -25,7 +25,7 @@ export class RutinasPage {
               private rutinasProv: RutinasProvider,
               private authservice: AuthService) {
 
-    this.listaAbierta = false;
+    this.listaAbierta = true;
     this.getRutinasUsuario();
   }
 
@@ -41,6 +41,16 @@ export class RutinasPage {
         this.listaAbierta = true;
 
     }
+  }
+
+  doRefresh(refresher) {
+    // console.log('Begin async operation', refresher);
+
+    setTimeout(() => {
+      // console.log('Async operation has ended');
+      this.getRutinasUsuario();
+      refresher.complete();
+    }, 2000);
   }
 
   irAPagina(pagina:string){

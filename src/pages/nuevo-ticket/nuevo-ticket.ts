@@ -21,6 +21,8 @@ export class NuevoTicketPage {
   motivoSeleccionado:any;
   descripcionSeleccionada: any;
   motivoDesestabilizacionSeleccionado : any;
+  clienteSeleccionado:any;
+  clientes:any;
   motivos;
   descripcionesMotivos;
   motivosDesestabilizacion;
@@ -39,7 +41,9 @@ export class NuevoTicketPage {
     this.serviceType = "";
     this.motivoSeleccionado = null;
     this.descripcionSeleccionada = null;
+    this.clientes = [];
     this.getMotivosOportunidades();
+    this.getClientesPlanta();
   }
 
   ionViewDidLoad() {
@@ -163,7 +167,7 @@ private createFileName() {
         this.descripcionSeleccionada = null;
         this.motivoDesestabilizacionSeleccionado = null;
       }, error=>{
-
+        this.descripcionesMotivos = null;
       })
     }
   }
@@ -181,6 +185,15 @@ private createFileName() {
     }
   }
 
+  getClientesPlanta(){
+    this.ticketsProv.getClientesPlanta(this.authservice.AuthToken.planta.sfid).subscribe(response =>{
+      this.clientes = response.data
+
+    }, error=>{
+
+    })
+  }
+
   createTicket(){
 
     var data = {
@@ -190,8 +203,9 @@ private createFileName() {
       'idplanta__c': this.authservice.AuthToken.planta.sfid,
       'operadorapp__c': this.authservice.AuthToken.usuario.sfid,
       'reason': this.motivoSeleccionado.name,
-      'descripciondefalla__c' : this.descripcionSeleccionada.name,
-      'motivodedesestabilizacion__c': this.motivoDesestabilizacionSeleccionado ? this.motivoDesestabilizacionSeleccionado.name : null
+      'descripciondefalla__c' : this.descripcionSeleccionada ? this.descripcionSeleccionada.name : null,
+      'motivodedesestabilizacion__c': this.motivoDesestabilizacionSeleccionado ? this.motivoDesestabilizacionSeleccionado.name : null,
+      'accountid' : this.clienteSeleccionado
     }
     // console.log(data);
     this.ticketsProv.createTicket(data).then(response=>{
