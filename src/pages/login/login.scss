@@ -1,7 +1,13 @@
 page-login {
   .loginButton{
-    width: 50%
+    width: 50%;
+    text-transform: none;
   }
+
+  .forgotPass{
+    text-transform: none;
+  }
+
   .spinner-md-crescent circle {
     stroke: #fff;
   }

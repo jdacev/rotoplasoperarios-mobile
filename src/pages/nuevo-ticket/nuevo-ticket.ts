@@ -21,6 +21,8 @@ export class NuevoTicketPage {
   motivoSeleccionado:any;
   descripcionSeleccionada: any;
   motivoDesestabilizacionSeleccionado : any;
+  clienteSeleccionado:any;
+  clientes:any;
   motivos;
   descripcionesMotivos;
   motivosDesestabilizacion;
@@ -39,7 +41,9 @@ export class NuevoTicketPage {
     this.serviceType = "";
     this.motivoSeleccionado = null;
     this.descripcionSeleccionada = null;
+    this.clientes = [];
     this.getMotivosOportunidades();
+    this.getClientesPlanta();
   }
 
   ionViewDidLoad() {
@@ -147,23 +151,31 @@ private createFileName() {
    });
   }
 
+  ordenar(item1, item2){
+    return (item1 < item2 ? -1 : (item1 === item2 ? 0 : 1));
+  }
+
   getMotivosOportunidades(){
     this.ticketsProv.getMotivosOportunidades().subscribe(response =>{
-      this.motivos = response.data;
+
+      // this.motivos = response.data;
+      this.motivos = response.data.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
     }, error =>{
 
     })
   }
 
+
+
   getDescripcionMotivos(motivo){
     if(motivo){
       this.ticketsProv.getDescripcionMotivos(motivo.sfid).subscribe(response =>{
-        this.descripcionesMotivos =  response.data;
+        this.descripcionesMotivos =  response.data.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
         this.motivosDesestabilizacion = null;
         this.descripcionSeleccionada = null;
         this.motivoDesestabilizacionSeleccionado = null;
       }, error=>{
-
+        this.descripcionesMotivos = null;
       })
     }
   }
@@ -171,7 +183,7 @@ private createFileName() {
   getMotivosDesestabilizacion(descripcion){
     if(descripcion){
       this.ticketsProv.getMotivosDesestabilizacion(descripcion.sfid).subscribe(response =>{
-        this.motivosDesestabilizacion =  response.data;
+        this.motivosDesestabilizacion = response.data.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
         this.motivoDesestabilizacionSeleccionado = null;
 
       }, error=>{
@@ -179,6 +191,15 @@ private createFileName() {
         this.motivosDesestabilizacion = null;
       })
     }
+  }
+
+  getClientesPlanta(){
+    this.ticketsProv.getClientesPlanta(this.authservice.AuthToken.planta.sfid).subscribe(response =>{
+      this.clientes = response.data.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
+
+    }, error=>{
+
+    })
   }
 
   createTicket(){
@@ -190,8 +211,9 @@ private createFileName() {
       'idplanta__c': this.authservice.AuthToken.planta.sfid,
       'operadorapp__c': this.authservice.AuthToken.usuario.sfid,
       'reason': this.motivoSeleccionado.name,
-      'descripciondefalla__c' : this.descripcionSeleccionada.name,
-      'motivodedesestabilizacion__c': this.motivoDesestabilizacionSeleccionado ? this.motivoDesestabilizacionSeleccionado.name : null
+      'descripciondefalla__c' : this.descripcionSeleccionada ? this.descripcionSeleccionada.name : null,
+      'motivodedesestabilizacion__c': this.motivoDesestabilizacionSeleccionado ? this.motivoDesestabilizacionSeleccionado.name : null,
+      'accountid' : this.clienteSeleccionado
     }
     // console.log(data);
     this.ticketsProv.createTicket(data).then(response=>{

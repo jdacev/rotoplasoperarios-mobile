@@ -157,7 +157,7 @@ export class AuthService {
     return new Promise(resolve => {
         var headers = new Headers();
         this.loadUserCredentials();
-        console.log(this.AuthToken);
+        // console.log(this.AuthToken);
         headers.append('Authorization', 'Bearer ' +this.AuthToken);
         this.http.get('http://localhost:3333/getinfo', {headers: headers}).subscribe(data => {
             if(data.json().success)

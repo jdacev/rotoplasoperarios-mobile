@@ -25,16 +25,16 @@ export class RutinasPage {
               private rutinasProv: RutinasProvider,
               private authservice: AuthService) {
 
-    this.listaAbierta = false;
+    this.listaAbierta = true;
     this.getRutinasUsuario();
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad RutinasPage');
+    // console.log('ionViewDidLoad RutinasPage');
   }
 
   toggleLista(){
-    console.log(this.listaAbierta)
+    // console.log(this.listaAbierta)
     if (this.listaAbierta) {
         this.listaAbierta = false;
     } else {
@@ -43,20 +43,25 @@ export class RutinasPage {
     }
   }
 
+  doRefresh(refresher) {
+    // console.log('Begin async operation', refresher);
+
+    setTimeout(() => {
+      // console.log('Async operation has ended');
+      this.getRutinasUsuario();
+      refresher.complete();
+    }, 2000);
+  }
+
   irAPagina(pagina:string){
     this.navCtrl.push(pagina)
   }
 
   getRutinasUsuario(){
     this.rutinasProv.getRutinasUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
-
-      if(data.status != 'success'){
-        console.log("ERROR RECIBIENDO DATA")
-      }else{
         this.rutinasList = data.data;
-      }
     }, error =>{
-        console.log("Error: " + error);
+        // console.log("Error: " + error);
     })
   }
 

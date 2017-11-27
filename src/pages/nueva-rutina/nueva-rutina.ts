@@ -15,6 +15,8 @@ export class NuevaRutinaPage {
   determinante:number;
   activities = [];
   tipoRutinas = [];
+  tipoRutina:string;
+  observacion:string;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -24,6 +26,8 @@ export class NuevaRutinaPage {
     this.ptarDate = new Date().toISOString();
     this.determinante = 123;
     this.activities = [];
+    this.tipoRutina = null;
+    this.observacion = "";
     this.getTipoRutinas();
   }
 
@@ -46,25 +50,65 @@ export class NuevaRutinaPage {
   getActividades(id: number){
     // console.log(id);
 
-/*
     this.rutinasProv.getPreguntasTipoRutina(id).subscribe(data =>{
       // console.log("data: " + data.data[0].name);
         this.activities = data.data;
+        for (let i = 0; i < this.activities.length; i++) {
+          this.activities[i].observacion = undefined;
+          if(this.activities[i].tipo_de_respuesta__c){
+            this.activities[i].valor = false;
+          }else{
+            this.activities[i].valor = undefined;
+          }
+        }
         console.log(this.activities);
     }, error =>{
         this.activities = [];
         console.log("Error: " + error);
     })
-*/
 
   }
 
-  test(){
+  respuestasIncompletas(){
+    for (let i = 0; i < this.activities.length; i++) {
+        if(this.activities[i].valor == undefined || (!this.activities[i].tipo_de_respuesta__c && this.activities[i].valor == ""))
+          return true;
+    }
 
-      // for (let i = 0; i < this.valor.length; i++) {
-      //     console.log("Actividad 1: " + this.valor[i] + ", Valor: " + this.observacion[i])
-      // }
+    return false;
+  }
 
+  crearRutina(){
+    var listaActividades = [];
+    for (let i = 0; i < this.activities.length; i++) {
+        listaActividades.push(
+          {
+            'id_pregunta_rutina__c': this.activities[i].sfid,
+            'valor_si_no__c' : this.activities[i].tipo_de_respuesta__c ? this.activities[i].valor : null,
+            'valornumerico__c' : !this.activities[i].tipo_de_respuesta__c ? this.activities[i].valor : null
+          });
+    }
+
+    var data = {
+      'observacion__c' : this.observacion,
+      'idtiporutina__c' : this.tipoRutina,
+      "idplanta__c": this.authservice.AuthToken.planta.sfid,
+      'usuarioapp__c': this.authservice.AuthToken.usuario.sfid,
+      'rutaimagen__c': 'RUTA/IMAGEN/',
+      'actividadrutina__c': listaActividades
+    }
+    console.log(data)
+
+    console.log(data);
+    this.rutinasProv.crearRutina(data).then(response=>{
+      if(response){
+        this.navCtrl.pop();
+      }else{
+
+      }
+    }, error=>{
+
+    });
   }
 
 }

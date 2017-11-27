@@ -16,7 +16,7 @@ export class TicketsProvider {
 
   constructor(public http: Http,
               private alertCtrl: AlertController) {
-    console.log('Hello TicketsProvider Provider');
+    // console.log('Hello TicketsProvider Provider');
   }
 
   getTicketsUsuario(idPlanta: number, idUsuario: string){
@@ -31,6 +31,11 @@ export class TicketsProvider {
 
   getDescripcionMotivos(id){
     return this.http.get(URL_SERVICIOS + '/descripcionmotivos/' + id)
+              .map(resp => resp.json())
+  }
+
+  getClientesPlanta(idPlanta:string){
+    return this.http.get(URL_SERVICIOS + '/clientesPlanta/' + idPlanta)
               .map(resp => resp.json())
   }
 

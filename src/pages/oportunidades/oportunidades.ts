@@ -25,12 +25,12 @@ export class OportunidadesPage {
               private ticketsProv: TicketsProvider,
               private authservice: AuthService) {
 
-    this.listaAbierta = false;
+    this.listaAbierta = true;
     this.getTicketsUsuario();
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad OportunidadesPage');
+    // console.log('ionViewDidLoad OportunidadesPage');
 
   }
 
@@ -45,7 +45,7 @@ export class OportunidadesPage {
   }
 
   toggleLista(){
-    console.log(this.listaAbierta)
+    // console.log(this.listaAbierta)
     if (this.listaAbierta) {
         this.listaAbierta = false;
     } else {

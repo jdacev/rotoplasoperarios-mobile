@@ -17,18 +17,22 @@
 
 <ion-content padding-top>
 
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
   <ion-list>
 
     <ion-item class="fondoNuevo" (click)="irAPagina('NuevaRutinaPage')">
       <button detail-none ion-item class="fondoNuevo">
         <ion-icon name="briefcase" isActive="false" item-start></ion-icon>
         Rutinas
-        <button color="primary" item-right ion-button style="width:40%">Nuevo</button>
+        <button color="blueRotoplas" item-right ion-button style="width:40%">Nuevo</button>
       </button>
     </ion-item>
 
     <ion-item>
-      <button detail-none ion-item (click)="toggleLista()">
+      <button detail-none ion-item>
         <ion-icon name="list" padding-right></ion-icon>
         <ion-icon [name]="listaAbierta ? 'arrow-dropdown' : 'arrow-dropright'" isActive="false" item-end></ion-icon>
         Mis Rutinas
@@ -42,7 +46,8 @@
       </ion-item>
 
       <ion-item *ngFor="let rutina of rutinasList">
-        <ion-label padding-left>{{ticket.casenumber}}</ion-label>
+        <h2 padding-left>{{rutina.name ? rutina.name : 'Generando...'}}</h2>
+        <p padding-left>Tipo: {{rutina.nombre__c}}</p>
       </ion-item>
     </div>
 

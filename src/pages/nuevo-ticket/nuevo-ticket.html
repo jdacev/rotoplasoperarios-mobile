@@ -18,15 +18,22 @@
 
 <ion-content padding>
   <h5 class="titulo">
-    Información PTAR
+    Información de Planta
   </h5>
 
   <ion-item>
-    <ion-label><b>Nombre PTAR</b></ion-label>
+    <ion-label><b>Nombre de Planta</b></ion-label>
     <ion-input disabled text-right type="text" [(ngModel)]="ptarName"></ion-input>
   </ion-item>
 
   <ion-item>
+    <ion-label style="white-space: normal"><b>Cliente</b></ion-label>
+    <ion-select style="width: 50%" [(ngModel)]="clienteSeleccionado">
+      <ion-option *ngFor="let cliente of clientes" [value]="cliente.sfid">{{cliente.name}}</ion-option>
+    </ion-select>
+  </ion-item>
+
+  <!-- <ion-item>
     <ion-label><b>Fecha de Apertura</b></ion-label>
     <ion-datetime text-right disabled displayFormat="DD/MM/YYYY" [(ngModel)]="ptarDate"></ion-datetime>
   </ion-item>
@@ -34,12 +41,12 @@
   <ion-item>
     <ion-label><b>Tipo de Ticket</b></ion-label>
     <ion-input disabled text-right type="text" [(ngModel)]="ticketType"></ion-input>
-  </ion-item>
+  </ion-item> -->
 
   <br>
 
   <h5 class="titulo">
-    Motivos
+    Detalle de la Oportunidad C
   </h5>
 
   <ion-item>
@@ -79,11 +86,11 @@
   </ion-item>
 
   <ion-item>
-    <ion-label style="white-space: normal"><b>Tipo de Servicio de Agua</b></ion-label>
+    <ion-label style="white-space: normal"><b>Envío de Agua</b></ion-label>
     <ion-select style="width: 50%" [(ngModel)]="serviceType">
-      <ion-option value="No envía agua">No envía agua</ion-option>
-      <ion-option value="Envía Agua Residual Tratada">Envía Agua Residual Tratada</ion-option>
       <ion-option value="Envía Agua Potable">Envía Agua Potable</ion-option>
+      <ion-option value="Envía Agua Residual Tratada">Envía Agua Residual Tratada</ion-option>
+      <ion-option value="No Envía Agua">No envía agua</ion-option>
       <ion-option value="No Aplica">No Aplica</ion-option>
     </ion-select>
   </ion-item>
@@ -91,7 +98,7 @@
   <br>
 
   <h5 class="titulo">
-    Fotografías (Evidencias)
+    Evidencias
   </h5>
 
   <!-- <ion-grid>
@@ -119,11 +126,11 @@
   <ion-grid>
     <ion-row>
       <ion-col text-right>
-        <button ion-button color="primary" (click)="createTicket()" [disabled]="!description || !serviceType || !motivoSeleccionado || !descripcionSeleccionada || (motivosDesestabilizacion && !motivoDesestabilizacionSeleccionado)">Crear</button>
+        <button ion-button color="blueRotoplas" (click)="createTicket()" [disabled]="!clienteSeleccionado || !serviceType || !motivoSeleccionado || (descripcionesMotivos && !descripcionSeleccionada) || (motivosDesestabilizacion && !motivoDesestabilizacionSeleccionado)">Crear</button>
       </ion-col>
 
       <ion-col text-left>
-        <button ion-button color="primary" (click)="cancel()">Cancelar</button>
+        <button ion-button color="blueRotoplas" (click)="cancel()">Cancelar</button>
       </ion-col>
     </ion-row>
   </ion-grid>

@@ -29,11 +29,11 @@
   </ion-item>
 
   <h5 class="titulo">
-    Información PTAR
+    Información de Planta
   </h5>
 
   <ion-item>
-    <ion-label><b>Nombre PTAR</b></ion-label>
+    <ion-label><b>Nombre de Planta</b></ion-label>
     <ion-input disabled text-right type="text" [(ngModel)]="ptarName"></ion-input>
   </ion-item>
 
@@ -45,6 +45,15 @@
   <ion-item>
     <ion-label><b>Fecha de Rutina</b></ion-label>
     <ion-datetime text-right disabled displayFormat="DD/MM/YYYY" [(ngModel)]="ptarDate"></ion-datetime>
+  </ion-item>
+
+  <h5 class="titulo">
+    Observación
+  </h5>
+
+  <ion-item>
+    <!-- <ion-label><b>Nombre PTAR</b></ion-label> -->
+    <ion-textarea rows="4" type="text" [(ngModel)]="observacion"></ion-textarea>
   </ion-item>
 
   <br>
@@ -65,17 +74,18 @@
 
 
         <ion-item *ngIf="activity.tipo_de_respuesta__c">
-          <ion-label stacked>Si/No</ion-label>
-          <ion-toggle checked="false"></ion-toggle>
+          <ion-label stacked>No/Si</ion-label>
+          <ion-toggle checked="false" [(ngModel)]="activity.valor"></ion-toggle>
         </ion-item>
         <ion-item *ngIf="!activity.tipo_de_respuesta__c">
           <ion-label stacked>m3</ion-label>
           <ion-input type="number" min="0" [(ngModel)]="activity.valor"></ion-input>
         </ion-item>
-        <ion-item>
+        <!-- <ion-item>
           <ion-label stacked>Observaciones</ion-label>
           <ion-textarea rows="4" type="text" [(ngModel)]="activity.observacion"></ion-textarea>
-        </ion-item>
+        </ion-item> -->
+        <br><br>
 
       </ion-slide>
 
@@ -96,10 +106,10 @@
   <ion-row>
 
     <ion-col text-right>
-      <button ion-button color="primary">Crear</button>
+      <button ion-button color="blueRotoplas" [disabled]="!tipoRutina || !observacion || respuestasIncompletas() || activities.length == 0" (click)="crearRutina()">Crear</button>
     </ion-col>
     <ion-col text-left>
-      <button ion-button color="primary" (click)="cancel()">Cancelar</button>
+      <button ion-button color="blueRotoplas" (click)="cancel()">Cancelar</button>
     </ion-col>
   </ion-row>
 
