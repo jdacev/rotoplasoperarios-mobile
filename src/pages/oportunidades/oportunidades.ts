@@ -58,6 +58,12 @@ export class OportunidadesPage {
     this.navCtrl.push(pagina)
   }
 
+  irADetalle(ticket){
+    this.navCtrl.push('DetalleOportunidadPage', {
+      ticket: ticket
+    })
+  }
+
   getTicketsUsuario(){
     this.ticketsProv.getTicketsUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
 

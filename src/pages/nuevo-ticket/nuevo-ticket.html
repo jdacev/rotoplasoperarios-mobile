@@ -22,7 +22,7 @@
   </h5>
 
   <ion-item>
-    <ion-label><b>Nombre de Planta</b></ion-label>
+    <ion-label><b>Planta</b></ion-label>
     <ion-input disabled text-right type="text" [(ngModel)]="ptarName"></ion-input>
   </ion-item>
 
@@ -88,9 +88,9 @@
   <ion-item>
     <ion-label style="white-space: normal"><b>Envío de Agua</b></ion-label>
     <ion-select style="width: 50%" [(ngModel)]="serviceType">
-      <ion-option value="Envía Agua Potable">Envía Agua Potable</ion-option>
-      <ion-option value="Envía Agua Residual Tratada">Envía Agua Residual Tratada</ion-option>
-      <ion-option value="No Envía Agua">No envía agua</ion-option>
+      <ion-option value="Env\u00eda Agua Potable">Envía Agua Potable</ion-option>
+      <ion-option value="Env\u00eda Agua Residual Tratada">Envía Agua Residual Tratada</ion-option>
+      <ion-option value="No Env\u00eda Agua">No envía agua</ion-option>
       <ion-option value="No Aplica">No Aplica</ion-option>
     </ion-select>
   </ion-item>
@@ -105,14 +105,17 @@
 
     <ion-row>
 
-      <ion-col col-3 *ngFor="let image of images">
+      <ion-col col-3 *ngFor="let image of images; let i = index">
         <ion-thumbnail>
           <img [src]="image" alt="">
         </ion-thumbnail>
+        <ion-fab *ngIf="images.length > 0" class="fabDeleteImagen">
+          <button class="botonEliminarImagen" (click)="eliminarImagen(i, image)" color="dark" ion-fab mini><ion-icon name="close"></ion-icon></button>
+        </ion-fab>
       </ion-col>
 
       <ion-col col-3>
-        <ion-fab>
+        <ion-fab *ngIf="images.length < 5">
           <button ion-fab mini color="danger" (click)="capturar()"><ion-icon name="add"></ion-icon></button>
         </ion-fab>
       </ion-col>

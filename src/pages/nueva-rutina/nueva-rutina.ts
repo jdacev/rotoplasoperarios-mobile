@@ -12,6 +12,7 @@ export class NuevaRutinaPage {
 
   ptarName:string;
   ptarDate:string;
+  formato:string;
   determinante:number;
   activities = [];
   tipoRutinas = [];
@@ -24,7 +25,8 @@ export class NuevaRutinaPage {
               private authservice: AuthService) {
     this.ptarName = this.authservice.AuthToken.planta.name;
     this.ptarDate = new Date().toISOString();
-    this.determinante = 123;
+    this.determinante = this.authservice.AuthToken.planta.determinante__c;
+    this.formato = this.authservice.AuthToken.planta.formato__c;
     this.activities = [];
     this.tipoRutina = null;
     this.observacion = "";

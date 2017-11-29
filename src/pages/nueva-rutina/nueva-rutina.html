@@ -33,7 +33,7 @@
   </h5>
 
   <ion-item>
-    <ion-label><b>Nombre de Planta</b></ion-label>
+    <ion-label><b>Planta</b></ion-label>
     <ion-input disabled text-right type="text" [(ngModel)]="ptarName"></ion-input>
   </ion-item>
 
@@ -43,8 +43,8 @@
   </ion-item>
 
   <ion-item>
-    <ion-label><b>Fecha de Rutina</b></ion-label>
-    <ion-datetime text-right disabled displayFormat="DD/MM/YYYY" [(ngModel)]="ptarDate"></ion-datetime>
+    <ion-label><b>Formato</b></ion-label>
+    <ion-input disabled text-right type="text" [(ngModel)]="formato"></ion-input>
   </ion-item>
 
   <h5 class="titulo">
@@ -106,7 +106,7 @@
   <ion-row>
 
     <ion-col text-right>
-      <button ion-button color="blueRotoplas" [disabled]="!tipoRutina || !observacion || respuestasIncompletas() || activities.length == 0" (click)="crearRutina()">Crear</button>
+      <button ion-button color="blueRotoplas" [disabled]="!tipoRutina || respuestasIncompletas() || activities.length == 0" (click)="crearRutina()">Crear</button>
     </ion-col>
     <ion-col text-left>
       <button ion-button color="blueRotoplas" (click)="cancel()">Cancelar</button>

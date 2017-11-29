@@ -45,10 +45,12 @@
         <ion-label padding-left>No hay oportunidades c</ion-label>
       </ion-item>
 
-      <ion-item *ngFor="let ticket of ticketList">
-        <h2 padding-left>{{ticket.reason}} - {{ticket.id_case_heroku_c__c}}</h2>
-        <p padding-left>Fecha: {{ticket.createddate | date:'dd/MM/yyyy HH:mm'}}</p>
-      </ion-item>
+      <!-- <ion-item *ngFor="let ticket of ticketList"> -->
+        <button detail-none ion-item *ngFor="let ticket of ticketList">
+          <h2 padding-left>{{ticket.reason}} - {{ticket.id_case_heroku_c__c}}</h2>
+          <p padding-left>Fecha: {{ticket.createddate | date:'dd/MM/yyyy HH:mm'}}</p>
+        </button>
+      <!-- </ion-item> -->
     </div>
 
   </ion-list>
