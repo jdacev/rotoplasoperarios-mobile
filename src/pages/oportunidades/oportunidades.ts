@@ -76,6 +76,7 @@ export class OportunidadesPage {
         this.ticketList = data.data;
       // }
     }, error =>{
+        this.loading = false;
         console.log("Error: " + error);
     })
   }

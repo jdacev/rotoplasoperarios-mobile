@@ -64,6 +64,7 @@ export class RutinasPage {
         this.rutinasList = data.data;
         this.loading = false;
     }, error =>{
+        this.loading = false;
         // console.log("Error: " + error);
     })
   }
