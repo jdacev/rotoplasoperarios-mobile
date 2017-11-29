@@ -42,6 +42,11 @@ export class NuevoTicketPage {
     this.motivoSeleccionado = null;
     this.descripcionSeleccionada = null;
     this.clientes = [];
+    // this.images.push('../assets/team.jpg')
+    // this.images.push('../assets/team.jpg')
+    // this.images.push('../assets/team.jpg')
+    // this.images.push('../assets/team.jpg')
+    // this.images.push('../assets/team.jpg')
     this.getMotivosOportunidades();
     this.getClientesPlanta();
   }
@@ -54,9 +59,15 @@ export class NuevoTicketPage {
     this.navCtrl.pop();
   }
 
+  checkDirectory(){
+    let dataDirectory=this.file.dataDirectory;
+    dataDirectory = dataDirectory.split('/rotoplas.app')[0];
+    this.presentToast("dataDirectory: " + dataDirectory);
+  }
+
   capturar(){
     const options: CameraOptions = {
-      quality: 100,
+      quality: 50,
       destinationType: this.camera.DestinationType.FILE_URI,
       sourceType: this.camera.PictureSourceType.CAMERA,
       encodingType: this.camera.EncodingType.JPEG,
@@ -64,6 +75,9 @@ export class NuevoTicketPage {
     }
 
     this.camera.getPicture(options).then((imagePath) => {
+      this.presentToast("Imagen Capturada: " + imagePath);
+      this.images.push(imagePath)
+
      // imageData is either a base64 encoded string or a file URI
      // If it's base64:
     //  let base64Image = 'data:image/jpeg;base64,' + imageData;
@@ -78,24 +92,25 @@ export class NuevoTicketPage {
 
 
       // i use x to take the folder i want to save the file to
-      let x=this.file.dataDirectory;
-      //when making cross platform apps make sure your .xxx setting here is compatible with ios and android
-      //a simple way to seperate the folder path and the file name
-      var sourceDirectory = imagePath.substring(0, imagePath.lastIndexOf('/') + 1);
-      var sourceFileName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.length);
-      var newFileName = "Nuevo - " + sourceFileName;
+      // let dataDirectory=this.file.dataDirectory;
+      // this.presentToast("dataDirectory: " + dataDirectory);
+      // //when making cross platform apps make sure your .xxx setting here is compatible with ios and android
+      // //a simple way to seperate the folder path and the file name
+      // var sourceDirectory = imagePath.substring(0, imagePath.lastIndexOf('/') + 1);
+      // var sourceFileName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.length);
+      // var newFileName = "Nuevo - " + sourceFileName;
 
-      // Here i just move the presaved image to my new folder.
-      //the args of file.moveFile are (sourceDirectory,SourceFilename,DestinationDir,NewFilename)
-      let move =this.file.moveFile(sourceDirectory,sourceFileName,x,newFileName)
-        .then(
-          file=>{ // do something with the file location
-                this.presentToast("FOTO MOVIDA: " + x + newFileName);
-                this.images.push(x + newFileName);
-          }, error => {
-                this.presentToast("ERROR MOVIENDO")
-          }
-                    )
+      //
+      // // Here i just move the presaved image to my new folder.
+      // //the args of file.moveFile are (sourceDirectory,SourceFilename,DestinationDir,NewFilename)
+      // let move =this.file.moveFile(sourceDirectory,sourceFileName,dataDirectory,newFileName)
+      //                     .then(
+      //                       file=>{ // do something with the file location
+      //                             this.presentToast("FOTO MOVIDA A : " + dataDirectory + newFileName);
+      //                             this.images.push(dataDirectory + newFileName);
+      //                       }, error => {
+      //                             this.presentToast("ERROR MOVIENDO")
+      //                       })
 
     }, (err) => {
      // Handle error
@@ -130,7 +145,43 @@ private createFileName() {
     toast.present();
   }
 
+  moverArchivo(images:string[], id){
+
+    let dataDirectory=this.file.dataDirectory;
+    var sourceDirectory = images[0].substring(0, images[0].lastIndexOf('/') + 1);
+    var destino = dataDirectory + id.toString() + '/';
+
+    // this.file.checkDir(dataDirectory, id)
+    //           .then(_ => {
+    //             this.presentToast('Directory exists')
+    //           })
+    //           .catch(err => {
+    //             this.presentToast('Directory doesnt exist')
+    this.file.createDir(dataDirectory, id.toString(), false).then(data=>{
+      this.presentToast('CREADO DIRECTORIO: ' + dataDirectory + ' ....archivo: ' + id.toString())
+    }, err =>{
+      this.presentToast('Error al crear Directorio: ' + err)
+    });
+
+              // });
+
+    // this.presentToast('dataDirectory: ' + dataDirectory);
+    var fileName = images[0].substring(images[0].lastIndexOf('/') + 1, images[0].length);
+    // var newFileName = "" + fileName;
+    this.file.moveFile(sourceDirectory,fileName,destino,fileName)
+                    .then(
+                      file=>{ // do something with the file location
+                            this.presentToast("FOTO MOVIDA A : " + destino + fileName);
+                            this.images.push(dataDirectory + fileName);
+                      }, error => {
+                            this.presentToast("ERROR MOVIENDO: " + error.message + "   ...error: " + error)
+                      })
+  }
+
   private moveFile(fileName:string){
+
+
+
     // Determine paths
    let basePath: string = fileName.split("/data/")[0];
    let destinationPath: string = basePath + "/Rotoplas/Images"
@@ -149,6 +200,14 @@ private createFileName() {
    }, error => {
      this.presentToast("ERROR: " + error);
    });
+  }
+
+  eliminarImagen(pos:number, imagen:string){
+    // console.log('pos:' + pos + ', ' + imagen);
+    var directorio = imagen.substring(0, imagen.lastIndexOf('/') + 1);
+    var nombreArchivo = imagen.substring(imagen.lastIndexOf('/') + 1, imagen.length);
+    this.file.removeFile(directorio, nombreArchivo);
+    this.images.splice(pos, 1)
   }
 
   ordenar(item1, item2){
@@ -218,6 +277,7 @@ private createFileName() {
     // console.log(data);
     this.ticketsProv.createTicket(data).then(response=>{
       if(response){
+        this.moverArchivo(this.images, response);
         this.navCtrl.pop();
       }else{
 

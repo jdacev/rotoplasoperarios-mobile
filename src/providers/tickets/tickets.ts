@@ -55,10 +55,10 @@ export class TicketsProvider {
     return new Promise(resolve => {
         this.http.post(URL_SERVICIOS + '/ticket', data).subscribe(response => {
           this.showAlert("Crear Oportunidad C", response.json().message);
-          resolve(true);
+          resolve(response.json().id_case_heroku_c__c);
         }, error =>{
           this.showAlert("Error al crear Oportunidad C", error.json().message);
-          resolve(false)
+          resolve(null)
         });
     });
   }
