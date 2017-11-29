@@ -277,7 +277,7 @@ private createFileName() {
     // console.log(data);
     this.ticketsProv.createTicket(data).then(response=>{
       if(response){
-        this.moverArchivo(this.images, response);
+        // this.moverArchivo(this.images, response);
         this.navCtrl.pop();
       }else{
 
