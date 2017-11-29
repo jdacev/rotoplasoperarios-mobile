@@ -19,6 +19,7 @@ export class RutinasPage {
 
   listaAbierta: boolean;
   rutinasList = [];
+  loading:boolean;
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -58,8 +59,10 @@ export class RutinasPage {
   }
 
   getRutinasUsuario(){
+    this.loading = true;
     this.rutinasProv.getRutinasUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
         this.rutinasList = data.data;
+        this.loading = false;
     }, error =>{
         // console.log("Error: " + error);
     })

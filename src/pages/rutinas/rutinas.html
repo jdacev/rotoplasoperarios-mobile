@@ -34,7 +34,8 @@
     <ion-item>
       <button detail-none ion-item>
         <ion-icon name="list" padding-right></ion-icon>
-        <ion-icon [name]="listaAbierta ? 'arrow-dropdown' : 'arrow-dropright'" isActive="false" item-end></ion-icon>
+        <ion-spinner item-end *ngIf="loading"></ion-spinner>
+        <ion-icon *ngIf="!loading" name="arrow-dropdown" isActive="false" item-end></ion-icon>
         Mis Rutinas
       </button>
     </ion-item>

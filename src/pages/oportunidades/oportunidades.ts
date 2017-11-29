@@ -17,6 +17,7 @@ import { AuthService } from "../../providers/auth-service/auth-service";
 })
 export class OportunidadesPage {
 
+  loading: boolean;
   listaAbierta: boolean;
   ticketList = [];
 
@@ -65,11 +66,13 @@ export class OportunidadesPage {
   }
 
   getTicketsUsuario(){
+    this.loading = true;
     this.ticketsProv.getTicketsUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
 
       // if(data.status != 'success'){
       //   console.log("ERROR RECIBIENDO DATA")
       // }else{
+        this.loading = false;
         this.ticketList = data.data;
       // }
     }, error =>{
