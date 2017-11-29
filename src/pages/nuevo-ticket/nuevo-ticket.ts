@@ -266,7 +266,7 @@ private createFileName() {
     var data = {
       'description' : this.description,
       'enviaagua__c' : this.serviceType,
-      "origin": this.ticketType,
+      "origin": 'App. Sistema de Monitoreo Sytesa',
       'idplanta__c': this.authservice.AuthToken.planta.sfid,
       'operadorapp__c': this.authservice.AuthToken.usuario.sfid,
       'reason': this.motivoSeleccionado.name,
