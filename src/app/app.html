@@ -19,7 +19,7 @@
 
       <button ion-item disabled>Información SYTESA</button>
 
-      <button ion-item disabled>{{authservice.AuthToken.planta.name}}</button>
+      <button ion-item disabled>{{authservice.AuthToken ? authservice.AuthToken.planta.name : ''}}</button>
 
       <button ion-item (click)="logout()">Cerrar Sesión</button>
 
