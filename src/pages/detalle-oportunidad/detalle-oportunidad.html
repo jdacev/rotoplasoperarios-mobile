@@ -1,0 +1,25 @@
+<ion-header>
+  <ion-navbar hideBackButton color="blueRotoplas">
+
+    <ion-buttons left>
+      <button ion-button icon-only menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+
+    <ion-title text-center style="padding-right:60px">
+      Detalle Oportunidad C
+    </ion-title>
+
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding-top>
+<!-- {{data}} -->
+<div *ngFor="let d of data">
+  {{d}}
+  <img [src]="d" alt="">
+</div>
+</ion-content>
