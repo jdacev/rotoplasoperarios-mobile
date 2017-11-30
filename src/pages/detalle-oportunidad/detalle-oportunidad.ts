@@ -25,14 +25,16 @@ export class DetalleOportunidadPage {
             private file: File) {
 
     this.ticket = navParams.get('ticket')
-    this.origen = file.dataDirectory + this.ticket.id_case_heroku_c__c.toString() + '/';
-    file.listDir(this.origen, '').then(response=>{
-      console.log('response[0]: ' + response[0]);
+    this.origen = file.dataDirectory
+    var subDir = this.ticket.id_case_heroku_c__c.toString() + '/';
+    // console.log('Orinen: ' + this.origen);
+    file.listDir(this.origen, subDir).then(response=>{
+      // console.log('response[0]: ' + response[0]);
+      console.log('response Json stringify: ' + JSON.stringify(response))
       this.data = response;
     }, error=>{
       this.data = error;
-      console.log('error: ' + error);
-      console.log('error msg: ' + error.message);
+      console.log('error: ' + JSON.stringify(error));
     });
   }
 

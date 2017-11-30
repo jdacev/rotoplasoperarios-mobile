@@ -18,8 +18,8 @@
 
 <ion-content padding-top>
 <!-- {{data}} -->
-<div *ngFor="let d of data">
+<div *ngFor="let imagen of data">
   {{d}}
-  <img [src]="d" alt="">
+  <img [src]="imagen.nativeURL" alt="imagen.name" *ngIf="imagen.isFile">
 </div>
 </ion-content>

@@ -47,6 +47,7 @@
       </ion-item>
 
       <!-- <ion-item *ngFor="let ticket of ticketList"> -->
+        <!-- <button detail-none (click)="irADetalle(ticket)" ion-item *ngFor="let ticket of ticketList"> -->
         <button detail-none ion-item *ngFor="let ticket of ticketList">
           <h2 padding-left>{{ticket.reason}} - {{ticket.id_case_heroku_c__c}}</h2>
           <p padding-left>Fecha: {{ticket.createddate | date:'dd/MM/yyyy HH:mm'}}</p>
