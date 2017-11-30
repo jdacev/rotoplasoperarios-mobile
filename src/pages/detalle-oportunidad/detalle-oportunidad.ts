@@ -25,7 +25,7 @@ export class DetalleOportunidadPage {
             private file: File) {
 
     this.ticket = navParams.get('ticket')
-    this.origen = file.dataDirectory
+    this.origen = file.dataDirectory + 'tickets/'
     var subDir = this.ticket.id_case_heroku_c__c.toString() + '/';
     // console.log('Orinen: ' + this.origen);
     file.listDir(this.origen, subDir).then(response=>{

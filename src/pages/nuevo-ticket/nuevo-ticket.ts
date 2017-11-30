@@ -59,11 +59,6 @@ export class NuevoTicketPage {
     this.navCtrl.pop();
   }
 
-  checkDirectory(){
-    let dataDirectory=this.file.dataDirectory;
-    dataDirectory = dataDirectory.split('/rotoplas.app')[0];
-    this.presentToast("dataDirectory: " + dataDirectory);
-  }
 
   capturar(){
     const options: CameraOptions = {
@@ -75,65 +70,11 @@ export class NuevoTicketPage {
     }
 
     this.camera.getPicture(options).then((imagePath) => {
-      this.presentToast("Imagen Capturada: " + imagePath);
+      // this.presentToast("Imagen Capturada: " + imagePath);
       this.images.push(imagePath)
-
-     // imageData is either a base64 encoded string or a file URI
-     // If it's base64:
-    //  let base64Image = 'data:image/jpeg;base64,' + imageData;
-      // let     x=this.file.dataDirectory
-      // var currentName = imagePath.substr(imagePath.lastIndexOf('/') + 1);
-      // var correctPath = imagePath.substr(0, imagePath.lastIndexOf('/') + 1);
-      // this.presentToast("current name: " + currentName);
-      // this.presentToast("correctPath: " + correctPath);
-      // this.presentToast("imagePath: " + imagePath);
-      // // this.moveFile(imagePath);
-      // this.copyFileToLocalDir(correctPath, currentName, this.createFileName(), imagePath);
-
-
-      // i use x to take the folder i want to save the file to
-      // let dataDirectory=this.file.dataDirectory;
-      // this.presentToast("dataDirectory: " + dataDirectory);
-      // //when making cross platform apps make sure your .xxx setting here is compatible with ios and android
-      // //a simple way to seperate the folder path and the file name
-      // var sourceDirectory = imagePath.substring(0, imagePath.lastIndexOf('/') + 1);
-      // var sourceFileName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.length);
-      // var newFileName = "Nuevo - " + sourceFileName;
-
-      //
-      // // Here i just move the presaved image to my new folder.
-      // //the args of file.moveFile are (sourceDirectory,SourceFilename,DestinationDir,NewFilename)
-      // let move =this.file.moveFile(sourceDirectory,sourceFileName,dataDirectory,newFileName)
-      //                     .then(
-      //                       file=>{ // do something with the file location
-      //                             this.presentToast("FOTO MOVIDA A : " + dataDirectory + newFileName);
-      //                             this.images.push(dataDirectory + newFileName);
-      //                       }, error => {
-      //                             this.presentToast("ERROR MOVIENDO")
-      //                       })
 
     }, (err) => {
      // Handle error
-    });
-  }
-
-  // Create a new name for the image
-private createFileName() {
-  var d = new Date(),
-  n = d.getTime(),
-  newFileName =  n + ".jpg";
-  return newFileName;
-}
-
-  // Copy the image to a local folder
-  private copyFileToLocalDir(namePath, currentName, newFileName, fileName) {
-    let basePath: string = fileName.split("/data/")[0];
-    let destinationPath: string = basePath + "/Rotoplas/Images"
-    this.file.copyFile(namePath, currentName, destinationPath, newFileName).then(success => {
-      console.log("COPIE A A OTRO LADO")//this.lastImage = newFileName;
-      this.presentToast('COPIE A A OTRO LADO: ' + destinationPath);
-    }, error => {
-      this.presentToast('Error while storing file.');
     });
   }
 
@@ -147,59 +88,109 @@ private createFileName() {
 
   moverArchivo(images:string[], id){
 
-    let dataDirectory=this.file.dataDirectory;
+    var dataDirectory=this.file.dataDirectory;
+    var origen = dataDirectory + 'tickets/'
     var sourceDirectory = images[0].substring(0, images[0].lastIndexOf('/') + 1);
-    var destino = dataDirectory + id.toString() + '/';
+    var destino = dataDirectory + 'tickets/' + id.toString() + '/';
+    this.validarDirectorio(dataDirectory, 'tickets').then(response=>{
+      if(response)
+        this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
+        //     console.log("ESTOY EN SII")
+      else(response)
+        this.file.createDir(dataDirectory, 'tickets', false).then(data=>{
+          // console.log("ESTOY EN CREADO")
+          // this.presentToast('Carpeta Tickets Creada');
+          this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
+        }, err =>{
+          // console.log("ESTOY EN NO CREADO ERROR")
 
-    // this.file.checkDir(dataDirectory, id)
-    //           .then(_ => {
-    //             this.presentToast('Directory exists')
-    //           })
-    //           .catch(err => {
-    //             this.presentToast('Directory doesnt exist')
-    this.file.createDir(dataDirectory, id.toString(), false).then(data=>{
-      this.presentToast('CREADO DIRECTORIO: ' + dataDirectory + ' ....archivo: ' + id.toString())
-    }, err =>{
-      this.presentToast('Error al crear Directorio: ' + err)
-    });
+          this.presentToast('Error al crear la carpeta Tickets: ' + err);
+          // console.log('Error crear carpeta tickets: ' + JSON.stringify(err));
+        });
+    }, error =>{
 
-              // });
+    })
+    // if(this.validarDirectorio(dataDirectory, 'tickets')){
+    //     this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
+    //     console.log("ESTOY EN SII")
+    // }else{
+    //   console.log("ESTOY EN NO")
+    //
+    //     this.file.createDir(dataDirectory, 'tickets', false).then(data=>{
+    //       console.log("ESTOY EN CREADO")
+    //       this.presentToast('Carpeta Tickets Creada');
+    //       this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
+    //     }, err =>{
+    //       console.log("ESTOY EN NO CREADO ERROR")
+    //
+    //       this.presentToast('Error al crear la carpeta Tickets: ' + err);
+    //       console.log('Error crear carpeta tickets: ' + JSON.stringify(err));
+    //     });
+    //
+    // }
+
+    // this.file.createDir(origen, id.toString(), false).then(data=>{
+    //   this.presentToast('Carpeta tickets/id creada: ' + origen + id.toString())
+    // }, err =>{
+    //   this.presentToast('Error al crear la carpeta id: ' + err)
+    // });
+
 
     // this.presentToast('dataDirectory: ' + dataDirectory);
-    var fileName = images[0].substring(images[0].lastIndexOf('/') + 1, images[0].length);
-    // var newFileName = "" + fileName;
-    this.file.moveFile(sourceDirectory,fileName,destino,fileName)
-                    .then(
-                      file=>{ // do something with the file location
-                            this.presentToast("FOTO MOVIDA A : " + destino + fileName);
-                            this.images.push(dataDirectory + fileName);
-                      }, error => {
-                            this.presentToast("ERROR MOVIENDO: " + error.message + "   ...error: " + error)
-                      })
+
   }
 
-  private moveFile(fileName:string){
+  crearCarpetasId(origen, sourceDirectory, destino, images, id){
+
+    this.file.createDir(origen, id.toString(), false).then(data=>{
+
+      for (let i = 0; i < images.length; i++) {
+
+          var fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[0].length);
+          // console.log('Filename: ' + fileName);
+          // console.log('Origen: ' + origen);
+          // console.log('SourceDirectory: ' + sourceDirectory);
+          // console.log('Destino: ' + destino);
+
+          this.file.moveFile(sourceDirectory,fileName,destino,fileName)
+          .then(
+            file=>{ // do something with the file location
+              // this.presentToast("FOTO MOVIDA A : " + destino + fileName);
+              // this.images.push(origen + fileName);
+            }, error => {
+            // console.log('Error: ' + JSON.stringify(error))
+            // console.log('Error: ' + error)
+            this.presentToast("ERROR MOVIENDO: " + error.message + "   ...error: " + error)
+          })
+      }
+
+      // this.presentToast('Carpeta tickets/id creada: ' + origen + id.toString())
+    }, err =>{
+      this.presentToast('Error al crear la carpeta id: ' + err)
+    });
 
 
+  }
 
-    // Determine paths
-   let basePath: string = fileName.split("/data/")[0];
-   let destinationPath: string = basePath + "/Rotoplas/Images"
-   let currentPath: string = this.file.applicationStorageDirectory + "cache/";
+  validarDirectorio(dataDirectory, subDirectorio){
+    return new Promise(resolve=>{
+      this.file.checkDir(dataDirectory, subDirectorio)
+                .then(_ => {
+                  // console.log('La carpeta tickets Existe')
+                resolve(true);
 
-
-   // Extract filename
-   fileName = fileName.split("/").pop();
-  //  this.presentToast("basePath: " + basePath + "            fileName: " + fileName + "            destinationPath: " + destinationPath + "\            currentPath: " + currentPath);
-
-
-   // Move the file
-   this.file.moveFile(currentPath, fileName,
-                 destinationPath, fileName).then(_ => {
-       this.presentToast("Saved one photo");
-   }, error => {
-     this.presentToast("ERROR: " + error);
-   });
+                })
+                .catch(err => {
+                  // this.presentToast('Directory doesnt exist')
+                  // console.log('La carpeta tickets NOOOO Existe')
+                  resolve(false);
+                  // this.file.createDir(dataDirectory, 'tickets', false).then(data=>{
+                  //   this.presentToast('CREADOO');
+                  // }, err =>{
+                    this.presentToast('Error al crear Directorio: ' + err)
+                  // });
+      });
+    });
   }
 
   eliminarImagen(pos:number, imagen:string){
@@ -277,7 +268,7 @@ private createFileName() {
     // console.log(data);
     this.ticketsProv.createTicket(data).then(response=>{
       if(response){
-        // this.moverArchivo(this.images, response);
+        this.moverArchivo(this.images, response);
         this.navCtrl.pop();
       }else{
 
