@@ -60,6 +60,7 @@ export class OportunidadesPage {
   }
 
   irADetalle(ticket){
+    console.log("YENDO A TICKET")
     this.navCtrl.push('DetalleOportunidadPage', {
       ticket: ticket
     })

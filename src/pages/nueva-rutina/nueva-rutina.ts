@@ -88,7 +88,7 @@ export class NuevaRutinaPage {
           this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
         }, err =>{
 
-          this.presentToast('Error al crear la carpeta Rutinas: ' + err);
+          // this.presentToast('Error al crear la carpeta Rutinas: ' + err);
         });
     }, error =>{
 
@@ -111,12 +111,12 @@ export class NuevaRutinaPage {
             file=>{
 
             }, error => {
-            this.presentToast("ERROR MOVIENDO: " + error.message + "   ...error: " + error)
+            // this.presentToast("ERROR MOVIENDO: " + error.message + "   ...error: " + error)
           })
       }
 
     }, err =>{
-      this.presentToast('Error al crear la carpeta id: ' + err)
+      // this.presentToast('Error al crear la carpeta id: ' + err)
     });
   }
 
@@ -128,7 +128,7 @@ export class NuevaRutinaPage {
                 })
                 .catch(err => {
                   resolve(false);
-                  this.presentToast('Error al crear Directorio: ' + err)
+                  // this.presentToast('Error al crear Directorio: ' + err)
                   // });
       });
     });

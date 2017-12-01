@@ -104,8 +104,8 @@ export class NuevoTicketPage {
         }, err =>{
           // console.log("ESTOY EN NO CREADO ERROR")
 
-          this.presentToast('Error al crear la carpeta Tickets: ' + err);
-          // console.log('Error crear carpeta tickets: ' + JSON.stringify(err));
+          // this.presentToast('Error al crear la carpeta Tickets: ' + err);
+          console.log('Error crear carpeta tickets: ' + JSON.stringify(err));
         });
     }, error =>{
 
@@ -160,13 +160,13 @@ export class NuevoTicketPage {
             }, error => {
             // console.log('Error: ' + JSON.stringify(error))
             // console.log('Error: ' + error)
-            this.presentToast("ERROR MOVIENDO: " + error.message + "   ...error: " + error)
+            // this.presentToast("ERROR MOVIENDO: " + error.message + "   ...error: " + error)
           })
       }
 
       // this.presentToast('Carpeta tickets/id creada: ' + origen + id.toString())
     }, err =>{
-      this.presentToast('Error al crear la carpeta id: ' + err)
+      // this.presentToast('Error al crear la carpeta id: ' + err)
     });
 
 
@@ -187,7 +187,7 @@ export class NuevoTicketPage {
                   // this.file.createDir(dataDirectory, 'tickets', false).then(data=>{
                   //   this.presentToast('CREADOO');
                   // }, err =>{
-                    this.presentToast('Error al crear Directorio: ' + err)
+                    // this.presentToast('Error al crear Directorio: ' + err)
                   // });
       });
     });
