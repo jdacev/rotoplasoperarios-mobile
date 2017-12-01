@@ -46,10 +46,13 @@
         <ion-label padding-left>No hay rutinas</ion-label>
       </ion-item>
 
-      <ion-item *ngFor="let rutina of rutinasList">
-        <h2 padding-left>{{rutina.name ? rutina.name : 'Generando...'}}</h2>
-        <p padding-left>Tipo: {{rutina.nombre__c}}</p>
-      </ion-item>
+      <!-- <ion-item *ngFor="let ticket of ticketList"> -->
+        <button detail-none (click)="irADetalle(rutina)" ion-item *ngFor="let rutina of rutinasList">
+          <!-- <button detail-none ion-item *ngFor="let ticket of ticketList"> -->
+          <h2 padding-left>{{rutina.name ? rutina.name : 'Generando...'}}</h2>
+          <p padding-left>Tipo: {{rutina.nombre__c}}</p>
+        </button>
+      <!-- </ion-item> -->
     </div>
 
   </ion-list>

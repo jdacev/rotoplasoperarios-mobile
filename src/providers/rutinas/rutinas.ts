@@ -19,8 +19,8 @@ export class RutinasProvider {
     // console.log('Hello RutinasProvider Provider');
   }
 
-  getPreguntasTipoRutina(id: number){
-    return this.http.get(URL_SERVICIOS + '/preguntastiporutina/' + id)
+  getPreguntasTipoRutina(idTipoRutina: string, turno:string){
+    return this.http.get(URL_SERVICIOS + '/preguntastiporutina/' + idTipoRutina + '/' + turno)
               .map(resp => resp.json())
   }
 
@@ -38,7 +38,7 @@ export class RutinasProvider {
     return new Promise(resolve => {
         this.http.post(URL_SERVICIOS + '/rutina', data).subscribe(response => {
           this.showAlert("Crear Rutina", response.json().message);
-          resolve(true);
+          resolve(response.json().id_rutina_heroku__c);
         }, error =>{
           this.showAlert("Error al crear Oportunidad C", error.json().message);
           resolve(false)

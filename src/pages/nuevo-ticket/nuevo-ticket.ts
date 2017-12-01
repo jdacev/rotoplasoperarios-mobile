@@ -79,12 +79,12 @@ export class NuevoTicketPage {
   }
 
     private presentToast(text) {
-    let toast = this.alertCtrl.create({
-      message: text,
-      buttons: ['Aceptar']
-    });
-    toast.present();
-  }
+      let toast = this.alertCtrl.create({
+        message: text,
+        buttons: ['Aceptar']
+      });
+      toast.present();
+    }
 
   moverArchivo(images:string[], id){
 
@@ -257,7 +257,7 @@ export class NuevoTicketPage {
     var data = {
       'description' : this.description,
       'enviaagua__c' : this.serviceType,
-      "origin": 'App. Sistema de Monitoreo Sytesa',
+      'origin': 'App. Sistema de Monitoreo Sytesa',
       'idplanta__c': this.authservice.AuthToken.planta.sfid,
       'operadorapp__c': this.authservice.AuthToken.usuario.sfid,
       'reason': this.motivoSeleccionado.name,
@@ -268,7 +268,9 @@ export class NuevoTicketPage {
     // console.log(data);
     this.ticketsProv.createTicket(data).then(response=>{
       if(response){
-        this.moverArchivo(this.images, response);
+        if(this.images.length > 0){
+          this.moverArchivo(this.images, response);
+        }
         this.navCtrl.pop();
       }else{
 

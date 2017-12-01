@@ -23,8 +23,16 @@
 
   <ion-item>
     <ion-label><b>Rutina</b></ion-label>
-    <ion-select [(ngModel)]="tipoRutina" (ionChange)="getActividades(tipoRutina)" cancelText="Cancelar" okText="Aceptar">
+    <ion-select [(ngModel)]="tipoRutina" (ionChange)="getActividades(tipoRutina, turno)" cancelText="Cancelar" okText="Aceptar">
       <ion-option *ngFor="let tipo of tipoRutinas" [value]="tipo.sfid">{{tipo.nombre__c}}</ion-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label><b>Turno</b></ion-label>
+    <ion-select [(ngModel)]="turno" [disabled]="!tipoRutina" (ionChange)="getActividades(tipoRutina, turno)" cancelText="Cancelar" okText="Aceptar">
+      <ion-option [value]="Matutino">Matutino</ion-option>
+      <ion-option [value]="Vespertino">Vespertino</ion-option>
     </ion-select>
   </ion-item>
 
@@ -52,7 +60,6 @@
   </h5>
 
   <ion-item>
-    <!-- <ion-label><b>Nombre PTAR</b></ion-label> -->
     <ion-textarea rows="4" type="text" [(ngModel)]="observacion"></ion-textarea>
   </ion-item>
 
@@ -73,40 +80,62 @@
         </ion-label>
 
 
-        <ion-item *ngIf="activity.tipo_de_respuesta__c">
+        <ion-item *ngIf="!activity.tipo_de_respuesta__c">
           <ion-label stacked>No/Si</ion-label>
           <ion-toggle checked="false" [(ngModel)]="activity.valor"></ion-toggle>
         </ion-item>
-        <ion-item *ngIf="!activity.tipo_de_respuesta__c">
+        <ion-item *ngIf="activity.tipo_de_respuesta__c">
           <ion-label stacked>m3</ion-label>
           <ion-input type="number" min="0" [(ngModel)]="activity.valor"></ion-input>
         </ion-item>
-        <!-- <ion-item>
+        <ion-item>
           <ion-label stacked>Observaciones</ion-label>
-          <ion-textarea rows="4" type="text" [(ngModel)]="activity.observacion"></ion-textarea>
-        </ion-item> -->
+          <ion-textarea rows="4" type="text" [(ngModel)]="activity.observaciones"></ion-textarea>
+        </ion-item>
         <br><br>
 
       </ion-slide>
 
     </ion-slides>
 
-    <!-- <ion-row>
-      <ion-col text-right>
-        <button ion-button color="primary" (click)="cancel()">Cancelar</button>
-      </ion-col>
-
-      <ion-col text-left>
-        <button ion-button color="primary">Crear</button>
-      </ion-col>
-    </ion-row> -->
 
   </div>
+
+  <br>
+
+  <h5 class="titulo">
+    Evidencias
+  </h5>
+
+  <ion-grid>
+
+    <ion-row>
+
+      <ion-col col-3 *ngFor="let image of images; let i = index">
+        <ion-thumbnail>
+          <img [src]="image" alt="">
+        </ion-thumbnail>
+        <ion-fab *ngIf="images.length > 0" class="fabDeleteImagen">
+          <button class="botonEliminarImagen" (click)="eliminarImagen(i, image)" color="dark" ion-fab mini><ion-icon name="close"></ion-icon></button>
+        </ion-fab>
+      </ion-col>
+
+      <ion-col col-3>
+        <ion-fab *ngIf="images.length < 5">
+          <button ion-fab mini color="danger" (click)="capturar()"><ion-icon name="add"></ion-icon></button>
+        </ion-fab>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+
+  <br><br><br>
 
   <ion-row>
 
     <ion-col text-right>
-      <button ion-button color="blueRotoplas" [disabled]="!tipoRutina || respuestasIncompletas() || activities.length == 0" (click)="crearRutina()">Crear</button>
+      <button ion-button color="blueRotoplas" [disabled]="!tipoRutina || !turno || respuestasIncompletas() || activities.length == 0" (click)="crearRutina()">Crear</button>
     </ion-col>
     <ion-col text-left>
       <button ion-button color="blueRotoplas" (click)="cancel()">Cancelar</button>

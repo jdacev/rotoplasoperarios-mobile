@@ -58,6 +58,12 @@ export class RutinasPage {
     this.navCtrl.push(pagina)
   }
 
+  irADetalle(rutina){
+    this.navCtrl.push('DetalleRutinaPage', {
+      rutina: rutina
+    })
+  }
+
   getRutinasUsuario(){
     this.loading = true;
     this.rutinasProv.getRutinasUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{

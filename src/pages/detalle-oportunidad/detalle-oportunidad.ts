@@ -22,7 +22,7 @@ export class DetalleOportunidadPage {
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-            private file: File) {
+              private file: File) {
 
     this.ticket = navParams.get('ticket')
     this.origen = file.dataDirectory + 'tickets/'
