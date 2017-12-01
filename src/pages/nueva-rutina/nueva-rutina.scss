@@ -10,4 +10,19 @@ page-nueva-rutina {
   button{
     width: 50%;
   }
+
+  .fabDeleteImagen{
+    // margin-top: -60px;
+    // margin-left: 45px;
+    z-index: 2;
+    position: absolute;
+    left: 0%;
+    top: 0%;
+    margin: auto;
+  }
+
+  .botonEliminarImagen{
+    width: 20px !important;
+    height: 20px !important;
+  }
 }
