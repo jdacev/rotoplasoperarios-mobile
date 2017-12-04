@@ -157,7 +157,7 @@ export class NuevaRutinaPage {
         this.activities = data.data;
         for (let i = 0; i < this.activities.length; i++) {
           this.activities[i].observacion = undefined;
-          if(!this.activities[i].tipo_de_respuesta__c){
+          if(this.activities[i].tipo_de_respuesta__c){
             this.activities[i].valor = false;
           }else{
             this.activities[i].valor = undefined;
@@ -174,7 +174,7 @@ export class NuevaRutinaPage {
 
   respuestasIncompletas(){
     for (let i = 0; i < this.activities.length; i++) {
-        if(this.activities[i].valor == undefined || (this.activities[i].tipo_de_respuesta__c && this.activities[i].valor == ""))
+        if(this.activities[i].valor == undefined || (!this.activities[i].tipo_de_respuesta__c && this.activities[i].valor == ""))
           return true;
     }
 
@@ -187,8 +187,8 @@ export class NuevaRutinaPage {
         listaActividades.push(
           {
             'id_pregunta_rutina__c': this.activities[i].sfid,
-            'valor_si_no__c' : !this.activities[i].tipo_de_respuesta__c ? this.activities[i].valor : null,
-            'valornumerico__c' : this.activities[i].tipo_de_respuesta__c ? this.activities[i].valor : null,
+            'valor_si_no__c' : this.activities[i].tipo_de_respuesta__c ? this.activities[i].valor : null,
+            'valornumerico__c' : !this.activities[i].tipo_de_respuesta__c ? this.activities[i].valor : null,
             'observaciones__c' : this.activities[i].observaciones
           });
     }
