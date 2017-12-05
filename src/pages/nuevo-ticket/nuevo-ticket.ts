@@ -93,20 +93,22 @@ export class NuevoTicketPage {
     var sourceDirectory = images[0].substring(0, images[0].lastIndexOf('/') + 1);
     var destino = dataDirectory + 'tickets/' + id.toString() + '/';
     this.validarDirectorio(dataDirectory, 'tickets').then(response=>{
-      if(response)
+      if(response){
         this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
-        //     console.log("ESTOY EN SII")
-      else(response)
+        console.log("ESTOY EN SII")
+      }
+      else{
         this.file.createDir(dataDirectory, 'tickets', false).then(data=>{
-          // console.log("ESTOY EN CREADO")
-          // this.presentToast('Carpeta Tickets Creada');
+          console.log("ESTOY EN CREADO")
+          this.presentToast('Carpeta Tickets Creada');
           this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
         }, err =>{
-          // console.log("ESTOY EN NO CREADO ERROR")
+          console.log("ESTOY EN NO CREADO ERROR")
 
-          // this.presentToast('Error al crear la carpeta Tickets: ' + err);
+          this.presentToast('Error al crear la carpeta Tickets: ' + err);
           console.log('Error crear carpeta tickets: ' + JSON.stringify(err));
         });
+      }
     }, error =>{
 
     })
@@ -176,13 +178,14 @@ export class NuevoTicketPage {
     return new Promise(resolve=>{
       this.file.checkDir(dataDirectory, subDirectorio)
                 .then(_ => {
-                  // console.log('La carpeta tickets Existe')
+                  console.log('La carpeta tickets Existe')
+                  this.presentToast('La carpeta tickets Existe')
                 resolve(true);
 
                 })
                 .catch(err => {
-                  // this.presentToast('Directory doesnt exist')
-                  // console.log('La carpeta tickets NOOOO Existe')
+                  this.presentToast('La carpeta tickets NOOOO Existe')
+                  console.log('La carpeta tickets NOOOO Existe')
                   resolve(false);
                   // this.file.createDir(dataDirectory, 'tickets', false).then(data=>{
                   //   this.presentToast('CREADOO');

@@ -66,6 +66,7 @@ export class RutinasPage {
 
   getRutinasUsuario(){
     this.loading = true;
+    
     this.rutinasProv.getRutinasUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
         this.rutinasList = data.data;
         this.loading = false;

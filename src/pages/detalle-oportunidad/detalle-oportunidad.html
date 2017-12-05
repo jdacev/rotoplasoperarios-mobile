@@ -16,10 +16,99 @@
 </ion-header>
 
 
-<ion-content padding-top>
-<!-- {{data}} -->
+<ion-content padding>
+
+  <h5 class="titulo">
+    Información de Planta
+  </h5>
+
+  <ion-item>
+    <ion-label><b>Planta</b></ion-label>
+    <ion-label text-right>{{ptarName}}</ion-label>
+    <!-- <ion-input disabled text-right type="text" [(ngModel)]="ptarName"></ion-input> -->
+  </ion-item>
+
+  <ion-item>
+    <ion-label style="white-space: normal"><b>Cliente</b></ion-label>
+    <ion-label text-right>{{!cliente ? '---' : cliente.nombrecliente}}</ion-label>
+    <!-- <ion-select style="width: 50%" [(ngModel)]="clienteSeleccionado">
+      <ion-option *ngFor="let cliente of clientes" [value]="cliente.sfid">{{cliente.name}}</ion-option>
+    </ion-select> -->
+  </ion-item>
+
+  <br>
+
+  <h5 class="titulo">
+    Detalle de la Oportunidad C
+  </h5>
+
+  <ion-item>
+    <ion-label style="white-space: normal"><b>Motivo</b></ion-label>
+    <ion-label text-right>{{ticket.reason}}</ion-label>
+    <!-- <ion-select style="width: 50%" [(ngModel)]="motivoSeleccionado" (ionChange)="getDescripcionMotivos(motivoSeleccionado)">
+      <ion-option *ngFor="let motivo of motivos" [value]="motivo">{{motivo.name}}</ion-option>
+    </ion-select> -->
+  </ion-item>
+
+  <br>
+
+  <ion-item>
+    <ion-label style="white-space: normal"><b>Descripción</b></ion-label>
+    <ion-label text-right>{{!ticket.descripciondefalla__c ? '---' : ticket.descripciondefalla__c}}</ion-label>
+    <!-- <ion-select [disabled]="!descripcionesMotivos" style="width: 50%" [(ngModel)]="descripcionSeleccionada" (ionChange)="getMotivosDesestabilizacion(descripcionSeleccionada)">
+      <ion-option *ngFor="let descripcion of descripcionesMotivos" [value]="descripcion">{{descripcion.name}}</ion-option>
+    </ion-select> -->
+  </ion-item>
+
+  <br>
+
+  <ion-item>
+    <ion-label style="white-space: normal"><b>Motivo de Desestabilización</b></ion-label>
+    <ion-label text-right>{{!ticket.descripciondefalla__c ? '---' : ticket.descripciondefalla__c}}</ion-label>
+    <!-- <ion-select [disabled]="!motivosDesestabilizacion" style="width: 50%" [(ngModel)]="motivoDesestabilizacionSeleccionado">
+      <ion-option *ngFor="let motivo of motivosDesestabilizacion" [value]="motivo">{{motivo.name}}</ion-option>
+    </ion-select> -->
+  </ion-item>
+
+  <br>
+
+  <h5 class="titulo">
+    Observaciones
+  </h5>
+
+  <ion-item>
+    <ion-label><b>Descripción</b></ion-label>
+    <ion-textarea [disabled]="true" rows="4" type="text" [(ngModel)]="description"></ion-textarea>
+  </ion-item>
+
+  <ion-item>
+    <ion-label style="white-space: normal"><b>Envío de Agua</b></ion-label>
+    <ion-label text-right>{{ticket.enviaagua__c}}</ion-label>
+  </ion-item>
+
+  <br>
+
+  <h5 class="titulo">
+    Evidencias
+  </h5>
+
+  <ion-grid>
+
+    <ion-row>
+
+      <ion-col col-3 *ngFor="let image of images; let i = index">
+        <ion-thumbnail>
+          <img [src]="image.nativeURL" alt="image.name" *ngIf="image.isFile">
+        </ion-thumbnail>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+<!-- {{data}}
 <div *ngFor="let imagen of data">
   {{d}}
   <img [src]="imagen.nativeURL" alt="imagen.name" *ngIf="imagen.isFile">
 </div>
+-->
 </ion-content>

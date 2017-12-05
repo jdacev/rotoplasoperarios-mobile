@@ -24,6 +24,11 @@ export class TicketsProvider {
               .map(resp => resp.json())
   }
 
+  getTicket(idTicket: string){
+    return this.http.get(URL_SERVICIOS + '/ticket/' + idTicket)
+              .map(resp => resp.json())
+  }
+
   getMotivosOportunidades(){
     return this.http.get(URL_SERVICIOS + '/motivosoportunidades')
               .map(resp => resp.json())
