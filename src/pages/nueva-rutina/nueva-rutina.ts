@@ -41,7 +41,7 @@ export class NuevaRutinaPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad NuevaRutinaPage');
+    // console.log('ionViewDidLoad NuevaRutinaPage');
   }
 
   cancel(){
@@ -163,10 +163,10 @@ export class NuevaRutinaPage {
             this.activities[i].valor = undefined;
           }
         }
-        console.log(this.activities);
+        // console.log(this.activities);
       }, error =>{
         this.activities = [];
-        console.log("Error: " + error);
+        // console.log("Error: " + error);
       })
     }
 
@@ -201,9 +201,9 @@ export class NuevaRutinaPage {
       'rutaimagen__c': 'RUTA/IMAGEN/',
       'actividadrutina__c': listaActividades
     }
-    console.log(data)
+    // console.log(data)
 
-    console.log(data);
+    // console.log(data);
     this.rutinasProv.crearRutina(data).then(response=>{
       if(response){
         if(this.images.length > 0){

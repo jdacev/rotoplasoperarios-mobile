@@ -52,7 +52,7 @@ export class NuevoTicketPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad NuevoTicketPage');
+    // console.log('ionViewDidLoad NuevoTicketPage');
   }
 
   cancel(){
@@ -100,12 +100,12 @@ export class NuevoTicketPage {
       else{
         this.file.createDir(dataDirectory, 'tickets', false).then(data=>{
           console.log("ESTOY EN CREADO")
-          this.presentToast('Carpeta Tickets Creada');
+          // this.presentToast('Carpeta Tickets Creada');
           this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
         }, err =>{
           console.log("ESTOY EN NO CREADO ERROR")
 
-          this.presentToast('Error al crear la carpeta Tickets: ' + err);
+          // this.presentToast('Error al crear la carpeta Tickets: ' + err);
           console.log('Error crear carpeta tickets: ' + JSON.stringify(err));
         });
       }
@@ -178,14 +178,14 @@ export class NuevoTicketPage {
     return new Promise(resolve=>{
       this.file.checkDir(dataDirectory, subDirectorio)
                 .then(_ => {
-                  console.log('La carpeta tickets Existe')
-                  this.presentToast('La carpeta tickets Existe')
+                  // console.log('La carpeta tickets Existe')
+                  // this.presentToast('La carpeta tickets Existe')
                 resolve(true);
 
                 })
                 .catch(err => {
-                  this.presentToast('La carpeta tickets NOOOO Existe')
-                  console.log('La carpeta tickets NOOOO Existe')
+                  // this.presentToast('La carpeta tickets NOOOO Existe')
+                  // console.log('La carpeta tickets NOOOO Existe')
                   resolve(false);
                   // this.file.createDir(dataDirectory, 'tickets', false).then(data=>{
                   //   this.presentToast('CREADOO');
