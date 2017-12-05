@@ -24,9 +24,11 @@
     "@ionic-native/core": "4.3.0",
     "@ionic-native/file": "^4.3.2",
     "@ionic-native/keyboard": "^4.4.2",
+    "@ionic-native/photo-viewer": "^4.4.2",
     "@ionic-native/splash-screen": "4.3.0",
     "@ionic-native/status-bar": "4.3.0",
     "@ionic/storage": "2.0.1",
+    "com-sarriaroman-photoviewer": "^1.1.11",
     "cordova-android": "6.3.0",
     "cordova-plugin-camera": "^2.4.1",
     "cordova-plugin-compat": "^1.2.0",
@@ -55,7 +57,8 @@
       "cordova-plugin-splashscreen": {},
       "cordova-plugin-ionic-webview": {},
       "cordova-plugin-camera": {},
-      "cordova-plugin-file": {}
+      "cordova-plugin-file": {},
+      "com-sarriaroman-photoviewer": {}
     },
     "platforms": [
       "android"

@@ -86,4 +86,5 @@
     <plugin name="cordova-plugin-camera" spec="^2.4.1" />
     <plugin name="cordova-plugin-file" spec="^4.3.3" />
     <engine name="android" spec="~6.3.0" />
+    <plugin name="com-sarriaroman-photoviewer" spec="^1.1.11" />
 </widget>

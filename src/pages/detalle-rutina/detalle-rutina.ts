@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { File } from '@ionic-native/file';
 import { AuthService } from "../../providers/auth-service/auth-service";
 import { RutinasProvider } from "../../providers/rutinas/rutinas";
+import { PhotoViewer } from '@ionic-native/photo-viewer';
 
 
 /**
@@ -33,7 +34,8 @@ export class DetalleRutinaPage {
               public navParams: NavParams,
               private file: File,
               private authservice: AuthService,
-              private rutinasProv: RutinasProvider) {
+              private rutinasProv: RutinasProvider,
+              private photoViewer: PhotoViewer) {
 
       this.ptarName = this.authservice.AuthToken.planta.name;
       this.determinante = this.authservice.AuthToken.planta.determinante__c;
@@ -69,6 +71,10 @@ export class DetalleRutinaPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad DetalleRutinaPage');
+  }
+
+  abrirImagen(path:string){
+    this.photoViewer.show(path);
   }
 
 }

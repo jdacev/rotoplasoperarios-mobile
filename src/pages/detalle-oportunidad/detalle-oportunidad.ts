@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { File } from '@ionic-native/file';
 import { AuthService } from "../../providers/auth-service/auth-service";
 import { TicketsProvider } from "../../providers/tickets/tickets";
+import { PhotoViewer } from '@ionic-native/photo-viewer';
 
 
 /**
@@ -32,7 +33,8 @@ export class DetalleOportunidadPage {
               public navParams: NavParams,
               private file: File,
               private authservice: AuthService,
-              private ticketsProv: TicketsProvider) {
+              private ticketsProv: TicketsProvider,
+              private photoViewer: PhotoViewer) {
 
     this.ptarName = this.authservice.AuthToken.planta.name;
     this.ticket = navParams.get('ticket')
@@ -68,6 +70,10 @@ export class DetalleOportunidadPage {
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad DetalleOportunidadPage');
+  }
+
+  abrirImagen(path:string){
+    this.photoViewer.show(path);
   }
 
 }

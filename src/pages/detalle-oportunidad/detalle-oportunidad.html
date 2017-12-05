@@ -98,7 +98,7 @@
 
       <ion-col col-3 *ngFor="let image of images; let i = index">
         <ion-thumbnail>
-          <img [src]="image.nativeURL" alt="image.name" *ngIf="image.isFile">
+          <img [src]="image.nativeURL" (click)="abrirImagen(image.nativeURL)" alt="image.name" *ngIf="image.isFile">
         </ion-thumbnail>
       </ion-col>
 

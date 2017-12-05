@@ -12,6 +12,7 @@ import { MyApp } from './app.component';
 //plugins
 import { Camera } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
+import { PhotoViewer } from '@ionic-native/photo-viewer';
 
 //servicios
 import { UsersProvider } from '../providers/users/users';
@@ -48,7 +49,8 @@ import { TicketsProvider } from '../providers/tickets/tickets';
     Camera,
     File,
     RutinasProvider,
-    TicketsProvider
+    TicketsProvider,
+    PhotoViewer
   ]
 })
 export class AppModule {}
