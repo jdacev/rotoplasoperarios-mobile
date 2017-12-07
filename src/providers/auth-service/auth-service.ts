@@ -191,10 +191,9 @@ export class AuthService {
       this.destroyUserCredentials();
     }
 
-    generarClave(usuario:string, correoElectronico:string){
+    generarClave(usuario:string){
       var data = {
-        'usuarioapp__c': usuario,
-        'correoelectronicoc__c': correoElectronico
+        'usuarioapp__c': usuario
       }
 
       return new Promise(resolve => {

@@ -55,12 +55,12 @@ export class PasswordRecoveryPage {
   }
 
   generar(){
-    this.authservice.generarClave(this.usuarioGeneracion.toLowerCase(), this.correoElectronico).then(response=>{
+    this.authservice.generarClave(this.usuarioGeneracion.toLowerCase()).then(response=>{
       console.log('response: ' + response)
       if(response){
         this.showAlert("Clave Generada", "En instantes recibirá por correo electrónico la clave para resetear la contraseña.");
       }else{
-        this.showAlert("Error", "Error al generar la clave. Verifique los datos e intente nuevamente.");
+        this.showAlert("Error", "Error al generar la clave. Verifique el nombre de usuario e intente nuevamente.");
       }
     }, error => {
       console.log('error: ' + error)
