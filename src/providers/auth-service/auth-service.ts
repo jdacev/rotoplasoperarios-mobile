@@ -137,6 +137,25 @@ export class AuthService {
     });
   }
 
+  cambiarContrasenia(usuario:string, pass:string){
+    var data = {
+      'usuarioapp__c': usuario,
+      'contrasenaapp__c': pass
+    }
+
+    return new Promise(resolve => {
+          this.http.put(URL_SERVICIOS + '/updatepassword', data).subscribe(response => {
+          // console.log("SI")
+          this.showAlert("Contraseña Cambiada", response.json().message);
+          resolve(true);
+        }, error => {
+          // console.log("NO")
+          this.showAlert("Error", error.json().message);
+          resolve(false);
+        });
+      })
+  }
+
   adduser(user) {
     var creds = "name=" + user.name + "&password=" + user.password;
     var headers = new Headers();
@@ -170,6 +189,43 @@ export class AuthService {
 
     logout() {
       this.destroyUserCredentials();
+    }
+
+    generarClave(usuario:string, correoElectronico:string){
+      var data = {
+        'usuarioapp__c': usuario,
+        'correoelectronicoc__c': correoElectronico
+      }
+
+      return new Promise(resolve => {
+            this.http.post(URL_SERVICIOS + '/forgotPassword', data).subscribe(response => {
+            // console.log("SI")
+            resolve(true);
+          }, error => {
+            // console.log("NO")
+            resolve(false);
+          });
+        })
+    }
+
+    verificarCodigo(usuario:string, codigo:number){
+      var data = {
+        'usuarioapp__c': usuario,
+        'codigoseguridad__c': codigo
+      }
+
+      return new Promise(resolve => {
+            this.http.post(URL_SERVICIOS + '/verifysecuritycode', data).subscribe(response => {
+            console.log("Clave correcta")
+            // this.showAlert('Error', error.json().message)
+            resolve(true);
+          }, error => {
+            console.log("Clave INCORRECTA")
+            resolve(false);
+            this.showAlert('Error', error.json().message)
+          });
+        })
+
     }
 
     showAlert(title:string, subtitle:string) {
