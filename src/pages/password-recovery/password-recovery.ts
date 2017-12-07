@@ -55,7 +55,7 @@ export class PasswordRecoveryPage {
   }
 
   generar(){
-    this.authservice.generarClave(this.usuarioGeneracion, this.correoElectronico).then(response=>{
+    this.authservice.generarClave(this.usuarioGeneracion.toLowerCase(), this.correoElectronico).then(response=>{
       console.log('response: ' + response)
       if(response){
         this.showAlert("Clave Generada", "En instantes recibirá por correo electrónico la clave para resetear la contraseña.");
@@ -68,11 +68,11 @@ export class PasswordRecoveryPage {
   }
 
   verificarCodigo(){
-    this.authservice.verificarCodigo(this.usuario, this.codigo).then(response => {
+    this.authservice.verificarCodigo(this.usuario.toLowerCase(), this.codigo).then(response => {
       if(response){
         console.log('VERIFICACION OK')
         this.navCtrl.push('NuevaPasswordPage', {
-          usuario: this.usuario
+          usuario: this.usuario.toLowerCase()
         })
       }else{
         console.log('ERROR EN VERIFICACION')
@@ -80,23 +80,6 @@ export class PasswordRecoveryPage {
     }, error => {
 
     })
-  }
-
-  generateKey(value){
-    if(this.generateKeyForm.valid) {
-      // console.log("FORM GENERAR KEY ES VALIDO");
-      this.showAlert("Clave Generada", "En instantes recibirá por correo electrónico la clave para resetear la contraseña.");
-    }else{
-      console.log("FORM GENERAR KEY NO ES VALIDO")
-    }
-  }
-
-  resetPass(value){
-    if(this.resetForm.valid) {
-      console.log("FORM RESET ES VALIDO");
-    }else{
-      console.log("FORM RESET NO ES VALIDO")
-    }
   }
 
   showAlert(title:string, subtitle:string) {
