@@ -30,6 +30,7 @@
     "@ionic/storage": "2.0.1",
     "com-sarriaroman-photoviewer": "^1.1.11",
     "cordova-android": "6.3.0",
+    "cordova-ios": "4.5.4",
     "cordova-plugin-camera": "^2.4.1",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-device": "^1.1.4",
@@ -61,7 +62,8 @@
       "com-sarriaroman-photoviewer": {}
     },
     "platforms": [
-      "android"
+      "android",
+      "ios"
     ]
   }
 }
