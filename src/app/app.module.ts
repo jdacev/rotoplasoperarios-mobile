@@ -13,12 +13,17 @@ import { MyApp } from './app.component';
 import { Camera } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
 import { PhotoViewer } from '@ionic-native/photo-viewer';
+import { GoogleMaps } from '@ionic-native/google-maps';
+import { Geolocation } from '@ionic-native/geolocation';
+import { LocationAccuracy } from '@ionic-native/location-accuracy';
 
 //servicios
 import { UsersProvider } from '../providers/users/users';
 import { AuthService } from '../providers/auth-service/auth-service';
 import { RutinasProvider } from '../providers/rutinas/rutinas';
 import { TicketsProvider } from '../providers/tickets/tickets';
+import { AsistenciaProvider } from '../providers/asistencia/asistencia';
+import { PlantasProvider } from '../providers/plantas/plantas';
 
 @NgModule({
   declarations: [
@@ -50,7 +55,12 @@ import { TicketsProvider } from '../providers/tickets/tickets';
     File,
     RutinasProvider,
     TicketsProvider,
-    PhotoViewer
+    PhotoViewer,
+    AsistenciaProvider,
+    GoogleMaps,
+    Geolocation,
+    LocationAccuracy,
+    PlantasProvider
   ]
 })
 export class AppModule {}

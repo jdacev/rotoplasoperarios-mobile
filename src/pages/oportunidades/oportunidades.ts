@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { TicketsProvider } from '../../providers/tickets/tickets';
 import { AuthService } from "../../providers/auth-service/auth-service";
+import { AsistenciaProvider } from "../../providers/asistencia/asistencia";
 
 /**
  * Generated class for the OportunidadesPage page.
@@ -24,10 +25,13 @@ export class OportunidadesPage {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private ticketsProv: TicketsProvider,
-              private authservice: AuthService) {
+              private authservice: AuthService,
+              private asistenciaProv: AsistenciaProvider,
+              private alertCtrl: AlertController) {
 
     this.listaAbierta = true;
     this.getTicketsUsuario();
+
   }
 
   ionViewDidLoad() {
@@ -56,7 +60,17 @@ export class OportunidadesPage {
   }
 
   irAPagina(pagina:string){
-    this.navCtrl.push(pagina)
+    this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{
+      var asistencia = response.data;
+      if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
+        //MOSTRAR ALERTA QUE NO HIZO EL CHECKIN
+        this.showAlert('Oportunidades C', 'Para crear una oportunidad realice el Ingreso Laboral en la planta correspondiente.');
+      }else{
+        this.navCtrl.push(pagina)
+      }
+    }, error => {
+
+    })
   }
 
   irADetalle(ticket){
@@ -80,6 +94,15 @@ export class OportunidadesPage {
         this.loading = false;
         console.log("Error: " + error);
     })
+  }
+
+  showAlert(titulo:string, subtitulo:string) {
+    let alert = this.alertCtrl.create({
+      title: titulo,
+      subTitle: subtitulo,
+      buttons: ['Aceptar']
+    });
+    alert.present();
   }
 
 }

@@ -88,4 +88,8 @@
     <plugin name="cordova-plugin-camera" spec="^2.4.1" />
     <plugin name="cordova-plugin-file" spec="^4.3.3" />
     <plugin name="com-sarriaroman-photoviewer" spec="^1.1.11" />
+    <plugin name="cordova-plugin-geolocation" spec="^3.0.0">
+        <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="Obtener Ubicacion" />
+    </plugin>
+    <plugin name="cordova-plugin-request-location-accuracy" spec="^2.2.2" />
 </widget>

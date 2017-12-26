@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { RutinasProvider } from '../../providers/rutinas/rutinas';
 import { AuthService } from "../../providers/auth-service/auth-service";
+import { AsistenciaProvider } from "../../providers/asistencia/asistencia";
 
 /**
  * Generated class for the RutinasPage page.
@@ -24,7 +25,9 @@ export class RutinasPage {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private rutinasProv: RutinasProvider,
-              private authservice: AuthService) {
+              private authservice: AuthService,
+              private alertCtrl: AlertController,
+              private asistenciaProv: AsistenciaProvider) {
 
     this.listaAbierta = true;
     this.getRutinasUsuario();
@@ -55,7 +58,17 @@ export class RutinasPage {
   }
 
   irAPagina(pagina:string){
-    this.navCtrl.push(pagina)
+    this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{
+      var asistencia = response.data;
+      if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
+        //MOSTRAR ALERTA QUE NO HIZO EL CHECKIN
+        this.showAlert('Oportunidades C', 'Para crear una oportunidad realice el Ingreso Laboral en la planta correspondiente.');
+      }else{
+        this.navCtrl.push(pagina)
+      }
+    }, error => {
+
+    })
   }
 
   irADetalle(rutina){
@@ -66,7 +79,7 @@ export class RutinasPage {
 
   getRutinasUsuario(){
     this.loading = true;
-    
+
     this.rutinasProv.getRutinasUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
         this.rutinasList = data.data;
         this.loading = false;
@@ -74,6 +87,15 @@ export class RutinasPage {
         this.loading = false;
         // console.log("Error: " + error);
     })
+  }
+
+  showAlert(titulo:string, subtitulo:string) {
+    let alert = this.alertCtrl.create({
+      title: titulo,
+      subTitle: subtitulo,
+      buttons: ['Aceptar']
+    });
+    alert.present();
   }
 
 }
