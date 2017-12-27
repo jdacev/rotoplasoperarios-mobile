@@ -8,7 +8,7 @@
     </ion-buttons>
 
     <ion-title text-center style="padding-right:60px">
-      Entrada Laboral
+      Salida Laboral
     </ion-title>
 
   </ion-navbar>
@@ -56,5 +56,33 @@
   </ion-row>
 
   <div id="map_canvas"></div>
+
+  <br>
+
+  <h5 class="titulo">
+    Evidencias
+  </h5>
+
+  <ion-grid>
+
+    <ion-row>
+
+      <ion-col col-3 *ngFor="let image of images; let i = index">
+        <ion-thumbnail>
+          <img [src]="image" alt="">
+        </ion-thumbnail>
+        <ion-fab *ngIf="images.length > 0" class="fabDeleteImagen">
+          <button class="botonEliminarImagen" (click)="eliminarImagen(i, image)" color="dark" ion-fab mini><ion-icon name="close"></ion-icon></button>
+        </ion-fab>
+      </ion-col>
+
+      <ion-col col-3>
+        <ion-fab>
+          <button ion-fab mini color="danger" (click)="capturar()"><ion-icon name="add"></ion-icon></button>
+        </ion-fab>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
 
 </ion-content>

@@ -62,7 +62,7 @@ export class RutinasPage {
       var asistencia = response.data;
       if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
         //MOSTRAR ALERTA QUE NO HIZO EL CHECKIN
-        this.showAlert('Oportunidades C', 'Para crear una oportunidad realice el Ingreso Laboral en la planta correspondiente.');
+        this.showAlert('Rutinas', 'Para crear una rutina realice el Ingreso Laboral en la planta correspondiente.');
       }else{
         this.navCtrl.push(pagina)
       }

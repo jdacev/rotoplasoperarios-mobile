@@ -147,7 +147,7 @@ export class MyApp {
   }
 
   deshabilitarOpcion(tipo:string){
-    if(this.userData){
+    // if(this.userData){
       //this.asistenciaProv.getAsistencia(this.userData.usuario.sfid);
       if(this.asistenciaProv.asistencia){
           if(this.asistenciaProv.asistencia.length == 0){
@@ -167,7 +167,7 @@ export class MyApp {
           return true
       }
       return true;
-    }
+    // }
 
     /*
     if(this.asistencia){
