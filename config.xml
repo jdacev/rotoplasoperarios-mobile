@@ -92,4 +92,8 @@
         <variable name="GEOLOCATION_USAGE_DESCRIPTION" value="Obtener Ubicacion" />
     </plugin>
     <plugin name="cordova-plugin-request-location-accuracy" spec="^2.2.2" />
+    <plugin name="cordova-plugin-file-transfer" spec="^1.7.0" />
+    <plugin name="cordova-plugin-local-notification" spec="^0.9.0-beta.1" />
+    <plugin name="cordova-plugin-file-opener2" spec="^2.0.19" />
+    <plugin name="cordova-plugin-document-viewer" spec="^0.9.7" />
 </widget>

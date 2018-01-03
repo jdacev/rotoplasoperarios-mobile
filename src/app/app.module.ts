@@ -16,6 +16,9 @@ import { PhotoViewer } from '@ionic-native/photo-viewer';
 import { GoogleMaps } from '@ionic-native/google-maps';
 import { Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
+import { FileOpener } from '@ionic-native/file-opener';
+import { DocumentViewer } from '@ionic-native/document-viewer';
+
 
 //servicios
 import { UsersProvider } from '../providers/users/users';
@@ -60,7 +63,9 @@ import { PlantasProvider } from '../providers/plantas/plantas';
     GoogleMaps,
     Geolocation,
     LocationAccuracy,
-    PlantasProvider
+    PlantasProvider,
+    FileOpener,
+    DocumentViewer
   ]
 })
 export class AppModule {}

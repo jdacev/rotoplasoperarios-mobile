@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavParams, NavController, AlertController } from 'ionic-angular';
 import { UsersProvider } from "../../providers/users/users";
 import { AuthService } from "../../providers/auth-service/auth-service";
+import { AsistenciaProvider } from "../../providers/asistencia/asistencia";
 
 
 
@@ -17,7 +18,8 @@ export class HomePage {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private _usersService : UsersProvider,
-              public authservice: AuthService) {
+              public authservice: AuthService,
+              private asistenciaProv: AsistenciaProvider) {
 
       // this._usersService.traerAlgo().subscribe(data =>{
       //
@@ -30,9 +32,9 @@ export class HomePage {
       //   }
       // })
 
-
       this.authservice.loadUserCredentials();
       var data = this.authservice.AuthToken;
+      this.asistenciaProv.getAsistencia(data.usuario.sfid);
       console.log(data);
 
   }

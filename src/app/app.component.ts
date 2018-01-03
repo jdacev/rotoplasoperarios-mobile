@@ -4,6 +4,13 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Keyboard } from '@ionic-native/keyboard';
 
+import { File } from '@ionic-native/file';
+
+import { LocalNotifications } from '@ionic-native/local-notifications';
+import { FileOpener } from '@ionic-native/file-opener';
+import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-viewer';
+
+
 import { AuthService } from "../providers/auth-service/auth-service";
 import { AsistenciaProvider } from "../providers/asistencia/asistencia";
 import { PlantasProvider } from "../providers/plantas/plantas";
@@ -13,8 +20,7 @@ import { LoginPage } from '../pages/login/login';
 import { AsistenciaPage } from '../pages/asistencia/asistencia';
 
 @Component({
-  templateUrl: 'app.html'
-})
+  templateUrl: 'app.html'})
 export class MyApp {
 
   loginPage = LoginPage;
@@ -24,7 +30,8 @@ export class MyApp {
   userData:any;
   asistencia:any;
   rootPage:any;
-
+  showMenu:boolean;
+  url:string;
   constructor(platform: Platform,
               statusBar: StatusBar,
               splashScreen: SplashScreen,
@@ -34,7 +41,10 @@ export class MyApp {
               public authservice: AuthService,
               private keyboard: Keyboard,
               private asistenciaProv: AsistenciaProvider,
-              private plantasProv: PlantasProvider) {
+              private plantasProv: PlantasProvider,
+              private file: File,
+              private fileOpener: FileOpener,
+              private document: DocumentViewer) {
 
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
@@ -44,7 +54,8 @@ export class MyApp {
       splashScreen.hide();
     });
 
-
+    // this.url= 'http://localhost:8100/assets/files/Manual-Tipo-I.pdf'
+    this.showMenu = false;
     authservice.loadUserCredentials();
     if(this.authservice.isLoggedin && this.authservice.AuthToken){
       console.log("ACA1")
@@ -68,6 +79,48 @@ export class MyApp {
       console.log("Voy a login")
       this.goToPage('LoginPage')
     }
+  }
+
+  showSubMenu(){
+    this.showMenu = !this.showMenu;
+  }
+
+  descargar(tipo:string){
+
+    var url = this.file.applicationDirectory + 'www/assets/';
+    switch(tipo){
+      case 'A':
+        url += 'Manual-Tipo-A.pdf';
+        break;
+
+      case 'B':
+        url += 'Manual-Tipo-B.pdf';
+        break;
+
+      case 'I':
+        url += 'Manual-Tipo-I.pdf';
+        break;
+
+      default:
+        console.log('No Encontrado');
+        break;
+    }
+
+    const options: DocumentViewerOptions = {
+      title: 'Manual tipo ' + tipo,
+      openWith: {enabled:false}
+    }
+
+    this.document.viewDocument(url, 'application/pdf', options)
+
+    // InAppBrowser()
+    // this.file.checkFile(this.file.applicationDirectory + 'www/assets/', 'Manual-Tipo-A.pdf').then(_ => console.log('File exists: www/assets/')).catch(err => console.log('File doesnt exist'));
+    //
+    // console.log('abriendo archivo: url: ' + this.file.applicationDirectory + 'www/assets/' + 'Manual-Tipo-A.pdf');
+    // this.fileOpener.open(this.file.applicationDirectory + 'www/assets/' + 'Manual-Tipo-A', 'application/pdf')
+    //   .then(() => {console.log('File is opened')}, error => {console.log(error); console.log(JSON.stringify(error))})
+    //   .catch(e => {console.log('Error openening file'); console.log(e)});
+
   }
 
   goToPage(pagina:any){

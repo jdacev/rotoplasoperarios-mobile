@@ -6,6 +6,12 @@
 .scroll-content{
   margin-top: 56px !important;
 }
+
+#sidenav {
+  button[submenu-item] {
+    padding-left: 35px; // maybe margin-left would work better to move the border as well
+  }
+}
 // App Global Sass
 // --------------------------------------------------
 // Put style rules here that you want to apply globally. These
