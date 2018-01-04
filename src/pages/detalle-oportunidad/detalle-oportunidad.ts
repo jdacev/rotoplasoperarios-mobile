@@ -26,7 +26,6 @@ export class DetalleOportunidadPage {
   ptarName:string;
   description:string;
   cliente:any;
-  // imagen:string = "file:///data/user/0/rotoplas.app/files/tickets/137/1512419963664.jpg";
 
 
   constructor(public navCtrl: NavController,
@@ -37,8 +36,11 @@ export class DetalleOportunidadPage {
               private photoViewer: PhotoViewer) {
 
     this.ptarName = this.authservice.AuthToken.planta.name;
+
+    // Recibo por parámetro todos los datos del ticket.
     this.ticket = navParams.get('ticket')
 
+    //Get para traer el Cliente
     this.ticketsProv.getTicket(this.ticket.id_case_heroku_c__c).subscribe(response =>{
       this.cliente = response.data;
     }, error =>{
@@ -51,19 +53,15 @@ export class DetalleOportunidadPage {
       this.description = this.ticket.description;
     }
 
+    // Levanto las imágenes que se encuentren dentro de la carpeta 'tickets/{IdTicket}'
     this.origen = file.dataDirectory + 'tickets/'
     var subDir = this.ticket.id_case_heroku_c__c.toString() + '/';
-    // console.log('Orinen: ' + this.origen);
 
     file.listDir(this.origen, subDir).then(response=>{
-      // console.log('response[0]: ' + response[0]);
-      // console.log('response Json stringify: ' + JSON.stringify(response))
-      // console.log('RUTA: ' + response[0].nativeURL);
       this.images = response;
 
     }, error=>{
       this.images = error;
-      // console.log('error: ' + JSON.stringify(error));
     });
 
   }
@@ -72,6 +70,7 @@ export class DetalleOportunidadPage {
     console.log('ionViewDidLoad DetalleOportunidadPage');
   }
 
+  //Abre la imagen en un visor al seleccionarla
   abrirImagen(path:string){
     this.photoViewer.show(path);
   }

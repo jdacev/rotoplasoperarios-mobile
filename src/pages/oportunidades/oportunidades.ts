@@ -39,8 +39,8 @@ export class OportunidadesPage {
 
   }
 
+  //Refresher
   doRefresh(refresher) {
-    // console.log('Begin async operation', refresher);
 
     setTimeout(() => {
       // console.log('Async operation has ended');

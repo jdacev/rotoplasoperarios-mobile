@@ -60,7 +60,13 @@ export class AsistenciaPage {
     console.log('ionViewDidLoad AsistenciaPage');
   }
 
+
+
   guardar(){
+
+    /*Calculo la distancia que existe entre 2 puntos
+    (latitud1;longitud1 contra latitud2;longitud2). */
+
     var R = 6371; // Radius of the earth in km
     var lat1 = this.lat;
     var lng1 = this.lng;
@@ -76,7 +82,8 @@ export class AsistenciaPage {
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     var distancia = R * c; // Distance in km
     distancia = distancia * 1000;
-    console.log('distancia: ' + distancia);
+
+    //Si la distancia es mayor al radio muestro una advertencia
     if(distancia > this.planta.radio__c){
       let alert = this.alertCtrl.create({
         title: 'Entrada Laboral',
@@ -96,6 +103,7 @@ export class AsistenciaPage {
   }
 
   postAsistencia(){
+    //Realizo la entrada laboral del operador, indicando latitud y longitud actual.
     this.asistenciaProv.postAsistencia('Entrada', this.operador.sfid, this.lat, this.lng).then(response => {
       if(response){
         this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid);
@@ -108,31 +116,36 @@ export class AsistenciaPage {
   }
 
   deg2rad(deg) {
+    //Convierto en radianes
     return deg * (Math.PI/180)
   }
 
+  //Obtengo la ubicación del dispositivo utilizando el GPS
   obtenerUbicacion(){
     this.locationAccuracy.canRequest().then((canRequest: boolean) => {
       // if(canRequest) {
         // the accuracy option will be ignored by iOS
+        //En caso de que no esté prendido, solicito acceso para activarlo
         this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(() =>{
-            console.log('Request successful')
+
+            //Si me da acceso, obtengo la posición
+
             this.geolocation.getCurrentPosition().then((resp) => {
               this.lat = resp.coords.latitude;
               this.lng = resp.coords.longitude;
 
+              //Si ya existe un marcador en el mapa del usuario, lo remuevo.
               if(this.markerUsuario){
                 this.markerUsuario.remove()
               }
 
+              //Agrego el marcador de la posición actual.
               this.map.addMarker({
                 title: this.operador.name,
                 icon: 'red',
                 animation: 'DROP',
                 position: {lat: this.lat, lng: this.lng}
               }).then(response=>{
-                console.log('response: ' + response)
-                console.log('responseJSON: ' + JSON.stringify(response))
                 this.markerUsuario = response;
               });
 
@@ -152,6 +165,7 @@ export class AsistenciaPage {
 
   cargarMapa(){
 
+  //Función para cargar el mapa. Indico posición donde se debe centrar y el zoom.
   let mapOptions: GoogleMapOptions = {
     camera: {
       target: {
@@ -172,6 +186,8 @@ export class AsistenciaPage {
     this.map.moveCamera({
       target: {lat: this.planta.billinglatitude, lng: this.planta.billinglongitude}
     });
+
+    //Agrego un círculo indicando el radio máximo para hacer el ingreso sin advertencia.
     this.map.addCircle({
       center:{lat: this.planta.billinglatitude, lng: this.planta.billinglongitude},
       radius: this.planta.radio__c,
@@ -179,6 +195,8 @@ export class AsistenciaPage {
       strokeWidth: 2,
       visible: true
     })
+
+    //Agrego el marcador de la planta.
     this.map.addMarker({
       title: 'Planta: ' + this.planta.name,
       icon: 'blue',
@@ -193,6 +211,7 @@ export class AsistenciaPage {
 
 }
 
+//Método para mostrar una alerta. Si envío una página debe redirigirme.
 showAlert(title:string, subtitle:string, page:string) {
   let alert = this.alertCtrl.create({
     title: title,

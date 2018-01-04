@@ -40,7 +40,10 @@ export class DetalleRutinaPage {
       this.ptarName = this.authservice.AuthToken.planta.name;
       this.determinante = this.authservice.AuthToken.planta.determinante__c;
       this.formato = this.authservice.AuthToken.planta.formato__c;
+
+      // Recibo por parámetro todos los datos de la rutina.
       this.rutina = navParams.get('rutina')
+
       if(!this.rutina.observacion__c || this.rutina.observacion__c == ""){
         this.observacion = '---';
       }
@@ -48,22 +51,21 @@ export class DetalleRutinaPage {
         this.observacion = this.rutina.observacion__c;
       }
 
+      //Get para traer las respuestas de las actividades
       this.rutinasProv.getRespuestasActividades(this.rutina.id_rutinas_heroku__c).subscribe(response=>{
         this.respuestas = response.data
       }, error=>{
 
       })
+
+      // Levanto las imágenes que se encuentren dentro de la carpeta 'rutinas/{IdRutina}'
       this.origen = file.dataDirectory + 'rutinas/'
       var subDir = this.rutina.id_rutinas_heroku__c.toString() + '/';
-      // console.log('Orinen: ' + this.origen);
-
 
       file.listDir(this.origen, subDir).then(response=>{
-        // console.log('response[0]: ' + response[0]);
-        console.log('response Json stringify: ' + JSON.stringify(response))
         this.images = response;
       }, error=>{
-        console.log('error: ' + JSON.stringify(error));
+        // console.log('error: ' + JSON.stringify(error));
       });
 
 
@@ -73,6 +75,7 @@ export class DetalleRutinaPage {
     console.log('ionViewDidLoad DetalleRutinaPage');
   }
 
+  //Abre la imagen en un visor al seleccionarla
   abrirImagen(path:string){
     this.photoViewer.show(path);
   }

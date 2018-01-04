@@ -31,10 +31,6 @@ export class LoginPage {
               public authservice: AuthService,
               private asistenciaProv: AsistenciaProvider) {
 
-    // authservice.loadUserCredentials();
-    // if(this.authservice.isLoggedin && this.authservice.AuthToken){
-    //   this.navCtrl.setRoot('HomePage');
-    // }
   }
 
   ionViewDidLoad() {
@@ -42,34 +38,26 @@ export class LoginPage {
   }
 
   ionViewDidEnter() {
-    //to disable menu, or
+    // Deshabilito el menú en esta pantalla cuando entro
     this.menuCtrl.enable(false);
   }
 
   ionViewWillLeave() {
-    // to enable menu.
+    // Habilito el menú en esta pantalla cuando salgo
     this.menuCtrl.enable(true);
   }
 
   login(user){
-    // this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
+
 
     this.loading = true;
     this.authservice.authenticate(user.name.toLowerCase(), user.password).then(data => {
       if(data) {
         this.loading = false;
-        //
-        // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{
-        //     var asistencia = response.data;
-        //     this.loading = false;
-        //     if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
-        //       this.navCtrl.setRoot('AsistenciaPage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
-        //     }else{
-              this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
-        //     }
-        // }, error => {
-        //   this.loading = false;
-        // })
+
+        /* Hago setRoot para que no pueda volver atras con el boton del celular.
+        Sino va a poder volver al login despues de loguearse*/
+        this.navCtrl.setRoot('HomePage');
 
       }else{
         this.loading = false;
@@ -80,8 +68,9 @@ export class LoginPage {
   }
 
   forgotPassword(){
-    this.navCtrl.push('PasswordRecoveryPage'); //push para levantar una pagina de recuperar contraseña y que pueda
-                                              // volver atras al login
+  /*push para levantar una pagina de recuperar contraseña y que pueda
+  volver atras al login*/
+    this.navCtrl.push('PasswordRecoveryPage');
   }
 
 }

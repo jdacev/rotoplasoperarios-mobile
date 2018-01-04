@@ -65,6 +65,7 @@ export class CheckoutPage {
     console.log('ionViewDidLoad CheckoutPage');
   }
 
+  //Método para capturar imágenes con el dispositivo.
   capturar(){
     const options: CameraOptions = {
       quality: 50,
@@ -75,7 +76,6 @@ export class CheckoutPage {
     }
 
     this.camera.getPicture(options).then((imagePath) => {
-      // this.presentToast("Imagen Capturada: " + imagePath);
       this.images.push(imagePath)
 
     }, (err) => {
@@ -83,26 +83,29 @@ export class CheckoutPage {
     });
   }
 
+  /*Muevo el archivo de la carpeta donde se guarda la imagen capturada,
+  a una carpeta que 'salidas' que le creo.
+  */
   moverArchivo(images:string[]){
-
     var dataDirectory=this.file.dataDirectory;
     var origen = dataDirectory + 'salidas/'
     var sourceDirectory = images[0].substring(0, images[0].lastIndexOf('/') + 1);
     var destino = dataDirectory + 'salidas/';
+
+    //Verifico si existe el directorio 'salidas'.
     this.validarDirectorio(dataDirectory, 'salidas').then(response=>{
       if(response){
-        console.log('La carpeta Salidas EXISTE')
+        //Existe la carpeta
         this.crearCarpetas(origen, sourceDirectory, destino, images);
       }
-      else(response)
+      else{
+        //NO Existe la carpeta 'salidas', entonces la creo
         this.file.createDir(dataDirectory, 'salidas', false).then(data=>{
-          console.log('La carpeta Salidas NO EXISTE y la CREE')
-
           this.crearCarpetas(origen, sourceDirectory, destino, images);
         }, err =>{
-          console.log('La carpeta Salidas NO EXISTE y no la pude crear')
           // this.presentToast('Error al crear la carpeta Rutinas: ' + err);
         });
+      }
     }, error =>{
 
     })
@@ -110,14 +113,14 @@ export class CheckoutPage {
 
   }
 
+  //Funcion que crea una carpeta con el nombre de la fecha actual para guardar las imágenes.
   crearCarpetas(origen, sourceDirectory, destino, images){
-
     var today = new Date().toString()
+    //Creo la carpeta con el dia actual
     this.file.createDir(origen, today, false).then(data=>{
-      console.log('Cree la carpeta', data)
 
+      //Muevo todas las imágenes al nuevo directorio.
       for (let i = 0; i < images.length; i++) {
-
           var fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[0].length);
           this.file.moveFile(sourceDirectory,fileName,destino,fileName)
           .then(
@@ -133,6 +136,7 @@ export class CheckoutPage {
     });
   }
 
+  // Funcion que verifica si existe un subdirectorio
   validarDirectorio(dataDirectory, subDirectorio){
     return new Promise(resolve=>{
       this.file.checkDir(dataDirectory, subDirectorio)
@@ -147,6 +151,7 @@ export class CheckoutPage {
     });
   }
 
+  //Función que elimina una imagen capturada.
   eliminarImagen(pos:number, imagen:string){
     var directorio = imagen.substring(0, imagen.lastIndexOf('/') + 1);
     var nombreArchivo = imagen.substring(imagen.lastIndexOf('/') + 1, imagen.length);
@@ -155,7 +160,7 @@ export class CheckoutPage {
   }
 
   cargarMapa(){
-    console.log("Entrando a cargar mapa")
+    //Función para cargar el mapa. Indico posición donde se debe centrar y el zoom.
     let mapOptions: GoogleMapOptions = {
       camera: {
         target: {
@@ -168,15 +173,17 @@ export class CheckoutPage {
     };
 
     this.map = GoogleMaps.create('map_canvas', mapOptions);
-    console.log("Cargando Mapa")
+
     // Wait the MAP_READY before using any methods.
     this.map.one(GoogleMapsEvent.MAP_READY)
     .then(() => {
-      console.log("MAPA LISTO")
+
       // Now you can use all methods safely.
       this.map.moveCamera({
         target: {lat: this.planta.billinglatitude, lng: this.planta.billinglongitude}
       });
+
+      //Agrego un círculo indicando el radio máximo para hacer el ingreso sin advertencia.
       this.map.addCircle({
         center:{lat: this.planta.billinglatitude, lng: this.planta.billinglongitude},
         radius: this.planta.radio__c,
@@ -184,6 +191,8 @@ export class CheckoutPage {
         strokeWidth: 2,
         visible: true
       })
+
+      //Agrego el marcador de la planta.
       this.map.addMarker({
         title: 'Planta: ' + this.planta.name,
         icon: 'blue',
@@ -198,6 +207,7 @@ export class CheckoutPage {
 
   }
 
+  //Método para mostrar una alerta. Si envío una página debe redirigirme.
   showAlert(title:string, subtitle:string, page:string) {
     let alert = this.alertCtrl.create({
       title: title,
@@ -214,24 +224,32 @@ export class CheckoutPage {
     alert.present();
   }
 
+  //Convierto en radianes
   deg2rad(deg) {
     return deg * (Math.PI/180)
   }
 
+  //Obtengo la ubicación del dispositivo utilizando el GPS
   obtenerUbicacion(){
+
     this.locationAccuracy.canRequest().then((canRequest: boolean) => {
       // if(canRequest) {
         // the accuracy option will be ignored by iOS
+        //En caso de que no esté prendido, solicito acceso para activarlo
         this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(() =>{
-            console.log('Request successful')
+
+            //Si me da acceso, obtengo la posición
+
             this.geolocation.getCurrentPosition().then((resp) => {
               this.lat = resp.coords.latitude;
               this.lng = resp.coords.longitude;
 
+              //Si ya existe un marcador en el mapa del usuario, lo remuevo.
               if(this.markerUsuario){
                 this.markerUsuario.remove()
               }
 
+              //Agrego el marcador de la posición actual.
               this.map.addMarker({
                 title: this.operador.name,
                 icon: 'red',
@@ -258,11 +276,15 @@ export class CheckoutPage {
   }
 
   guardar(){
+
+    /*Calculo la distancia que existe entre 2 puntos
+    (latitud1;longitud1 contra latitud2;longitud2). */
+
     if(!this.images || this.images.length == 0){
       this.showAlert('Salida Laboral', 'Para realizar la salida debe cargar al menos una evidencia.', null);
       return;
     }
-    
+
     var R = 6371; // Radius of the earth in km
     var lat1 = this.lat;
     var lng1 = this.lng;
@@ -278,7 +300,9 @@ export class CheckoutPage {
     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     var distancia = R * c; // Distance in km
     distancia = distancia * 1000;
-    console.log('distancia: ' + distancia);
+
+
+    //Si la distancia es mayor al radio muestro una advertencia
     if(distancia > this.planta.radio__c){
       let alert = this.alertCtrl.create({
         title: 'Salida Laboral',
@@ -297,6 +321,8 @@ export class CheckoutPage {
 
   }
 
+
+  //Realizo la entrada laboral del operador, indicando latitud y longitud actual.
   postAsistencia(){
     this.asistenciaProv.postAsistencia('Salida', this.operador.sfid, this.lat, this.lng).then(response => {
       if(response){

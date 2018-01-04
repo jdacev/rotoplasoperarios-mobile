@@ -21,16 +21,6 @@ export class HomePage {
               public authservice: AuthService,
               private asistenciaProv: AsistenciaProvider) {
 
-      // this._usersService.traerAlgo().subscribe(data =>{
-      //
-      //   console.log(data);
-      //
-      //   if(data.error){
-      //     console.log("ERROR RECIBIENDO DATA")
-      //   }else{
-      //     console.log("DATA RECIBIDA");
-      //   }
-      // })
 
       this.authservice.loadUserCredentials();
       var data = this.authservice.AuthToken;

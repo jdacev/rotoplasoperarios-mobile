@@ -25,6 +25,7 @@ export class NuevaPasswordPage {
               public navParams: NavParams,
               public authservice: AuthService) {
 
+    //Recibo por parámetro el usuario que quiere generar la contraseña
     this.usuario = navParams.get('usuario')
   }
 
@@ -32,6 +33,7 @@ export class NuevaPasswordPage {
     console.log('ionViewDidLoad NuevaPasswordPage');
   }
 
+  //Verifico la coincidencia de las contraseñas
   cambiarContrasenia(){
     if(this.pass1 != this.pass2){
       this.showAlert("Error", "Las contraseñas no coinciden.");
@@ -47,6 +49,7 @@ export class NuevaPasswordPage {
     })
   }
 
+  //Funcion para mostrar alerts.
   showAlert(title:string, subtitle:string) {
     let alert = this.alertCtrl.create({
       title: title,

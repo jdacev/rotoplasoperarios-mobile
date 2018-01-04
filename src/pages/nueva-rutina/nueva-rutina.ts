@@ -30,6 +30,7 @@ export class NuevaRutinaPage {
               private camera: Camera,
               private file: File,
               private alertCtrl: AlertController) {
+
     this.ptarName = this.authservice.AuthToken.planta.name;
     this.ptarDate = new Date().toISOString();
     this.determinante = this.authservice.AuthToken.planta.determinante__c;
@@ -44,10 +45,12 @@ export class NuevaRutinaPage {
     // console.log('ionViewDidLoad NuevaRutinaPage');
   }
 
+  //Vuelvo a la pantalla anterior.
   cancel(){
     this.navCtrl.pop();
   }
 
+  //Método para capturar imágenes y guardarlas en un array.
   capturar(){
     const options: CameraOptions = {
       quality: 50,
@@ -58,7 +61,6 @@ export class NuevaRutinaPage {
     }
 
     this.camera.getPicture(options).then((imagePath) => {
-      // this.presentToast("Imagen Capturada: " + imagePath);
       this.images.push(imagePath)
 
     }, (err) => {
@@ -74,33 +76,42 @@ export class NuevaRutinaPage {
     toast.present();
   }
 
+  /*Muevo el archivo de la carpeta donde se guarda la imagen capturada,
+  a una carpeta que 'rutinas' que le creo.
+  */
   moverArchivo(images:string[], id){
 
     var dataDirectory=this.file.dataDirectory;
     var origen = dataDirectory + 'rutinas/'
     var sourceDirectory = images[0].substring(0, images[0].lastIndexOf('/') + 1);
     var destino = dataDirectory + 'rutinas/' + id.toString() + '/';
+
+    //Verifico si existe el directorio 'rutinas'.
     this.validarDirectorio(dataDirectory, 'rutinas').then(response=>{
-      if(response)
+      if(response){
+        //Existe la carpeta
         this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
-      else(response)
+      }
+      else{
+        //NO Existe la carpeta 'rutinas', entonces la creo
         this.file.createDir(dataDirectory, 'rutinas', false).then(data=>{
           this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
         }, err =>{
 
-          // this.presentToast('Error al crear la carpeta Rutinas: ' + err);
         });
+      }
     }, error =>{
 
     })
 
-
   }
 
+  //Funcion que crea una carpeta con el nombre del ID para guardar las imágenes.
   crearCarpetasId(origen, sourceDirectory, destino, images, id){
-
+    //Creo la carpeta con el nombre {ID}
     this.file.createDir(origen, id.toString(), false).then(data=>{
 
+      //Muevo todas las imágenes al nuevo directorio.
       for (let i = 0; i < images.length; i++) {
 
           var fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[0].length);
@@ -111,15 +122,16 @@ export class NuevaRutinaPage {
             file=>{
 
             }, error => {
-            // this.presentToast("ERROR MOVIENDO: " + error.message + "   ...error: " + error)
+
           })
       }
 
     }, err =>{
-      // this.presentToast('Error al crear la carpeta id: ' + err)
+
     });
   }
 
+  // Funcion que verifica si existe un subdirectorio
   validarDirectorio(dataDirectory, subDirectorio){
     return new Promise(resolve=>{
       this.file.checkDir(dataDirectory, subDirectorio)
@@ -128,18 +140,18 @@ export class NuevaRutinaPage {
                 })
                 .catch(err => {
                   resolve(false);
-                  // this.presentToast('Error al crear Directorio: ' + err)
-                  // });
       });
     });
   }
 
+  //Función que elimina una imagen capturada.
   eliminarImagen(pos:number, imagen:string){
     var directorio = imagen.substring(0, imagen.lastIndexOf('/') + 1);
     var nombreArchivo = imagen.substring(imagen.lastIndexOf('/') + 1, imagen.length);
     this.file.removeFile(directorio, nombreArchivo);
     this.images.splice(pos, 1)
   }
+
 
   getTipoRutinas(){
     this.rutinasProv.getTipoRutinas().subscribe(data=>{
@@ -150,10 +162,12 @@ export class NuevaRutinaPage {
   }
 
   getActividades(idTipoRutina:string, turno:string){
-    // console.log(id);
+
     if(idTipoRutina && turno){
       this.rutinasProv.getPreguntasTipoRutina(idTipoRutina, turno).subscribe(data =>{
-        // console.log("data: " + data.data[0].name);
+
+        // Agrego el campo observación vacío, y el tipo seteo el tipo de
+        //respuesta en null o en false.
         this.activities = data.data;
         for (let i = 0; i < this.activities.length; i++) {
           this.activities[i].observacion = undefined;
@@ -163,15 +177,17 @@ export class NuevaRutinaPage {
             this.activities[i].valor = undefined;
           }
         }
-        // console.log(this.activities);
+
       }, error =>{
         this.activities = [];
-        // console.log("Error: " + error);
+
       })
     }
 
   }
 
+  //Método que verifica si hay alguna respuesta incompleta
+  //para deshabilitar el boton de crear
   respuestasIncompletas(){
     for (let i = 0; i < this.activities.length; i++) {
         if(this.activities[i].valor == undefined || (!this.activities[i].tipo_de_respuesta__c && this.activities[i].valor == ""))
@@ -201,9 +217,7 @@ export class NuevaRutinaPage {
       'rutaimagen__c': 'RUTA/IMAGEN/',
       'actividadrutina__c': listaActividades
     }
-    // console.log(data)
 
-    // console.log(data);
     this.rutinasProv.crearRutina(data).then(response=>{
       if(response){
         if(this.images.length > 0){

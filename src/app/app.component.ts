@@ -54,29 +54,23 @@ export class MyApp {
       splashScreen.hide();
     });
 
-    // this.url= 'http://localhost:8100/assets/files/Manual-Tipo-I.pdf'
+    
     this.showMenu = false;
     authservice.loadUserCredentials();
     if(this.authservice.isLoggedin && this.authservice.AuthToken){
       console.log("ACA1")
       this.userData = this.authservice.AuthToken
         this.asistenciaProv.getAsistencia(this.userData.usuario.sfid).subscribe(response => {
+
           this.asistencia = response.data;
-          // if(this.asistencia.length == 0 || this.asistencia[0].tipo__c == 'Salida'){
-          //   // this.goToPage('AsistenciaPage')
-          //   this.rootPage = 'AsistenciaPage';
-          //   this.appCtrl.navPop();
-          // }else{
-        //     // this.goToPage('HomePage')
-            this.rootPage = 'HomePage';
-            this.appCtrl.navPop();
-          // }
+          this.rootPage = 'HomePage';
+          this.appCtrl.navPop();
+
         }, error => {
 
         })
 
     }else{
-      console.log("Voy a login")
       this.goToPage('LoginPage')
     }
   }
@@ -140,7 +134,6 @@ export class MyApp {
   cambiarPlanta(){
     this.plantasProv.getPlantasPorUsuario(this.userData.usuario.sfid).subscribe(response => {
       this.plantas = response.data;
-      console.log('Plantas: ', this.plantas)
 
           let alert = this.alertCtrl.create();
           alert.setTitle('Selección de Planta');
@@ -191,7 +184,7 @@ export class MyApp {
               return
             }
           });
-          // alert.addButton('Cancelar');
+
           alert.present();
 
     }, error => {
@@ -200,8 +193,7 @@ export class MyApp {
   }
 
   deshabilitarOpcion(tipo:string){
-    // if(this.userData){
-      //this.asistenciaProv.getAsistencia(this.userData.usuario.sfid);
+
       if(this.asistenciaProv.asistencia){
           if(this.asistenciaProv.asistencia.length == 0){
             if(tipo == 'Salida'){
@@ -220,37 +212,10 @@ export class MyApp {
           return true
       }
       return true;
-    // }
 
-    /*
-    if(this.asistencia){
-        if(this.asistencia.length == 0){
-          if(tipo == 'Salida'){
-            return true;
-          }
-          if(tipo == 'Entrada'){
-            return false;
-          }
-        }
-        if(tipo == 'Salida' && this.asistencia[0].tipo__c == 'Entrada'){
-          return false
-        }
-        if(tipo == 'Entrada' && this.asistencia[0].tipo__c == 'Salida'){
-          return false
-        }
-        return true
-    }
-    return true;
-    */
   }
 
   salida(){
-
-    /*---------------------------------------------------------
-
-    -FALTA LA VALIDACION DE SI HAY ALGUNA RUTINA DIARIA DE HOY-
-
-    ---------------------------------------------------------*/
 
     this.asistenciaProv.postAsistencia('Salida', this.userData.usuario.sfid, this.authservice.AuthToken.planta.billinglatitude, this.authservice.AuthToken.planta.billinglatitude).then(response => {
       if(response){
@@ -259,7 +224,7 @@ export class MyApp {
         }, error => {
 
         });
-        // this.showAlert("Entrada Laboral", "Entrada Exitosa", 'HomePage');
+
       }
     }, error => {
 
@@ -298,10 +263,6 @@ export class MyApp {
         });
         alert.present();
 
-        // this.authservice.logout();
-        // this.menuCtrl.close();
-        // let nav = this.appCtrl.getRootNav();
-        // nav.setRoot(LoginPage);
       }
 
       console.log(JSON.stringify(this.asistencia))

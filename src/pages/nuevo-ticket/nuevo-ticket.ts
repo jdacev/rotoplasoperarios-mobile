@@ -34,6 +34,7 @@ export class NuevoTicketPage {
               private alertCtrl: AlertController,
               private ticketsProv: TicketsProvider,
               private authservice: AuthService) {
+
     this.ptarName = this.authservice.AuthToken.planta.name;
     this.ptarDate = new Date().toISOString();
     this.ticketType = "Interno";
@@ -42,11 +43,7 @@ export class NuevoTicketPage {
     this.motivoSeleccionado = null;
     this.descripcionSeleccionada = null;
     this.clientes = [];
-    // this.images.push('../assets/team.jpg')
-    // this.images.push('../assets/team.jpg')
-    // this.images.push('../assets/team.jpg')
-    // this.images.push('../assets/team.jpg')
-    // this.images.push('../assets/team.jpg')
+
     this.getMotivosOportunidades();
     this.getClientesPlanta();
   }
@@ -59,7 +56,7 @@ export class NuevoTicketPage {
     this.navCtrl.pop();
   }
 
-
+  //Método para capturar imágenes y guardarlas en un array.
   capturar(){
     const options: CameraOptions = {
       quality: 50,
@@ -70,7 +67,6 @@ export class NuevoTicketPage {
     }
 
     this.camera.getPicture(options).then((imagePath) => {
-      // this.presentToast("Imagen Capturada: " + imagePath);
       this.images.push(imagePath)
 
     }, (err) => {
@@ -86,140 +82,98 @@ export class NuevoTicketPage {
       toast.present();
     }
 
+    /*Muevo el archivo de la carpeta donde se guarda la imagen capturada,
+    a una carpeta que 'tickets' que le creo.
+    */
   moverArchivo(images:string[], id){
 
     var dataDirectory=this.file.dataDirectory;
     var origen = dataDirectory + 'tickets/'
     var sourceDirectory = images[0].substring(0, images[0].lastIndexOf('/') + 1);
     var destino = dataDirectory + 'tickets/' + id.toString() + '/';
+
+    //Verifico si existe el directorio 'tickets'.
     this.validarDirectorio(dataDirectory, 'tickets').then(response=>{
       if(response){
+        //Existe la carpeta
         this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
-        console.log("ESTOY EN SII")
       }
       else{
+        //NO Existe la carpeta 'rutinas', entonces la creo
         this.file.createDir(dataDirectory, 'tickets', false).then(data=>{
-          console.log("ESTOY EN CREADO")
-          // this.presentToast('Carpeta Tickets Creada');
           this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
         }, err =>{
-          console.log("ESTOY EN NO CREADO ERROR")
 
-          // this.presentToast('Error al crear la carpeta Tickets: ' + err);
-          console.log('Error crear carpeta tickets: ' + JSON.stringify(err));
         });
       }
     }, error =>{
 
     })
-    // if(this.validarDirectorio(dataDirectory, 'tickets')){
-    //     this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
-    //     console.log("ESTOY EN SII")
-    // }else{
-    //   console.log("ESTOY EN NO")
-    //
-    //     this.file.createDir(dataDirectory, 'tickets', false).then(data=>{
-    //       console.log("ESTOY EN CREADO")
-    //       this.presentToast('Carpeta Tickets Creada');
-    //       this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
-    //     }, err =>{
-    //       console.log("ESTOY EN NO CREADO ERROR")
-    //
-    //       this.presentToast('Error al crear la carpeta Tickets: ' + err);
-    //       console.log('Error crear carpeta tickets: ' + JSON.stringify(err));
-    //     });
-    //
-    // }
-
-    // this.file.createDir(origen, id.toString(), false).then(data=>{
-    //   this.presentToast('Carpeta tickets/id creada: ' + origen + id.toString())
-    // }, err =>{
-    //   this.presentToast('Error al crear la carpeta id: ' + err)
-    // });
-
-
-    // this.presentToast('dataDirectory: ' + dataDirectory);
 
   }
 
+  //Funcion que crea una carpeta con el nombre del ID para guardar las imágenes.
   crearCarpetasId(origen, sourceDirectory, destino, images, id){
-
+    //Creo la carpeta con el nombre {ID}
     this.file.createDir(origen, id.toString(), false).then(data=>{
 
+      //Muevo todas las imágenes al nuevo directorio.
       for (let i = 0; i < images.length; i++) {
 
           var fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[0].length);
-          // console.log('Filename: ' + fileName);
-          // console.log('Origen: ' + origen);
-          // console.log('SourceDirectory: ' + sourceDirectory);
-          // console.log('Destino: ' + destino);
 
           this.file.moveFile(sourceDirectory,fileName,destino,fileName)
           .then(
-            file=>{ // do something with the file location
-              // this.presentToast("FOTO MOVIDA A : " + destino + fileName);
-              // this.images.push(origen + fileName);
+            file=>{
+
             }, error => {
-            // console.log('Error: ' + JSON.stringify(error))
-            // console.log('Error: ' + error)
-            // this.presentToast("ERROR MOVIENDO: " + error.message + "   ...error: " + error)
+
           })
       }
 
-      // this.presentToast('Carpeta tickets/id creada: ' + origen + id.toString())
     }, err =>{
-      // this.presentToast('Error al crear la carpeta id: ' + err)
+
     });
 
 
   }
 
+  // Funcion que verifica si existe un subdirectorio
   validarDirectorio(dataDirectory, subDirectorio){
     return new Promise(resolve=>{
       this.file.checkDir(dataDirectory, subDirectorio)
                 .then(_ => {
-                  // console.log('La carpeta tickets Existe')
-                  // this.presentToast('La carpeta tickets Existe')
-                resolve(true);
-
+                  resolve(true);
                 })
                 .catch(err => {
-                  // this.presentToast('La carpeta tickets NOOOO Existe')
-                  // console.log('La carpeta tickets NOOOO Existe')
                   resolve(false);
-                  // this.file.createDir(dataDirectory, 'tickets', false).then(data=>{
-                  //   this.presentToast('CREADOO');
-                  // }, err =>{
-                    // this.presentToast('Error al crear Directorio: ' + err)
-                  // });
       });
     });
   }
 
+  //Función que elimina una imagen capturada.
   eliminarImagen(pos:number, imagen:string){
-    // console.log('pos:' + pos + ', ' + imagen);
     var directorio = imagen.substring(0, imagen.lastIndexOf('/') + 1);
     var nombreArchivo = imagen.substring(imagen.lastIndexOf('/') + 1, imagen.length);
     this.file.removeFile(directorio, nombreArchivo);
     this.images.splice(pos, 1)
   }
 
+  //Método para ordenamiento
   ordenar(item1, item2){
     return (item1 < item2 ? -1 : (item1 === item2 ? 0 : 1));
   }
 
+  //Get para buscar los motivos y ordenarlos por orden alfabético
   getMotivosOportunidades(){
     this.ticketsProv.getMotivosOportunidades().subscribe(response =>{
-
-      // this.motivos = response.data;
       this.motivos = response.data.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
     }, error =>{
 
     })
   }
 
-
-
+  //Get para buscar las descripciones del motivo que selecciono
   getDescripcionMotivos(motivo){
     if(motivo){
       this.ticketsProv.getDescripcionMotivos(motivo.sfid).subscribe(response =>{
@@ -233,6 +187,7 @@ export class NuevoTicketPage {
     }
   }
 
+  // Get para buscar el motivo de desestabilización.
   getMotivosDesestabilizacion(descripcion){
     if(descripcion){
       this.ticketsProv.getMotivosDesestabilizacion(descripcion.sfid).subscribe(response =>{
