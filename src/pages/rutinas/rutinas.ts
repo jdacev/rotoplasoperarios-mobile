@@ -61,8 +61,9 @@ export class RutinasPage {
     this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{
       var asistencia = response.data;
       if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
+        this.navCtrl.push(pagina)
         //MOSTRAR ALERTA QUE NO HIZO EL CHECKIN
-        this.showAlert('Rutinas', 'Para crear una rutina realice el Ingreso Laboral en la planta correspondiente.');
+        //this.showAlert('Rutinas', 'Para crear una rutina realice el Ingreso Laboral en la planta correspondiente.');
       }else{
         this.navCtrl.push(pagina)
       }

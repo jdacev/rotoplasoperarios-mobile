@@ -9,11 +9,11 @@
   <ion-content>
     <ion-list id="sidenav">
 
-      <button ion-item (click)="goToPage( homePage )">Home</button>
+      <button ion-item (click)="goToPage( homePage )">Inicio</button>
 
-      <button ion-item [disabled]="deshabilitarOpcion('Entrada')" (click)="goToPage('AsistenciaPage')" disabled>Entrada Laboral</button>
+      <button ion-item [disabled]="true" (click)="goToPage('AsistenciaPage')" disabled>Entrada Laboral</button>
 
-      <button ion-item [disabled]="deshabilitarOpcion('Salida')" (click)="goToPage('CheckoutPage')">Salida Laboral</button>
+      <button ion-item [disabled]="true" (click)="goToPage('CheckoutPage')">Salida Laboral</button>
 
       <button ion-item (click)="showSubMenu()">Manual del Operador</button>
       <div *ngIf="showMenu">
