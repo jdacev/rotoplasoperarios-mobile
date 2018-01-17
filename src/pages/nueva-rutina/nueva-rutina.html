@@ -23,14 +23,14 @@
 
   <ion-item>
     <ion-label><b>Rutina</b></ion-label>
-    <ion-select [(ngModel)]="tipoRutina" (ionChange)="getActividades(tipoRutina, turno)" cancelText="Cancelar" okText="Aceptar">
+    <ion-select okText="Aceptar" cancelText="Cancelar" [(ngModel)]="tipoRutina" (ionChange)="getActividades(tipoRutina, turno)" cancelText="Cancelar" okText="Aceptar">
       <ion-option *ngFor="let tipo of tipoRutinas" [value]="tipo.sfid">{{tipo.nombre__c}}</ion-option>
     </ion-select>
   </ion-item>
 
   <ion-item>
-    <ion-label><b>Turno</b></ion-label>
-    <ion-select [(ngModel)]="turno" [disabled]="!tipoRutina" (ionChange)="getActividades(tipoRutina, turno)" cancelText="Cancelar" okText="Aceptar">
+    <ion-label><b>*Turno</b></ion-label>
+    <ion-select okText="Aceptar" cancelText="Cancelar" [(ngModel)]="turno" [disabled]="!tipoRutina" (ionChange)="getActividades(tipoRutina, turno)" cancelText="Cancelar" okText="Aceptar">
       <ion-option [value]="Matutino">Matutino</ion-option>
       <ion-option [value]="Vespertino">Vespertino</ion-option>
     </ion-select>
@@ -85,7 +85,7 @@
           <ion-toggle checked="false" [(ngModel)]="activity.valor"></ion-toggle>
         </ion-item>
         <ion-item *ngIf="!activity.tipo_de_respuesta__c">
-          <ion-label stacked>Valor</ion-label>
+          <ion-label stacked>*Valor</ion-label>
           <ion-input type="number" min="0" [(ngModel)]="activity.valor"></ion-input>
         </ion-item>
         <ion-item>
@@ -135,7 +135,8 @@
   <ion-row>
 
     <ion-col text-right>
-      <button ion-button color="blueRotoplas" [disabled]="!tipoRutina || !turno || respuestasIncompletas() || activities.length == 0" (click)="crearRutina()">Crear</button>
+      <button ion-button color="blueRotoplas" [disabled]="!tipoRutina || !turno || respuestasIncompletas() || activities.length == 0" (click)="crearRutina()" *ngIf="!loading">Crear</button>
+      <button ion-button color="blueRotoplas" ion-button disabled class="loginButton" *ngIf="loading"><ion-spinner></ion-spinner></button>
     </ion-col>
     <ion-col text-left>
       <button ion-button color="blueRotoplas" (click)="cancel()">Cancelar</button>

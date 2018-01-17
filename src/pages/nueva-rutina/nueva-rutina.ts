@@ -12,6 +12,7 @@ import { AuthService } from "../../providers/auth-service/auth-service";
 })
 export class NuevaRutinaPage {
 
+  loading:boolean;
   ptarName:string;
   ptarDate:string;
   formato:string;
@@ -31,6 +32,7 @@ export class NuevaRutinaPage {
               private file: File,
               private alertCtrl: AlertController) {
 
+    this.loading = false;
     this.ptarName = this.authservice.AuthToken.planta.name;
     this.ptarDate = new Date().toISOString();
     this.determinante = this.authservice.AuthToken.planta.determinante__c;
@@ -198,6 +200,7 @@ export class NuevaRutinaPage {
   }
 
   crearRutina(){
+    this.loading = true;
     var listaActividades = [];
     for (let i = 0; i < this.activities.length; i++) {
         listaActividades.push(
@@ -223,12 +226,13 @@ export class NuevaRutinaPage {
         if(this.images.length > 0){
           this.moverArchivo(this.images, response);
         }
+        this.loading = false;
         this.navCtrl.pop();
       }else{
 
       }
     }, error=>{
-
+      this.loading = false;
     });
   }
 

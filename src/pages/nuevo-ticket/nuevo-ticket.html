@@ -27,8 +27,8 @@
   </ion-item>
 
   <ion-item>
-    <ion-label style="white-space: normal"><b>Cliente</b></ion-label>
-    <ion-select style="width: 50%" [(ngModel)]="clienteSeleccionado">
+    <ion-label style="white-space: normal"><b>*Cliente</b></ion-label>
+    <ion-select style="width: 50%" okText="Aceptar" cancelText="Cancelar" [(ngModel)]="clienteSeleccionado">
       <ion-option *ngFor="let cliente of clientes" [value]="cliente.sfid">{{cliente.name}}</ion-option>
     </ion-select>
   </ion-item>
@@ -50,8 +50,8 @@
   </h5>
 
   <ion-item>
-    <ion-label style="white-space: normal"><b>Motivo</b></ion-label>
-    <ion-select style="width: 50%" [(ngModel)]="motivoSeleccionado" (ionChange)="getDescripcionMotivos(motivoSeleccionado)">
+    <ion-label style="white-space: normal"><b>*Motivo</b></ion-label>
+    <ion-select style="width: 50%" okText="Aceptar" cancelText="Cancelar" [(ngModel)]="motivoSeleccionado" (ionChange)="getDescripcionMotivos(motivoSeleccionado)">
       <ion-option *ngFor="let motivo of motivos" [value]="motivo">{{motivo.name}}</ion-option>
     </ion-select>
   </ion-item>
@@ -59,8 +59,8 @@
   <br>
 
   <ion-item>
-    <ion-label style="white-space: normal"><b>Descripción</b></ion-label>
-    <ion-select [disabled]="!descripcionesMotivos" style="width: 50%" [(ngModel)]="descripcionSeleccionada" (ionChange)="getMotivosDesestabilizacion(descripcionSeleccionada)">
+    <ion-label style="white-space: normal"><b>*Descripción</b></ion-label>
+    <ion-select [disabled]="!descripcionesMotivos" okText="Aceptar" cancelText="Cancelar" style="width: 50%" [(ngModel)]="descripcionSeleccionada" (ionChange)="getMotivosDesestabilizacion(descripcionSeleccionada)">
       <ion-option *ngFor="let descripcion of descripcionesMotivos" [value]="descripcion">{{descripcion.name}}</ion-option>
     </ion-select>
   </ion-item>
@@ -68,8 +68,8 @@
   <br>
 
   <ion-item>
-    <ion-label style="white-space: normal"><b>Motivo de Desestabilización</b></ion-label>
-    <ion-select [disabled]="!motivosDesestabilizacion" style="width: 50%" [(ngModel)]="motivoDesestabilizacionSeleccionado">
+    <ion-label style="white-space: normal"><b>*Motivo de Desestabilización</b></ion-label>
+    <ion-select okText="Aceptar" cancelText="Cancelar" [disabled]="!motivosDesestabilizacion" style="width: 50%" [(ngModel)]="motivoDesestabilizacionSeleccionado">
       <ion-option *ngFor="let motivo of motivosDesestabilizacion" [value]="motivo">{{motivo.name}}</ion-option>
     </ion-select>
   </ion-item>
@@ -86,8 +86,8 @@
   </ion-item>
 
   <ion-item>
-    <ion-label style="white-space: normal"><b>Envío de Agua</b></ion-label>
-    <ion-select style="width: 50%" [(ngModel)]="serviceType">
+    <ion-label style="white-space: normal"><b>*Envío de Agua</b></ion-label>
+    <ion-select okText="Aceptar" cancelText="Cancelar" style="width: 50%" [(ngModel)]="serviceType">
       <ion-option value="Env\u00eda Agua Potable">Envía Agua Potable</ion-option>
       <ion-option value="Env\u00eda Agua Residual Tratada">Envía Agua Residual Tratada</ion-option>
       <ion-option value="No Env\u00eda Agua">No envía agua</ion-option>
@@ -129,7 +129,8 @@
   <ion-grid>
     <ion-row>
       <ion-col text-right>
-        <button ion-button color="blueRotoplas" (click)="createTicket()" [disabled]="!clienteSeleccionado || !serviceType || !motivoSeleccionado || (descripcionesMotivos && !descripcionSeleccionada) || (motivosDesestabilizacion && !motivoDesestabilizacionSeleccionado)">Crear</button>
+        <button ion-button color="blueRotoplas" (click)="createTicket()" [disabled]="!clienteSeleccionado || !serviceType || !motivoSeleccionado || (descripcionesMotivos && !descripcionSeleccionada) || (motivosDesestabilizacion && !motivoDesestabilizacionSeleccionado)" *ngIf="!loading">Crear</button>
+        <button ion-button color="blueRotoplas" ion-button disabled class="loginButton" *ngIf="loading"><ion-spinner></ion-spinner></button>
       </ion-col>
 
       <ion-col text-left>

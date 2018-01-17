@@ -12,6 +12,8 @@ import { AuthService } from "../../providers/auth-service/auth-service";
 })
 export class NuevoTicketPage {
 
+  loading: boolean;
+
   description: string;
   ptarName:string;
   ptarDate:string;
@@ -35,6 +37,7 @@ export class NuevoTicketPage {
               private ticketsProv: TicketsProvider,
               private authservice: AuthService) {
 
+    this.loading = false;
     this.ptarName = this.authservice.AuthToken.planta.name;
     this.ptarDate = new Date().toISOString();
     this.ticketType = "Interno";
@@ -211,7 +214,7 @@ export class NuevoTicketPage {
   }
 
   createTicket(){
-
+    this.loading = true;
     var data = {
       'description' : this.description,
       'enviaagua__c' : this.serviceType,
@@ -229,12 +232,13 @@ export class NuevoTicketPage {
         if(this.images.length > 0){
           this.moverArchivo(this.images, response);
         }
+        this.loading = false;
         this.navCtrl.pop();
       }else{
-
+        this.loading = false;
       }
     }, error=>{
-
+      this.loading = false;
     });
   }
 
