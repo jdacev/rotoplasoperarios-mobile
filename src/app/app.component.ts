@@ -54,7 +54,6 @@ export class MyApp {
       splashScreen.hide();
     });
 
-    
     this.showMenu = false;
     authservice.loadUserCredentials();
     if(this.authservice.isLoggedin && this.authservice.AuthToken){

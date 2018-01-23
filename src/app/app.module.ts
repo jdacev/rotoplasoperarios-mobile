@@ -18,6 +18,7 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 import { FileOpener } from '@ionic-native/file-opener';
 import { DocumentViewer } from '@ionic-native/document-viewer';
+import { Network } from '@ionic-native/network';
 
 
 //servicios
@@ -51,6 +52,7 @@ import { PlantasProvider } from '../providers/plantas/plantas';
     SplashScreen,
     Keyboard,
     AlertController,
+    Network,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     UsersProvider,
     AuthService,
@@ -65,7 +67,7 @@ import { PlantasProvider } from '../providers/plantas/plantas';
     LocationAccuracy,
     PlantasProvider,
     FileOpener,
-    DocumentViewer
+    DocumentViewer,
   ]
 })
 export class AppModule {}
