@@ -218,6 +218,7 @@ export class NuevaRutinaPage {
       "idplanta__c": this.authservice.AuthToken.planta.sfid,
       'usuarioapp__c': this.authservice.AuthToken.usuario.sfid,
       'rutaimagen__c': 'RUTA/IMAGEN/',
+      'createddate_heroku__c': new Date(),
       'actividadrutina__c': listaActividades
     }
 

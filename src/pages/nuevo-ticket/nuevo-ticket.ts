@@ -215,17 +215,33 @@ export class NuevoTicketPage {
 
   createTicket(){
     this.loading = true;
+    // var data = {
+    //   'description' : this.description,
+    //   'enviaagua__c' : this.serviceType,
+    //   'origin': 'App. Sistema de Monitoreo Sytesa',
+    //   'idplanta__c': this.authservice.AuthToken.planta.sfid,
+    //   'operadorapp__c': this.authservice.AuthToken.usuario.sfid,
+    //   'reason': this.motivoSeleccionado.name,
+    //   'descripciondefalla__c' : this.descripcionSeleccionada ? this.descripcionSeleccionada.name : null,
+    //   'motivodedesestabilizacion__c': this.motivoDesestabilizacionSeleccionado ? this.motivoDesestabilizacionSeleccionado.name : null,
+    //   'accountid' : this.clienteSeleccionado
+    // }
+
+
+
     var data = {
       'description' : this.description,
       'enviaagua__c' : this.serviceType,
       'origin': 'App. Sistema de Monitoreo Sytesa',
       'idplanta__c': this.authservice.AuthToken.planta.sfid,
       'operadorapp__c': this.authservice.AuthToken.usuario.sfid,
+      'createddate_heroku__c': new Date(),
       'reason': this.motivoSeleccionado.name,
       'descripciondefalla__c' : this.descripcionSeleccionada ? this.descripcionSeleccionada.name : null,
       'motivodedesestabilizacion__c': this.motivoDesestabilizacionSeleccionado ? this.motivoDesestabilizacionSeleccionado.name : null,
       'accountid' : this.clienteSeleccionado
     }
+
     // console.log(data);
     this.ticketsProv.createTicket(data).then(response=>{
       if(response){
