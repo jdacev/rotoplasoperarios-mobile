@@ -54,7 +54,7 @@ export class MyApp {
       splashScreen.hide();
     });
 
-    
+
     this.showMenu = false;
     authservice.loadUserCredentials();
     if(this.authservice.isLoggedin && this.authservice.AuthToken){
@@ -132,7 +132,7 @@ export class MyApp {
   }
 
   cambiarPlanta(){
-    this.plantasProv.getPlantasPorUsuario(this.userData.usuario.sfid).subscribe(response => {
+    this.plantasProv.getPlantasPorUsuario(this.authservice.AuthToken.usuario.sfid).subscribe(response => {
       this.plantas = response.data;
 
           let alert = this.alertCtrl.create();
@@ -141,7 +141,7 @@ export class MyApp {
           // Now we add the radio buttons
           for(let i=0; i< this.plantas.length; i++) {
               let check;
-              if(this.userData.planta.sfid == this.plantas[i].sfid){
+              if(this.authservice.AuthToken.planta.sfid == this.plantas[i].sfid){
                 check = true;
               }else{
                 check = false;
@@ -160,6 +160,7 @@ export class MyApp {
             text: 'Aceptar',
             handler: selected => {
               // this.storeUserCredentials(data);   //CAMBIAR ESTO POR EL TOKEN
+              this.userData = this.authservice.AuthToken;
               var userData = window.localStorage.getItem('currentUser');
               userData = JSON.parse(userData);
               console.log('selected: ', selected)
