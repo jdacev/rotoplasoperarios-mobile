@@ -63,9 +63,9 @@ export class OportunidadesPage {
     this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{
       var asistencia = response.data;
       if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
-        this.navCtrl.push(pagina)
+        //this.navCtrl.push(pagina)
         //MOSTRAR ALERTA QUE NO HIZO EL CHECKIN
-        //this.showAlert('Oportunidades C', 'Para crear una oportunidad realice el Ingreso Laboral en la planta correspondiente.');
+        this.showAlert('Oportunidades C', 'Para crear una oportunidad realice el Ingreso Laboral en la planta correspondiente.');
       }else{
         this.navCtrl.push(pagina)
       }
