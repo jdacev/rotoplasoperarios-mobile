@@ -47,7 +47,7 @@ export class DetalleOportunidadPage {
 
     })
 
-    if(this.ticket.description == "" || this.ticket.description == null){
+    if(this.ticket.description == "" || this.ticket.description == null || this.ticket.description == 'null'){
       this.description = "---"
     }else{
       this.description = this.ticket.description;
@@ -55,7 +55,11 @@ export class DetalleOportunidadPage {
 
     // Levanto las imágenes que se encuentren dentro de la carpeta 'tickets/{IdTicket}'
     this.origen = file.dataDirectory + 'tickets/'
-    var subDir = this.ticket.id_case_heroku_c__c.toString() + '/';
+    if(this.ticket.id_case_heroku_c__c){
+      var subDir = this.ticket.id_case_heroku_c__c.toString() + '/';
+    }else{
+      var subDir = this.ticket.id_case_sqllite.toString() + '/';
+    }
 
     file.listDir(this.origen, subDir).then(response=>{
       this.images = response;

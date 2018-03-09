@@ -3,6 +3,9 @@ import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angu
 import { TicketsProvider } from '../../providers/tickets/tickets';
 import { AuthService } from "../../providers/auth-service/auth-service";
 import { AsistenciaProvider } from "../../providers/asistencia/asistencia";
+import { DatabaseService } from "../../services/database-service";
+import { NetworkService } from "../../services/network-service";
+import { Network } from '@ionic-native/network';
 
 /**
  * Generated class for the OportunidadesPage page.
@@ -27,10 +30,18 @@ export class OportunidadesPage {
               private ticketsProv: TicketsProvider,
               private authservice: AuthService,
               private asistenciaProv: AsistenciaProvider,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController,
+              private dbService: DatabaseService,
+              private networkService: NetworkService,
+              private network: Network) {
 
     this.listaAbierta = true;
-    this.getTicketsUsuario();
+    if(this.network.type == 'none' || this.network.type == 'unknown'){
+        this.getOportunidadesOffline();
+    }else{
+      this.getOportunidadesOnline();
+    }
+
 
   }
 
@@ -44,7 +55,13 @@ export class OportunidadesPage {
 
     setTimeout(() => {
       // console.log('Async operation has ended');
-      this.getTicketsUsuario();
+      if(this.network.type == 'none' || this.network.type == 'unknown'){
+          this.getOportunidadesOffline();
+      }
+      else{
+          this.getOportunidadesOnline();
+      }
+
       refresher.complete();
     }, 2000);
   }
@@ -75,13 +92,16 @@ export class OportunidadesPage {
   }
 
   irADetalle(ticket){
-    console.log("YENDO A TICKET")
+    console.log("ticket: " + JSON.stringify(ticket));
+    console.log("YENDO A TICKET");
     this.navCtrl.push('DetalleOportunidadPage', {
       ticket: ticket
+    }).catch(err => {
+      console.log("ERROR: " + JSON.stringify(err));
     })
   }
 
-  getTicketsUsuario(){
+  getOportunidadesOnline(){
     this.loading = true;
     this.ticketsProv.getTicketsUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
 
@@ -94,6 +114,15 @@ export class OportunidadesPage {
     }, error =>{
         this.loading = false;
         console.log("Error: " + error);
+    })
+  }
+
+  getOportunidadesOffline(){
+    this.loading = true;
+    this.dbService.getOportunidades().then(result => {
+      console.log("result: " + JSON.stringify(result));
+      this.loading = false;
+      this.ticketList = result;
     })
   }
 

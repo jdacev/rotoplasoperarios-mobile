@@ -14,6 +14,7 @@ import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-vi
 import { AuthService } from "../providers/auth-service/auth-service";
 import { AsistenciaProvider } from "../providers/asistencia/asistencia";
 import { PlantasProvider } from "../providers/plantas/plantas";
+import { NetworkService } from "../services/network-service";
 
 import { HomePage } from '../pages/home/home';
 import { LoginPage } from '../pages/login/login';
@@ -44,7 +45,8 @@ export class MyApp {
               private plantasProv: PlantasProvider,
               private file: File,
               private fileOpener: FileOpener,
-              private document: DocumentViewer) {
+              private document: DocumentViewer,
+              private networkService: NetworkService) {
 
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.

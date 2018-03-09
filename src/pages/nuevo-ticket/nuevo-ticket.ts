@@ -2,8 +2,13 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
+// import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { TicketsProvider } from "../../providers/tickets/tickets";
 import { AuthService } from "../../providers/auth-service/auth-service";
+import { DatabaseService } from "../../services/database-service";
+import { NetworkService } from "../../services/network-service";
+import { Network } from '@ionic-native/network';
+// import { URL_SERVICIOS } from "../../config/url.services";
 
 @IonicPage()
 @Component({
@@ -35,7 +40,10 @@ export class NuevoTicketPage {
               private file: File,
               private alertCtrl: AlertController,
               private ticketsProv: TicketsProvider,
-              private authservice: AuthService) {
+              private authservice: AuthService,
+              private dbService: DatabaseService,
+              private networkService: NetworkService,
+              private network: Network) {
 
     this.loading = false;
     this.ptarName = this.authservice.AuthToken.planta.name;
@@ -215,18 +223,6 @@ export class NuevoTicketPage {
 
   createTicket(){
     this.loading = true;
-    // var data = {
-    //   'description' : this.description,
-    //   'enviaagua__c' : this.serviceType,
-    //   'origin': 'App. Sistema de Monitoreo Sytesa',
-    //   'idplanta__c': this.authservice.AuthToken.planta.sfid,
-    //   'operadorapp__c': this.authservice.AuthToken.usuario.sfid,
-    //   'reason': this.motivoSeleccionado.name,
-    //   'descripciondefalla__c' : this.descripcionSeleccionada ? this.descripcionSeleccionada.name : null,
-    //   'motivodedesestabilizacion__c': this.motivoDesestabilizacionSeleccionado ? this.motivoDesestabilizacionSeleccionado.name : null,
-    //   'accountid' : this.clienteSeleccionado
-    // }
-
 
 
     var data = {
@@ -242,20 +238,72 @@ export class NuevoTicketPage {
       'accountid' : this.clienteSeleccionado
     }
 
-    // console.log(data);
-    this.ticketsProv.createTicket(data).then(response=>{
-      if(response){
-        if(this.images.length > 0){
-          this.moverArchivo(this.images, response);
-        }
-        this.loading = false;
-        this.navCtrl.pop();
-      }else{
-        this.loading = false;
-      }
-    }, error=>{
-      this.loading = false;
-    });
+    if(this.network.type == 'none' || this.network.type == 'unknown'){
+
+        this.dbService.crearOportunidad(data).then(response =>{
+            console.log("response: " + JSON.stringify(response));
+            // if(response){
+            if(this.images.length > 0){
+              this.moverArchivo(this.images, response);
+            }
+            this.loading = false;
+            this.navCtrl.pop();
+            // }else{
+            //   this.loading = false;
+            // }
+        }, error=>{
+          this.loading = false;
+        });
+    }else{
+        console.log(data);
+        this.ticketsProv.createTicket(data).then(response=>{
+          if(response){
+            if(this.images.length > 0){
+              this.uploadImages(this.images, response);
+              // this.moverArchivo(this.images, response);
+            }
+            this.loading = false;
+            this.navCtrl.pop();
+          }else{
+            this.loading = false;
+          }
+        }, error=>{
+          this.loading = false;
+        });
+    }
+
+  }
+
+  uploadImages(images, id){
+    // let options: FileUploadOptions = {
+    //   fileKey: 'azureupload',
+    //   // fileName: fileName,
+    //   chunkedMode: false,
+    //   mimeType: "image/jpeg",
+    //   // mimeType: 'multipart/form-data',
+    //   // headers: {},
+    //   params : {'containername': "oportunidad" + id.toString()}
+    // }
+    //
+    // const fileTransfer: FileTransferObject = this.transfer.create();
+    //
+    // for (let i = 0; i < images.length; i++) {
+    //   fileTransfer.upload(images[i], URL_SERVICIOS + '/azurestoragecreateblockblobfromstream', options)
+    //   .then((data) => {
+    //     console.log(data+" Uploaded Successfully");
+    //
+    //   }, (err) => {
+    //     console.log('Error:' + JSON.stringify(err));
+    //   });
+    // }
+
+    // console.log("UPLOADING");
+    // console.log("Options:", options);
+    // console.log("Options: "+ options);
+    // console.log("Options: "+ JSON.stringify(options));
+
+
+
   }
 
 }
