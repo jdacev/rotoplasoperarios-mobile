@@ -39,6 +39,12 @@ export class RutinasProvider {
               .map(resp => resp.json())
   }
 
+  getImagenes(id:string){
+    console.log("URL: " + URL_SERVICIOS + '/azurelistarimagenesporcontenedor/rutina' +id.toString())
+    return this.http.get(URL_SERVICIOS + '/azurelistarimagenesporcontenedor/rutina' +id.toString())
+              .map(resp => resp.json())
+  }
+
   crearRutina(data){
     return new Promise(resolve => {
         this.http.post(URL_SERVICIOS + '/rutina', data).subscribe(response => {

@@ -2,8 +2,13 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { RutinasProvider } from "../../providers/rutinas/rutinas";
 import { AuthService } from "../../providers/auth-service/auth-service";
+import { DatabaseService } from "../../services/database-service";
+import { NetworkService } from "../../services/network-service";
+import { Network } from '@ionic-native/network';
+import { URL_SERVICIOS } from "../../config/url.services";
 
 @IonicPage()
 @Component({
@@ -30,7 +35,11 @@ export class NuevaRutinaPage {
               private authservice: AuthService,
               private camera: Camera,
               private file: File,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController,
+              private dbService: DatabaseService,
+              private networkService: NetworkService,
+              private network: Network,
+              private transfer: FileTransfer) {
 
     this.loading = false;
     this.ptarName = this.authservice.AuthToken.planta.name;
@@ -223,18 +232,65 @@ export class NuevaRutinaPage {
     }
 
     this.rutinasProv.crearRutina(data).then(response=>{
-      if(response){
-        if(this.images.length > 0){
-          this.moverArchivo(this.images, response);
+      if(this.network.type == 'none' || this.network.type == 'unknown'){
+        if(response){
+          if(this.images.length > 0){
+            this.moverArchivo(this.images, response);
+          }
+          this.loading = false;
+          this.navCtrl.pop();
+        }else{
+          this.loading = false;
         }
-        this.loading = false;
-        this.navCtrl.pop();
       }else{
-
+        if(response){
+          if(this.images.length > 0){
+            this.uploadImages(this.images, response);
+          }
+          this.loading = false;
+          this.navCtrl.pop();
+        }else{
+          this.loading = false;
+        }
       }
+
     }, error=>{
       this.loading = false;
     });
+  }
+
+  uploadImages(images, id){
+    let options: FileUploadOptions = {
+      fileKey: 'azureupload',
+      // fileName: fileName,
+      chunkedMode: false,
+      mimeType: "image/jpeg",
+      // mimeType: 'multipart/form-data',
+      // headers: {},
+      params : {'containername': "rutina" + id.toString()}
+    }
+
+    const fileTransfer: FileTransferObject = this.transfer.create();
+
+    for (let i = 0; i < images.length; i++) {
+      console.log(images[i]);
+      options.fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[i].length);
+      fileTransfer.upload(images[i], URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
+      .then((data) => {
+        console.log(data+" Uploaded Successfully");
+
+      }, (err) => {
+        console.log('Error:' + JSON.stringify(err));
+      });
+    }
+
+    // console.log("UPLOADING");
+    // console.log("Options:", options);
+    // console.log("Options: "+ options);
+    // console.log("Options: "+ JSON.stringify(options));
+
+
+
   }
 
 }

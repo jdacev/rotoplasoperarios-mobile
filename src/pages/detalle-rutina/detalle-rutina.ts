@@ -58,15 +58,29 @@ export class DetalleRutinaPage {
 
       })
 
-      // Levanto las imágenes que se encuentren dentro de la carpeta 'rutinas/{IdRutina}'
-      this.origen = file.dataDirectory + 'rutinas/'
-      var subDir = this.rutina.id_rutinas_heroku__c.toString() + '/';
+      this.rutinasProv.getImagenes(this.rutina.id_rutinas_heroku__c).subscribe(response=>{
+        console.log("IMAGES: " + response)
+        console.log("IMAGES: " + JSON.stringify(response))
+        if(response.blobs){
+          this.images = response.blobs;
+          console.log(this.images);
+        }
+        else{
+          this.images = null;
+        }
+      }, error =>{
+        console.log("ERROR:" + JSON.stringify(error));
+      })
 
-      file.listDir(this.origen, subDir).then(response=>{
-        this.images = response;
-      }, error=>{
-        // console.log('error: ' + JSON.stringify(error));
-      });
+      // Levanto las imágenes que se encuentren dentro de la carpeta 'rutinas/{IdRutina}'
+      // this.origen = file.dataDirectory + 'rutinas/'
+      // var subDir = this.rutina.id_rutinas_heroku__c.toString() + '/';
+      //
+      // file.listDir(this.origen, subDir).then(response=>{
+      //   this.images = response;
+      // }, error=>{
+      //   // console.log('error: ' + JSON.stringify(error));
+      // });
 
 
   }
