@@ -175,6 +175,8 @@ export class MyApp {
               this.userData.planta.formato__c = selected.formato__c;
               this.userData.planta.name = selected.name;
               this.userData.planta.sfid = selected.sfid;
+              this.userData.planta.accountsfid = selected.accountsfid;
+              this.userData.planta.accountname = selected.accountname;
               localStorage.setItem('currentUser', JSON.stringify(this.userData));
               this.authservice.loadUserCredentials();
               return

@@ -12,7 +12,7 @@ import { MyApp } from './app.component';
 //plugins
 import { Camera } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
-// import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { PhotoViewer } from '@ionic-native/photo-viewer';
 import { GoogleMaps } from '@ionic-native/google-maps';
 import { Geolocation } from '@ionic-native/geolocation';
@@ -76,8 +76,8 @@ import { NetworkService } from '../services/network-service';
     DatabaseService,
     NetworkService,
     Network,
-    // FileTransferObject,
-    // FileTransfer
+    FileTransferObject,
+    FileTransfer
   ]
 })
 export class AppModule {}

@@ -49,6 +49,12 @@ export class TicketsProvider {
               .map(resp => resp.json())
   }
 
+  getImagenes(id:string){
+    console.log("URL: " + URL_SERVICIOS + '/azurelistarimagenesporcontenedor/oportunidad' +id.toString())
+    return this.http.get(URL_SERVICIOS + '/azurelistarimagenesporcontenedor/oportunidad' +id.toString())
+              .map(resp => resp.json())
+  }
+
   createTicket(data){
     // var data = {
     //   'description' : description,

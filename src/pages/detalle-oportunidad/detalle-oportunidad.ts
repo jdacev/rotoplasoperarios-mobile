@@ -53,20 +53,36 @@ export class DetalleOportunidadPage {
       this.description = this.ticket.description;
     }
 
+
+    this.ticketsProv.getImagenes(this.ticket.id_case_heroku_c__c).subscribe(response=>{
+      console.log("IMAGES: " + response)
+      console.log("IMAGES: " + JSON.stringify(response))
+      if(response.blobs){
+        this.images = response.blobs;
+        console.log(this.images);
+      }
+      else{
+        this.images = null;
+      }
+    }, error =>{
+      console.log("ERROR:" + JSON.stringify(error));
+    })
     // Levanto las imágenes que se encuentren dentro de la carpeta 'tickets/{IdTicket}'
-    this.origen = file.dataDirectory + 'tickets/'
-    if(this.ticket.id_case_heroku_c__c){
-      var subDir = this.ticket.id_case_heroku_c__c.toString() + '/';
-    }else{
-      var subDir = this.ticket.id_case_sqllite.toString() + '/';
-    }
+    // this.origen = file.dataDirectory + 'tickets/'
+    // if(this.ticket.id_case_heroku_c__c){
+    //   var subDir = this.ticket.id_case_heroku_c__c.toString() + '/';
+    // }else{
+    //   var subDir = this.ticket.id_case_sqllite.toString() + '/';
+    // }
+    //
+    // file.listDir(this.origen, subDir).then(response=>{
+    //   this.images = response;
+    //
+    // }, error=>{
+    //   this.images = error;
+    // });
 
-    file.listDir(this.origen, subDir).then(response=>{
-      this.images = response;
 
-    }, error=>{
-      this.images = error;
-    });
 
   }
 

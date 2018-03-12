@@ -2,13 +2,13 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
-// import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { TicketsProvider } from "../../providers/tickets/tickets";
 import { AuthService } from "../../providers/auth-service/auth-service";
 import { DatabaseService } from "../../services/database-service";
 import { NetworkService } from "../../services/network-service";
 import { Network } from '@ionic-native/network';
-// import { URL_SERVICIOS } from "../../config/url.services";
+import { URL_SERVICIOS } from "../../config/url.services";
 
 @IonicPage()
 @Component({
@@ -43,7 +43,8 @@ export class NuevoTicketPage {
               private authservice: AuthService,
               private dbService: DatabaseService,
               private networkService: NetworkService,
-              private network: Network) {
+              private network: Network,
+              private transfer: FileTransfer) {
 
     this.loading = false;
     this.ptarName = this.authservice.AuthToken.planta.name;
@@ -213,12 +214,13 @@ export class NuevoTicketPage {
   }
 
   getClientesPlanta(){
-    this.ticketsProv.getClientesPlanta(this.authservice.AuthToken.planta.sfid).subscribe(response =>{
-      this.clientes = response.data.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
-
-    }, error=>{
-
-    })
+    // this.ticketsProv.getClientesPlanta(this.authservice.AuthToken.planta.sfid).subscribe(response =>{
+    //   this.clientes = response.data.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
+    //
+    // }, error=>{
+    //
+    // })
+    this.clientes.push({'sfid' : this.authservice.AuthToken.planta.accountsfid, 'name' : this.authservice.AuthToken.planta.accountname})
   }
 
   createTicket(){
@@ -275,27 +277,29 @@ export class NuevoTicketPage {
   }
 
   uploadImages(images, id){
-    // let options: FileUploadOptions = {
-    //   fileKey: 'azureupload',
-    //   // fileName: fileName,
-    //   chunkedMode: false,
-    //   mimeType: "image/jpeg",
-    //   // mimeType: 'multipart/form-data',
-    //   // headers: {},
-    //   params : {'containername': "oportunidad" + id.toString()}
-    // }
-    //
-    // const fileTransfer: FileTransferObject = this.transfer.create();
-    //
-    // for (let i = 0; i < images.length; i++) {
-    //   fileTransfer.upload(images[i], URL_SERVICIOS + '/azurestoragecreateblockblobfromstream', options)
-    //   .then((data) => {
-    //     console.log(data+" Uploaded Successfully");
-    //
-    //   }, (err) => {
-    //     console.log('Error:' + JSON.stringify(err));
-    //   });
-    // }
+    let options: FileUploadOptions = {
+      fileKey: 'azureupload',
+      // fileName: fileName,
+      chunkedMode: false,
+      mimeType: "image/jpeg",
+      // mimeType: 'multipart/form-data',
+      // headers: {},
+      params : {'containername': "oportunidad" + id.toString()}
+    }
+
+    const fileTransfer: FileTransferObject = this.transfer.create();
+
+    for (let i = 0; i < images.length; i++) {
+      console.log(images[i]);
+      options.fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[i].length);
+      fileTransfer.upload(images[i], URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
+      .then((data) => {
+        console.log(data+" Uploaded Successfully");
+
+      }, (err) => {
+        console.log('Error:' + JSON.stringify(err));
+      });
+    }
 
     // console.log("UPLOADING");
     // console.log("Options:", options);

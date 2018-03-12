@@ -14,7 +14,7 @@ export class NetworkService {
     this.connected = this.network.onConnect().subscribe(data => {
       console.log("data: " + JSON.stringify(data))
       this.status = data.type;
-      this.displayNetworkUpdate(data.type);
+      // this.displayNetworkUpdate(data.type);
     }, error => console.error(error));
 
     this.disconnected = this.network.onDisconnect().subscribe(data => {
@@ -22,7 +22,7 @@ export class NetworkService {
       this.status = data.type;
       console.log("status: " + this.status);
       console.log("statusJSON: " + JSON.stringify(this.status));
-      this.displayNetworkUpdate(data.type);
+      // this.displayNetworkUpdate(data.type);
     }, error => console.error(error));
   }
 
