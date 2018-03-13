@@ -13,7 +13,7 @@ export class DatabaseService {
   constructor(private platform:Platform, private sqlite:SQLite) {
     this.platform.ready().then(()=>{
       this.sqlite.create({
-        name: 'todos.db',
+        name: 'rotoplas.db',
         location: 'default'
       })
       .then((db:SQLiteObject)=>{
@@ -45,15 +45,35 @@ export class DatabaseService {
       );`
     ,{})
     .then(()=>{
-      // return this.database.executeSql(
-      // `CREATE TABLE IF NOT EXISTS todo (
-      //   id INTEGER PRIMARY KEY AUTOINCREMENT,
-      //   description TEXT,
-      //   isImportant INTEGER,
-      //   isDone INTEGER,
-      //   listId INTEGER,
-      //   FOREIGN KEY(listId) REFERENCES list(id)
-      //   );`,{} )
+      return this.database.executeSql(
+      `CREATE TABLE IF NOT EXISTS tiporutina (
+        sfid TEXT PRIMARY KEY AUTOINCREMENT,
+        nombre__c TEXT
+        );`,{} )
+    }).then(()=>{
+      return this.database.executeSql(
+      `CREATE TABLE IF NOT EXISTS preguntarutina (
+        sfid TEXT PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        turno__c TEXT,
+        rutina__c TEXT,
+        id INTEGER,
+        tipo_de_respuesta__c TEXT,
+        orden__c INTEGER
+        );`,{} )
+    })
+    .then(()=>{
+      return this.database.executeSql(
+      `CREATE TABLE IF NOT EXISTS rutinas (
+        id_rutina_sqllite INTEGER PRIMARY KEY AUTOINCREMENT,
+        observacion__c TEXT,
+        idplanta__c TEXT,
+        usuarioapp__c TEXT,
+        idtiporutina__c TEXT,
+        rutaimagen__c TEXT,
+        createddate_heroku__c TEXT,
+        FOREIGN KEY(idtiporutina__c) REFERENCES tiporutina(sfid)
+        );`,{} )
     }).catch((err)=>console.log("error detected creating tables", err));
   }
 
