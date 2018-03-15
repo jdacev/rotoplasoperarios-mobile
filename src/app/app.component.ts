@@ -162,24 +162,28 @@ export class MyApp {
             text: 'Aceptar',
             handler: selected => {
               // this.storeUserCredentials(data);   //CAMBIAR ESTO POR EL TOKEN
-              this.userData = this.authservice.AuthToken;
-              var userData = window.localStorage.getItem('currentUser');
-              userData = JSON.parse(userData);
-              console.log('selected: ', selected)
-              // console.log('userData: ', JSON.parse(userData))
-              this.userData.planta.billingcity = selected.billingcity;
-              this.userData.planta.billinglatitude = selected.billinglatitude;
-              this.userData.planta.billinglongitude = selected.billinglongitude;
-              this.userData.planta.billingstreet = selected.billingstreet;
-              this.userData.planta.determinante__c = selected.determinante__c;
-              this.userData.planta.formato__c = selected.formato__c;
-              this.userData.planta.name = selected.name;
-              this.userData.planta.sfid = selected.sfid;
-              this.userData.planta.accountsfid = selected.accountsfid;
-              this.userData.planta.accountname = selected.accountname;
-              localStorage.setItem('currentUser', JSON.stringify(this.userData));
-              this.authservice.loadUserCredentials();
-              return
+              this.plantasProv.getClientesByPlanta(selected.sfid).subscribe(response=>{
+                this.userData = this.authservice.AuthToken;
+                var userData = window.localStorage.getItem('currentUser');
+                userData = JSON.parse(userData);
+                console.log('selected: ', selected)
+                // console.log('userData: ', JSON.parse(userData))
+                this.userData.planta.billingcity = selected.billingcity;
+                this.userData.planta.billinglatitude = selected.billinglatitude;
+                this.userData.planta.billinglongitude = selected.billinglongitude;
+                this.userData.planta.billingstreet = selected.billingstreet;
+                this.userData.planta.determinante__c = selected.determinante__c;
+                this.userData.planta.formato__c = selected.formato__c;
+                this.userData.planta.name = selected.name;
+                this.userData.planta.sfid = selected.sfid;
+                this.userData.clientes = response.data;
+                localStorage.setItem('currentUser', JSON.stringify(this.userData));
+                this.authservice.loadUserCredentials();
+                return
+            }, error => {
+
+            })
+
             }
           });
           alert.addButton({

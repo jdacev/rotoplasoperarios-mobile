@@ -167,7 +167,7 @@ export class CheckoutPage {
           lat: this.planta.billinglatitude, // default location
           lng: this.planta.billinglongitude // default location
         },
-        zoom: 18,
+        zoom: 14,
         tilt: 30
       }
     };

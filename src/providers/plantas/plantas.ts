@@ -24,4 +24,9 @@ export class PlantasProvider {
               .map(resp => resp.json())
   }
 
+  getClientesByPlanta(sfidPlanta){
+    return this.http.get(URL_SERVICIOS + '/clientesplanta/' + sfidPlanta)
+              .map(resp => resp.json())
+  }
+
 }

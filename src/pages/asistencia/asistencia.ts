@@ -123,7 +123,7 @@ export class AsistenciaPage {
   //Obtengo la ubicación del dispositivo utilizando el GPS
   obtenerUbicacion(){
     this.locationAccuracy.canRequest().then((canRequest: boolean) => {
-      if(canRequest) {
+      // if(canRequest) {
         // the accuracy option will be ignored by iOS
         //En caso de que no esté prendido, solicito acceso para activarlo
         this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(() =>{
@@ -157,7 +157,7 @@ export class AsistenciaPage {
         }, error => {
           console.log('Error requesting location permissions', error)
         });
-      }
+      // }
 
     });
 
@@ -172,7 +172,7 @@ export class AsistenciaPage {
         lat: this.planta.billinglatitude, // default location
         lng: this.planta.billinglongitude // default location
       },
-      zoom: 18,
+      zoom: 14,
       tilt: 30
     }
   };

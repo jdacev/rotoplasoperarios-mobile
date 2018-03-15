@@ -220,7 +220,8 @@ export class NuevoTicketPage {
     // }, error=>{
     //
     // })
-    this.clientes.push({'sfid' : this.authservice.AuthToken.planta.accountsfid, 'name' : this.authservice.AuthToken.planta.accountname})
+    // this.clientes.push({'sfid' : this.authservice.AuthToken.planta.accountsfid, 'name' : this.authservice.AuthToken.planta.accountname})
+    this.clientes = this.authservice.AuthToken.clientes;
   }
 
   createTicket(){
