@@ -244,7 +244,7 @@ export class NuevoTicketPage {
     if(this.network.type == 'none' || this.network.type == 'unknown'){
 
         this.dbService.crearOportunidad(data).then(response =>{
-            console.log("response: " + JSON.stringify(response));
+            // console.log("response: " + JSON.stringify(response));
             // if(response){
             if(this.images.length > 0){
               this.moverArchivo(this.images, response);
@@ -258,7 +258,7 @@ export class NuevoTicketPage {
           this.loading = false;
         });
     }else{
-        console.log(data);
+        // console.log(data);
         this.ticketsProv.createTicket(data).then(response=>{
           if(response){
             if(this.images.length > 0){
@@ -291,11 +291,11 @@ export class NuevoTicketPage {
     const fileTransfer: FileTransferObject = this.transfer.create();
 
     for (let i = 0; i < images.length; i++) {
-      console.log(images[i]);
+      // console.log(images[i]);
       options.fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[i].length);
       fileTransfer.upload(images[i], URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
       .then((data) => {
-        console.log(data+" Uploaded Successfully");
+        // console.log(data+" Uploaded Successfully");
 
       }, (err) => {
         console.log('Error:' + JSON.stringify(err));

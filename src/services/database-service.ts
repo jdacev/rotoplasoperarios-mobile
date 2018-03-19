@@ -47,13 +47,13 @@ export class DatabaseService {
     .then(()=>{
       return this.database.executeSql(
       `CREATE TABLE IF NOT EXISTS tiporutina (
-        sfid TEXT PRIMARY KEY AUTOINCREMENT,
+        sfid TEXT PRIMARY KEY,
         nombre__c TEXT
         );`,{} )
     }).then(()=>{
       return this.database.executeSql(
       `CREATE TABLE IF NOT EXISTS preguntarutina (
-        sfid TEXT PRIMARY KEY AUTOINCREMENT,
+        sfid TEXT PRIMARY KEY,
         name TEXT,
         turno__c TEXT,
         rutina__c TEXT,
@@ -61,8 +61,7 @@ export class DatabaseService {
         tipo_de_respuesta__c TEXT,
         orden__c INTEGER
         );`,{} )
-    })
-    .then(()=>{
+    }).then(()=>{
       return this.database.executeSql(
       `CREATE TABLE IF NOT EXISTS rutinas (
         id_rutina_sqllite INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -74,7 +73,31 @@ export class DatabaseService {
         createddate_heroku__c TEXT,
         FOREIGN KEY(idtiporutina__c) REFERENCES tiporutina(sfid)
         );`,{} )
-    }).catch((err)=>console.log("error detected creating tables", err));
+    }).then(()=>{
+        return this.database.executeSql(
+        `CREATE TABLE IF NOT EXISTS preguntarutina (
+          sfid TEXT PRIMARY KEY,
+          name TEXT,
+          turno__c TEXT,
+          rutina__c TEXT,
+          id INTEGER,
+          tipo_de_respuesta__c TEXT,
+          orden__c INTEGER
+          );`,{} )
+    }).then(()=>{
+        return this.database.executeSql(
+        `CREATE TABLE IF NOT EXISTS actividadrutina (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          id_rutinas_heroku__c INTEGER,
+          id_pregunta_rutina__c INTEGER,
+          valor_si_no__c INTEGER,
+          valornumerico__c INTEGER,
+          observaciones__c TEXT
+          );`,{} )
+    }).then(()=>{
+        console.log("ESTA TODO CREADO");
+
+    }).catch((err)=>console.log("error detected creating tables" + JSON.stringify(err)));
   }
 
   private isReady(){
@@ -105,17 +128,17 @@ export class DatabaseService {
   removeTodo(id:number){ }
 
   crearOportunidad(data){
-    console.log("Creando oportunidad");
+    // console.log("Creando oportunidad");
     return this.isReady()
     .then(()=>{
-      console.log("Adentro de READY");
-      console.log("data: " + JSON.stringify(data));
+      // console.log("Adentro de READY");
+      // console.log("data: " + JSON.stringify(data));
       return this.database.executeSql(`INSERT INTO oportunidades(description, enviaagua__c, origin, idplanta__c, operadorapp__c, reason, descripciondefalla__c, motivodedesestabilizacion__c, accountid, createddate_heroku__c)
             VALUES ('${data.description}', '${data.enviaagua__c}', '${data.origin}', '${data.idplanta__c}', '${data.operadorapp__c}', '${data.reason}', '${data.descripciondefalla__c}', '${data.motivodedesestabilizacion__c}', '${data.accountid}', '${data.createddate_heroku__c}');`, {}).then((result)=>{
         if(result.insertId){
           return this.getOportunidad(result.insertId);
         }
-        console.log("result: " + JSON.stringify(result));
+        // console.log("result: " + JSON.stringify(result));
       }).catch(er => {
         console.log("ERROR:" + JSON.stringify(er));
       })

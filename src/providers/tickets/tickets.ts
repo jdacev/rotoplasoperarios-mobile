@@ -50,7 +50,7 @@ export class TicketsProvider {
   }
 
   getImagenes(id:string){
-    console.log("URL: " + URL_SERVICIOS + '/azurelistarimagenesporcontenedor/oportunidad' +id.toString())
+    // console.log("URL: " + URL_SERVICIOS + '/azurelistarimagenesporcontenedor/oportunidad' +id.toString())
     return this.http.get(URL_SERVICIOS + '/azurelistarimagenesporcontenedor/oportunidad' +id.toString())
               .map(resp => resp.json())
   }

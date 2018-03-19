@@ -273,11 +273,11 @@ export class NuevaRutinaPage {
     const fileTransfer: FileTransferObject = this.transfer.create();
 
     for (let i = 0; i < images.length; i++) {
-      console.log(images[i]);
+      // console.log(images[i]);
       options.fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[i].length);
       fileTransfer.upload(images[i], URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
       .then((data) => {
-        console.log(data+" Uploaded Successfully");
+        // console.log(data+" Uploaded Successfully");
 
       }, (err) => {
         console.log('Error:' + JSON.stringify(err));

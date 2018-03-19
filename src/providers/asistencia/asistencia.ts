@@ -18,7 +18,7 @@ export class AsistenciaProvider {
 
   constructor(public http: Http,
               private authservice: AuthService) {
-    console.log('Hello AsistenciaProvider Provider');
+    // console.log('Hello AsistenciaProvider Provider');
     // if(authservice.isLoggedin && authservice.AuthToken){
     //   this.getAsistencia(authservice.AuthToken.usuario.sfid).subscribe(response=>{
     //     this.asistencia = response;
@@ -53,7 +53,14 @@ export class AsistenciaProvider {
 
     return new Promise(resolve => {
         this.http.post(URL_SERVICIOS + '/asistencia', data).subscribe(response => {
-          resolve(true);
+          // console.log("SALIDAresponse: " + JSON.stringify(response))
+          if(data.tipo__c == 'Salida'){
+            // console.log("ID : " + response.json().id_asistencia__c);
+            resolve(response.json().id_asistencia__c);
+            // resolve(id);
+          }
+
+          resolve(response);
         }, error =>{
           resolve(false)
         });

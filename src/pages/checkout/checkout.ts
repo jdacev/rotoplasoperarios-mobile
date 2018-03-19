@@ -4,6 +4,11 @@ import { AuthService } from "../../providers/auth-service/auth-service";
 import { AsistenciaProvider }  from "../../providers/asistencia/asistencia";
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
+import { DatabaseService } from "../../services/database-service";
+import { NetworkService } from "../../services/network-service";
+import { Network } from '@ionic-native/network';
+import { URL_SERVICIOS } from "../../config/url.services";
 
 import {
   GoogleMaps,
@@ -50,7 +55,11 @@ export class CheckoutPage {
               private alertCtrl: AlertController,
               private asistenciaProv: AsistenciaProvider,
               private camera: Camera,
-              private file: File) {
+              private file: File,
+              private dbService: DatabaseService,
+              private networkService: NetworkService,
+              private network: Network,
+              private transfer: FileTransfer) {
 
       this.operador = this.authservice.AuthToken.usuario;
       this.planta = this.authservice.AuthToken.planta;
@@ -62,7 +71,7 @@ export class CheckoutPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad CheckoutPage');
+    // console.log('ionViewDidLoad CheckoutPage');
   }
 
   //Método para capturar imágenes con el dispositivo.
@@ -243,6 +252,9 @@ export class CheckoutPage {
             this.geolocation.getCurrentPosition().then((resp) => {
               this.lat = resp.coords.latitude;
               this.lng = resp.coords.longitude;
+              this.map.moveCamera({
+                target: {lat: this.lat, lng: this.lng}
+              });
 
               //Si ya existe un marcador en el mapa del usuario, lo remuevo.
               if(this.markerUsuario){
@@ -256,13 +268,13 @@ export class CheckoutPage {
                 animation: 'DROP',
                 position: {lat: this.lat, lng: this.lng}
               }).then(response=>{
-                console.log('response: ' + response)
-                console.log('responseJSON: ' + JSON.stringify(response))
+                // console.log('response: ' + response)
+                // console.log('responseJSON: ' + JSON.stringify(response))
                 this.markerUsuario = response;
               });
 
-               console.log("Lat: " + resp.coords.latitude);
-               console.log("Lng: " + resp.coords.longitude);
+               // console.log("Lat: " + resp.coords.latitude);
+               // console.log("Lng: " + resp.coords.longitude);
             }).catch((error) => {
               console.log('Error getting location', error);
             });
@@ -281,7 +293,7 @@ export class CheckoutPage {
     (latitud1;longitud1 contra latitud2;longitud2). */
 
     if(!this.images || this.images.length == 0){
-      this.showAlert('Salida Laboral', 'Para realizar la salida debe cargar al menos una evidencia.', null);
+      this.showAlert('Salida Laboral', 'Para realizar el registro de salida se debe tomar fotografía del checador de la planta y el formato de la bitácora.', null);
       return;
     }
 
@@ -328,7 +340,11 @@ export class CheckoutPage {
       if(response){
         this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid);
         if(this.images.length > 0){
-          this.moverArchivo(this.images);
+          // this.moverArchivo(this.images);
+          // console.log("response: " + response);
+          // var id = JSON.stringify(response);
+          // console.log("ID: " + id)
+          this.uploadImages(this.images, response);
         }
         this.showAlert("Salida Laboral", "Salida Exitosa", 'HomePage');
       }
@@ -336,6 +352,41 @@ export class CheckoutPage {
       console.log('error: ' + error)
       console.log('errorJSON: ' + JSON.stringify(error))
     })
+  }
+
+  uploadImages(images, id){
+    let options: FileUploadOptions = {
+      fileKey: 'azureupload',
+      // fileName: fileName,
+      chunkedMode: false,
+      mimeType: "image/jpeg",
+      // mimeType: 'multipart/form-data',
+      // headers: {},
+      params : {'containername': "salida" + id.toString()}
+    }
+    // console.log("Options: " + JSON.stringify(options))
+
+    const fileTransfer: FileTransferObject = this.transfer.create();
+
+    for (let i = 0; i < images.length; i++) {
+      // console.log(images[i]);
+      options.fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[i].length);
+      fileTransfer.upload(images[i], URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
+      .then((data) => {
+        // console.log(data+" Uploaded Successfully");
+
+      }, (err) => {
+        console.log('Error:' + JSON.stringify(err));
+      });
+    }
+
+    // console.log("UPLOADING");
+    // console.log("Options:", options);
+    // console.log("Options: "+ options);
+    // console.log("Options: "+ JSON.stringify(options));
+
+
+
   }
 
 }

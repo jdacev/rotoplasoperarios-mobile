@@ -134,6 +134,10 @@ export class AsistenciaPage {
               this.lat = resp.coords.latitude;
               this.lng = resp.coords.longitude;
 
+              this.map.moveCamera({
+                target: {lat: this.lat, lng: this.lng}
+              });
+
               //Si ya existe un marcador en el mapa del usuario, lo remuevo.
               if(this.markerUsuario){
                 this.markerUsuario.remove()

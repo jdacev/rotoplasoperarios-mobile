@@ -12,16 +12,16 @@ export class NetworkService {
 
   constructor(private toast:ToastController, private network: Network) {
     this.connected = this.network.onConnect().subscribe(data => {
-      console.log("data: " + JSON.stringify(data))
+      // console.log("data: " + JSON.stringify(data))
       this.status = data.type;
       // this.displayNetworkUpdate(data.type);
     }, error => console.error(error));
 
     this.disconnected = this.network.onDisconnect().subscribe(data => {
-      console.log("data: " + JSON.stringify(data))
+      // console.log("data: " + JSON.stringify(data))
       this.status = data.type;
-      console.log("status: " + this.status);
-      console.log("statusJSON: " + JSON.stringify(this.status));
+      // console.log("status: " + this.status);
+      // console.log("statusJSON: " + JSON.stringify(this.status));
       // this.displayNetworkUpdate(data.type);
     }, error => console.error(error));
   }
