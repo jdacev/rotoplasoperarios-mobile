@@ -32,6 +32,7 @@ import { AsistenciaProvider } from '../providers/asistencia/asistencia';
 import { PlantasProvider } from '../providers/plantas/plantas';
 import { DatabaseService } from '../services/database-service';
 import { NetworkService } from '../services/network-service';
+import { SyncProvider } from '../providers/sync/sync';
 
 
 @NgModule({
@@ -77,7 +78,8 @@ import { NetworkService } from '../services/network-service';
     NetworkService,
     Network,
     FileTransferObject,
-    FileTransfer
+    FileTransfer,
+    SyncProvider
   ]
 })
 export class AppModule {}

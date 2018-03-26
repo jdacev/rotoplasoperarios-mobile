@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { SyncProvider } from "../providers/sync/sync";
 
 
 @Injectable()
@@ -10,7 +11,9 @@ export class DatabaseService {
   private database: SQLiteObject;
   private dbReady = new BehaviorSubject<boolean>(false);
 
-  constructor(private platform:Platform, private sqlite:SQLite) {
+  constructor(private platform:Platform,
+              private sqlite:SQLite,
+              private syncProv:SyncProvider) {
     this.platform.ready().then(()=>{
       this.sqlite.create({
         name: 'rotoplas.db',
@@ -59,7 +62,8 @@ export class DatabaseService {
         rutina__c TEXT,
         id INTEGER,
         tipo_de_respuesta__c TEXT,
-        orden__c INTEGER
+        orden__c INTEGER,
+        idtiporutina__c TEXT
         );`,{} )
     }).then(()=>{
       return this.database.executeSql(
@@ -75,17 +79,6 @@ export class DatabaseService {
         );`,{} )
     }).then(()=>{
         return this.database.executeSql(
-        `CREATE TABLE IF NOT EXISTS preguntarutina (
-          sfid TEXT PRIMARY KEY,
-          name TEXT,
-          turno__c TEXT,
-          rutina__c TEXT,
-          id INTEGER,
-          tipo_de_respuesta__c TEXT,
-          orden__c INTEGER
-          );`,{} )
-    }).then(()=>{
-        return this.database.executeSql(
         `CREATE TABLE IF NOT EXISTS actividadrutina (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           id_rutinas_heroku__c INTEGER,
@@ -95,8 +88,43 @@ export class DatabaseService {
           observaciones__c TEXT
           );`,{} )
     }).then(()=>{
-        console.log("ESTA TODO CREADO");
+        return this.database.executeSql(
+        `DELETE FROM preguntarutina;`,{} )
+    }).then(()=>{
+        return this.database.executeSql(
+        `DELETE FROM tiporutina;`,{} )
+    }).then(()=>{
+        this.syncProv.getTipoRutinas().subscribe(response => {
+           var tipo = response.data;
+           for (let i = 0; i < tipo.length; i++) {
+             this.database.executeSql(`INSERT INTO tiporutina(sfid, nombre__c)
+                   VALUES ('${tipo[i].sfid}', '${tipo[i].nombre__c}');`, {}).then(()=>{
+                     // console.log("AGREGUE")
+                   }).catch(err =>{
+                     console.log("ERROR INSERT: " + JSON.stringify(err));
+                   })
+           }
+           // console.log("TIPORUTINA: " + JSON.stringify(response));
+           // this.getTipoRutinas();
+        })
+    }).then(()=>{
+        this.syncProv.getPreguntasRutinas().subscribe(response => {
+           var preguntas = response.data;
+           for (let i = 0; i < preguntas.length; i++) {
+             this.database.executeSql(`INSERT INTO preguntarutina(name, turno__c, rutina__c, sfid, id, tipo_de_respuesta__c, idtiporutina__c, orden__c)
+                   VALUES ('${preguntas[i].name}', '${preguntas[i].turno__c}', '${preguntas[i].rutina__c}', '${preguntas[i].sfid}', '${preguntas[i].id}', '${preguntas[i].tipo_de_respuesta__c}', '${preguntas[i].idtiporutina__c}', '${preguntas[i].orden__c}');`, {}).then(()=>{
+                     // console.log("AGREGUE")
+                   }).catch(err =>{
+                     console.log("ERROR INSERT: " + JSON.stringify(err));
+                   })
+           }
+           // console.log("TIPORUTINA: " + JSON.stringify(response));
+           // this.getPreguntasRutinas();
+        })
 
+    }).then(()=>{
+        // return this.database.executeSql(
+        // `SELECT * FROM tiporutina;`,{} )
     }).catch((err)=>console.log("error detected creating tables" + JSON.stringify(err)));
   }
 
@@ -156,6 +184,30 @@ export class DatabaseService {
         }
         return oportunidades;
       })
+    })
+  }
+
+  getTipoRutinas(){
+    this.database.executeSql("SELECT * from tiporutina", [])
+      .then((data)=>{
+        let tipo = [];
+        for(let i=0; i<data.rows.length; i++){
+          // tipo.push(data.rows.item(i));
+          console.log("DATA TipoRutina:" + JSON.stringify(data.rows.item(i)))
+        }
+        // return oportunidades;
+    })
+  }
+
+  getPreguntasRutinas(){
+    this.database.executeSql("SELECT * from preguntarutina", [])
+      .then((data)=>{
+        let tipo = [];
+        for(let i=0; i<data.rows.length; i++){
+          // tipo.push(data.rows.item(i));
+          console.log("DATA PreguntaRutina:" + JSON.stringify(data.rows.item(i)))
+        }
+        // return oportunidades;
     })
   }
 
