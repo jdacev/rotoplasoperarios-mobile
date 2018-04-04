@@ -87,7 +87,7 @@ export class AsistenciaPage {
     if(distancia > this.planta.radio__c){
       let alert = this.alertCtrl.create({
         title: 'Entrada Laboral',
-        subTitle: 'Usted se encuentra a una distancia mayor a la establecida para realizar el Ingreso. ¿Desea continuar?',
+        subTitle: 'Usted se encuentra a una distancia mayor a la establecida para realizar el Ingreso.',
         buttons: ['Aceptar']
       });
       alert.present();
