@@ -4,7 +4,7 @@ import { File } from '@ionic-native/file';
 import { AuthService } from "../../providers/auth-service/auth-service";
 import { TicketsProvider } from "../../providers/tickets/tickets";
 import { PhotoViewer } from '@ionic-native/photo-viewer';
-
+import { Network } from '@ionic-native/network';
 
 /**
  * Generated class for the DetalleOportunidadPage page.
@@ -33,7 +33,8 @@ export class DetalleOportunidadPage {
               private file: File,
               private authservice: AuthService,
               private ticketsProv: TicketsProvider,
-              private photoViewer: PhotoViewer) {
+              private photoViewer: PhotoViewer,
+              private network: Network) {
 
     this.ptarName = this.authservice.AuthToken.planta.name;
 
@@ -41,11 +42,48 @@ export class DetalleOportunidadPage {
     this.ticket = navParams.get('ticket')
 
     //Get para traer el Cliente
-    this.ticketsProv.getTicket(this.ticket.id_case_heroku_c__c).subscribe(response =>{
-      this.cliente = response.data;
-    }, error =>{
+    if(this.network.type != 'none' && this.network.type != 'unknown'){
+        this.ticketsProv.getTicket(this.ticket.id_case_heroku_c__c).subscribe(response =>{
+          this.cliente = response.data;
+        }, error =>{
 
-    })
+        })
+
+        this.ticketsProv.getImagenes(this.ticket.id_case_heroku_c__c).subscribe(response=>{
+          console.log("IMAGES: " + response)
+          console.log("IMAGES: " + JSON.stringify(response))
+          if(response.blobs){
+            this.images = response.blobs;
+            console.log(this.images);
+          }
+          else{
+            this.images = null;
+          }
+        }, error =>{
+          console.log("ERROR:" + JSON.stringify(error));
+        })
+      }else{
+        // Levanto las imágenes que se encuentren dentro de la carpeta 'tickets/{IdTicket}'
+         this.origen = file.dataDirectory + 'tickets/';
+         if(this.ticket.id_case_heroku_c__c){
+           var subDir = this.ticket.id_case_heroku_c__c.toString() + '/';
+         }else{
+           var subDir = this.ticket.id_case_sqllite.toString() + '/';
+           console.log("id_case_sqllite: "+this.ticket.id_case_sqllite);
+         }
+         console.log("busco destino: "+ this.origen + subDir);
+         console.log("subDir: "+ subDir);
+         console.log("this.origen: "+this.origen);
+
+         file.listDir(this.origen, subDir).then(response=>{
+           this.images = response;
+
+         }, error=>{
+           console.log("falla file.listDir: "+JSON.stringify(error));//efectivamente
+           //this.images = error;
+         });
+
+      }
 
     if(this.ticket.description == "" || this.ticket.description == null || this.ticket.description == 'null'){
       this.description = "---"
@@ -54,41 +92,12 @@ export class DetalleOportunidadPage {
     }
 
 
-    this.ticketsProv.getImagenes(this.ticket.id_case_heroku_c__c).subscribe(response=>{
-      console.log("IMAGES: " + response)
-      console.log("IMAGES: " + JSON.stringify(response))
-      if(response.blobs){
-        this.images = response.blobs;
-        console.log(this.images);
-      }
-      else{
-        this.images = null;
-      }
-    }, error =>{
-      console.log("ERROR:" + JSON.stringify(error));
-    })
-    // Levanto las imágenes que se encuentren dentro de la carpeta 'tickets/{IdTicket}'
-    // this.origen = file.dataDirectory + 'tickets/'
-    // if(this.ticket.id_case_heroku_c__c){
-    //   var subDir = this.ticket.id_case_heroku_c__c.toString() + '/';
-    // }else{
-    //   var subDir = this.ticket.id_case_sqllite.toString() + '/';
-    // }
-    //
-    // file.listDir(this.origen, subDir).then(response=>{
-    //   this.images = response;
-    //
-    // }, error=>{
-    //   this.images = error;
-    // });
+
 
 
 
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad DetalleOportunidadPage');
-  }
 
   //Abre la imagen en un visor al seleccionarla
   abrirImagen(path:string){

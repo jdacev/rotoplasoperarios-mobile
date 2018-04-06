@@ -41,8 +41,6 @@ export class OportunidadesPage {
     }else{
       this.getOportunidadesOnline();
     }
-
-
   }
 
   ionViewDidLoad() {
@@ -75,10 +73,10 @@ export class OportunidadesPage {
 
     }
   }
-
+/********************************************/
   irAPagina(pagina:string){
-    this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{
-      var asistencia = response.data;
+    /*this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{*/
+      var asistencia = this.asistenciaProv.asistencia;//response.data;//obtener de providers/asistencia
       if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
         //this.navCtrl.push(pagina)
         //MOSTRAR ALERTA QUE NO HIZO EL CHECKIN
@@ -86,9 +84,9 @@ export class OportunidadesPage {
       }else{
         this.navCtrl.push(pagina)
       }
-    }, error => {
+  /*  }, error => {
 
-    })
+  })*/
   }
 
   irADetalle(ticket){

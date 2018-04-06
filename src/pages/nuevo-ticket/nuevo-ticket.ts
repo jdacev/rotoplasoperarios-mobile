@@ -98,24 +98,28 @@ export class NuevoTicketPage {
     a una carpeta que 'tickets' que le creo.
     */
   moverArchivo(images:string[], id){
-
     var dataDirectory=this.file.dataDirectory;
+    console.log("obtengo directory" + dataDirectory);
     var origen = dataDirectory + 'tickets/'
     var sourceDirectory = images[0].substring(0, images[0].lastIndexOf('/') + 1);
-    var destino = dataDirectory + 'tickets/' + id.toString() + '/';
+    var destino = dataDirectory + 'tickets/' + id.id_case_sqllite.toString() + '/';
 
+    console.log("/////////////////////////////////---------------");
+    console.log("Destino: "+ destino);
     //Verifico si existe el directorio 'tickets'.
     this.validarDirectorio(dataDirectory, 'tickets').then(response=>{
+      console.log("response:"+response);
       if(response){
         //Existe la carpeta
-        this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
+        console.log("existe carpeta tickets en: " + dataDirectory);
+        this.crearCarpetasId(origen, sourceDirectory, destino, images, id.id_case_sqllite);
       }
       else{
         //NO Existe la carpeta 'rutinas', entonces la creo
         this.file.createDir(dataDirectory, 'tickets', false).then(data=>{
-          this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
+          this.crearCarpetasId(origen, sourceDirectory, destino, images, id.id_case_sqllite);
         }, err =>{
-
+              console.log("fallo al crear carpeta: "+ JSON.stringify(err));
         });
       }
     }, error =>{
@@ -127,24 +131,26 @@ export class NuevoTicketPage {
   //Funcion que crea una carpeta con el nombre del ID para guardar las imágenes.
   crearCarpetasId(origen, sourceDirectory, destino, images, id){
     //Creo la carpeta con el nombre {ID}
+    console.log("creando carpeta id...");
+    console.log("path: "+ sourceDirectory);
     this.file.createDir(origen, id.toString(), false).then(data=>{
-
+      console.log("creado, copiando imagenes...");
       //Muevo todas las imágenes al nuevo directorio.
       for (let i = 0; i < images.length; i++) {
-
+          console.log("imagen numero "+ i);
           var fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[0].length);
-
-          this.file.moveFile(sourceDirectory,fileName,destino,fileName)
+          console.log(fileName);
+          this.file.moveFile(sourceDirectory,fileName,destino,'')
           .then(
             file=>{
-
+                console.log("copiado con exito");
             }, error => {
-
+                console.log("error al copiar: "+JSON.stringify(error));
           })
       }
 
     }, err =>{
-
+        console.log("error al crear carpeta "+ JSON.stringify(err));
     });
 
 

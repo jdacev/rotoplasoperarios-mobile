@@ -187,13 +187,15 @@ export class DatabaseService {
     })
   }
 
+
+
   getTipoRutinas(){
     this.database.executeSql("SELECT * from tiporutina", [])
       .then((data)=>{
         let tipo = [];
         for(let i=0; i<data.rows.length; i++){
           // tipo.push(data.rows.item(i));
-          console.log("DATA TipoRutina:" + JSON.stringify(data.rows.item(i)))
+          //console.log("DATA TipoRutina:" + JSON.stringify(data.rows.item(i)))
         }
         // return oportunidades;
     })

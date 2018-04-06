@@ -162,9 +162,9 @@ export class NuevaRutinaPage {
     this.file.removeFile(directorio, nombreArchivo);
     this.images.splice(pos, 1)
   }
+/***********************************************************************/
 
-
-  getTipoRutinas(){
+  getTipoRutinas(){//verificar si es online sino buscar en la base de datos local
     this.rutinasProv.getTipoRutinas().subscribe(data=>{
       this.tipoRutinas = data.data;
     }, error=>{
