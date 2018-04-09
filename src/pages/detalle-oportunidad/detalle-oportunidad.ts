@@ -21,7 +21,7 @@ import { Network } from '@ionic-native/network';
 export class DetalleOportunidadPage {
 
   ticket:any;
-  images:any;
+  images:any=[];
   origen:string;
   ptarName:string;
   description:string;
@@ -40,7 +40,7 @@ export class DetalleOportunidadPage {
 
     // Recibo por parámetro todos los datos del ticket.
     this.ticket = navParams.get('ticket')
-
+    console.log("Se recibio ticket: "+ JSON.stringify(this.ticket));
     //Get para traer el Cliente
     if(this.network.type != 'none' && this.network.type != 'unknown'){
         this.ticketsProv.getTicket(this.ticket.id_case_heroku_c__c).subscribe(response =>{
@@ -57,7 +57,7 @@ export class DetalleOportunidadPage {
             console.log(this.images);
           }
           else{
-            this.images = null;
+            this.images = [];
           }
         }, error =>{
           console.log("ERROR:" + JSON.stringify(error));
@@ -72,14 +72,15 @@ export class DetalleOportunidadPage {
            console.log("id_case_sqllite: "+this.ticket.id_case_sqllite);
          }
          console.log("busco destino: "+ this.origen + subDir);
-         console.log("subDir: "+ subDir);
-         console.log("this.origen: "+this.origen);
 
          file.listDir(this.origen, subDir).then(response=>{
-           this.images = response;
+           for (let i = 0; i < response.length; i++) {
+               this.images.push(response[i].nativeURL);
+           }
+
 
          }, error=>{
-           console.log("falla file.listDir: "+JSON.stringify(error));//efectivamente
+           console.log("falla file.listDir: "+JSON.stringify(error));
            //this.images = error;
          });
 
