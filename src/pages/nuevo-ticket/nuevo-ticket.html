@@ -51,7 +51,7 @@
 
   <ion-item>
     <ion-label style="white-space: normal"><b>*Motivo</b></ion-label>
-    <ion-select style="width: 50%" okText="Aceptar" cancelText="Cancelar" [(ngModel)]="motivoSeleccionado" (ionChange)="getDescripcionMotivos(motivoSeleccionado)">
+    <ion-select style="width: 50%" okText="Aceptar" cancelText="Cancelar" [(ngModel)]="motivoSeleccionado" (ionChange)="getDescripcionMotivosOffline(motivoSeleccionado)">
       <ion-option *ngFor="let motivo of motivos" [value]="motivo">{{motivo.name}}</ion-option>
     </ion-select>
   </ion-item>
@@ -60,7 +60,7 @@
 
   <ion-item>
     <ion-label style="white-space: normal"><b>*Descripción</b></ion-label>
-    <ion-select [disabled]="!descripcionesMotivos" okText="Aceptar" cancelText="Cancelar" style="width: 50%" [(ngModel)]="descripcionSeleccionada" (ionChange)="getMotivosDesestabilizacion(descripcionSeleccionada)">
+    <ion-select [disabled]="!descripcionesMotivos || descripcionesMotivos.length == 0" okText="Aceptar" cancelText="Cancelar" style="width: 50%" [(ngModel)]="descripcionSeleccionada" (ionChange)="getMotivosDesestabilizacionOffline(descripcionSeleccionada)">
       <ion-option *ngFor="let descripcion of descripcionesMotivos" [value]="descripcion">{{descripcion.name}}</ion-option>
     </ion-select>
   </ion-item>
@@ -69,7 +69,7 @@
 
   <ion-item>
     <ion-label style="white-space: normal"><b>*Motivo de Desestabilización</b></ion-label>
-    <ion-select okText="Aceptar" cancelText="Cancelar" [disabled]="!motivosDesestabilizacion" style="width: 50%" [(ngModel)]="motivoDesestabilizacionSeleccionado">
+    <ion-select okText="Aceptar" cancelText="Cancelar" [disabled]="!motivosDesestabilizacion || motivosDesestabilizacion.length == 0" style="width: 50%" [(ngModel)]="motivoDesestabilizacionSeleccionado">
       <ion-option *ngFor="let motivo of motivosDesestabilizacion" [value]="motivo">{{motivo.name}}</ion-option>
     </ion-select>
   </ion-item>

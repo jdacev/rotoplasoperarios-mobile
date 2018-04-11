@@ -63,6 +63,19 @@ export class DetalleOportunidadPage {
           console.log("ERROR:" + JSON.stringify(error));
         })
       }else{
+        let clientes = this.authservice.AuthToken.clientes;
+        console.log("ACCOUNTID = " + this.ticket.accountid);
+        
+        for (let i = 0; i < clientes.length; i++) {
+          console.log("Cliente:" + JSON.stringify(clientes[i]));
+          
+          if(clientes[i].sfid == this.ticket.accountid){
+            this.cliente = clientes[i];
+            break;
+          }
+          
+        }
+
         // Levanto las imágenes que se encuentren dentro de la carpeta 'tickets/{IdTicket}'
          this.origen = file.dataDirectory + 'tickets/';
          if(this.ticket.id_case_heroku_c__c){

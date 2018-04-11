@@ -30,7 +30,7 @@ export class NuevaPasswordPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad NuevaPasswordPage');
+    // console.log('ionViewDidLoad NuevaPasswordPage');
   }
 
   //Verifico la coincidencia de las contraseñas

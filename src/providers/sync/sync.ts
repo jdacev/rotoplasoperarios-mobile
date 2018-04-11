@@ -14,7 +14,7 @@ import { URL_SERVICIOS } from "../../config/url.services";
 export class SyncProvider {
 
   constructor(public http: Http) {
-    console.log('Hello SyncProvider Provider');
+    // console.log('Hello SyncProvider Provider');
   }
 
   getPreguntasRutinas(){

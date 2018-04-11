@@ -56,7 +56,8 @@ export class NuevoTicketPage {
     this.descripcionSeleccionada = null;
     this.clientes = [];
 
-    this.getMotivosOportunidades();
+    // this.getMotivosOportunidades();
+    this.getMotivosOportunidadesOffline();
     this.getClientesPlanta();
   }
 
@@ -191,6 +192,40 @@ export class NuevoTicketPage {
     })
   }
 
+  getMotivosOportunidadesOffline(){
+    this.dbService.getMotivosOportunidadesOffline().then(response =>{
+      console.log("MOTIVOS EN NUEVO TICKET: " + JSON.stringify(response));
+      this.motivos = response.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
+      // this.motivos = response.data.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
+    }, error =>{
+
+    })
+  }
+
+  //Get para buscar las descripciones del motivo que selecciono
+  getDescripcionMotivosOffline(motivo){
+    console.log("MOTIVO SFID: " + motivo.sfid)
+    if(motivo){
+      this.dbService.getDescripcionesFallaOffline(motivo.sfid).then(response=>{
+        if(response.length > 0){
+          console.log("DESC. MOTIVOS EN NUEVO TICKET: " + JSON.stringify(response));
+          this.descripcionesMotivos = response.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
+          this.motivosDesestabilizacion = null;
+          this.descripcionSeleccionada = null;
+          this.motivoDesestabilizacionSeleccionado = null;
+        }else{
+          this.descripcionesMotivos = null; 
+          this.motivoDesestabilizacionSeleccionado = null;
+          this.motivosDesestabilizacion = null;   
+        }
+      }, error =>{
+        this.descripcionesMotivos = null;
+        this.motivoDesestabilizacionSeleccionado = null;
+        this.motivosDesestabilizacion = null;  
+      })
+    }
+  }
+
   //Get para buscar las descripciones del motivo que selecciono
   getDescripcionMotivos(motivo){
     if(motivo){
@@ -205,7 +240,27 @@ export class NuevoTicketPage {
     }
   }
 
+  
+
   // Get para buscar el motivo de desestabilización.
+  getMotivosDesestabilizacionOffline(descripcion){
+    if(descripcion){
+      this.dbService.getMotivosDesestabilizacionOffline(descripcion.sfid).then(response =>{
+        if(response.length > 0){
+          this.motivosDesestabilizacion = response.sort((item1, item2): number => this.ordenar(item1.name, item2.name));
+          this.motivoDesestabilizacionSeleccionado = null;
+        }else{
+          this.motivoDesestabilizacionSeleccionado = null;
+          this.motivosDesestabilizacion = null;  
+        }
+
+      }, error=>{
+        this.motivoDesestabilizacionSeleccionado = null;
+        this.motivosDesestabilizacion = null;
+      })
+    }
+  }
+
   getMotivosDesestabilizacion(descripcion){
     if(descripcion){
       this.ticketsProv.getMotivosDesestabilizacion(descripcion.sfid).subscribe(response =>{

@@ -86,7 +86,7 @@ export class DetalleRutinaPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad DetalleRutinaPage');
+    // console.log('ionViewDidLoad DetalleRutinaPage');
   }
 
   //Abre la imagen en un visor al seleccionarla

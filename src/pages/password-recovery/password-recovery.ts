@@ -41,7 +41,7 @@ export class PasswordRecoveryPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad PasswordRecoveryPage');
+    //console.log('ionViewDidLoad PasswordRecoveryPage');
   }
 
   ionViewDidEnter() {

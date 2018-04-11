@@ -16,7 +16,7 @@ export class PlantasProvider {
 
   constructor(public http: Http,
               private alertCtrl: AlertController) {
-    console.log('Hello PlantasProvider Provider');
+    // console.log('Hello PlantasProvider Provider');
   }
 
   getPlantasPorUsuario(idUsuario: number){

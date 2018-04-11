@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { AlertController } from 'ionic-angular';
+import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 
 import { URL_SERVICIOS } from "../../config/url.services";
 
@@ -14,8 +15,11 @@ import { URL_SERVICIOS } from "../../config/url.services";
 @Injectable()
 export class TicketsProvider {
 
+  private database: SQLiteObject;
+
   constructor(public http: Http,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController,
+              private sqlite:SQLite,) {
     // console.log('Hello TicketsProvider Provider');
   }
 
@@ -52,6 +56,16 @@ export class TicketsProvider {
   getImagenes(id:string){
     // console.log("URL: " + URL_SERVICIOS + '/azurelistarimagenesporcontenedor/oportunidad' +id.toString())
     return this.http.get(URL_SERVICIOS + '/azurelistarimagenesporcontenedor/oportunidad' +id.toString())
+              .map(resp => resp.json())
+  }
+
+  getTodasDescripcionesFallas(){
+    return this.http.get(URL_SERVICIOS + '/descripcionesfallas/')
+              .map(resp => resp.json())
+  }
+
+  getTodasMotivosDesestabilizaciones(){
+    return this.http.get(URL_SERVICIOS + '/desestabilizaciones/')
               .map(resp => resp.json())
   }
 
