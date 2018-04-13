@@ -336,7 +336,8 @@ export class CheckoutPage {
   postAsistencia(){
     this.asistenciaProv.postAsistencia('Salida', this.operador.sfid, this.lat, this.lng).then(response => {
       if(response){
-        this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid);
+        // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid);
+        this.authservice.AuthToken.asistencia.tipo__c == 'Salida';
         if(this.images.length > 0){
           // this.moverArchivo(this.images);
           // console.log("response: " + response);

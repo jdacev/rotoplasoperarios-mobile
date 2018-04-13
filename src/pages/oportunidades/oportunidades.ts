@@ -36,7 +36,9 @@ export class OportunidadesPage {
               private network: Network) {
 
     this.listaAbierta = true;
+    console.log("getOportunidadesOffline");
     if(this.network.type == 'none' || this.network.type == 'unknown'){
+        console.log("getOportunidadesOffline");
         this.getOportunidadesOffline();
     }else{
       this.getOportunidadesOnline();
@@ -76,8 +78,11 @@ export class OportunidadesPage {
 /********************************************/
   irAPagina(pagina:string){
     /*this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{*/
-      var asistencia = this.asistenciaProv.asistencia;//response.data;//obtener de providers/asistencia
-      if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
+      // var asistencia = this.asistenciaProv.asistencia;//response.data;//obtener de providers/asistencia
+      var asistencia = this.authservice.AuthToken.asistencia;
+      console.log("ASISTENCIA: " + JSON.stringify(asistencia.tipo__c))
+      // if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
+        if(asistencia == null || asistencia.tipo__c == 'Salida'){
         //this.navCtrl.push(pagina)
         //MOSTRAR ALERTA QUE NO HIZO EL CHECKIN
         this.showAlert('Oportunidades C', 'Para crear una oportunidad realice el Ingreso Laboral en la planta correspondiente.');
@@ -117,10 +122,15 @@ export class OportunidadesPage {
 
   getOportunidadesOffline(){
     this.loading = true;
+    console.log("buscando tickets");
+    
     this.dbService.getOportunidades().then(result => {
       console.log("result: " + JSON.stringify(result));
       this.loading = false;
       this.ticketList = result;
+    }, error =>{
+      console.log("ERROR buscando oportunidades Offline: " + JSON.stringify(error));
+      
     })
   }
 

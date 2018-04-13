@@ -3,6 +3,8 @@ import { IonicPage, NavController, NavParams, MenuController, AlertController } 
 import { AuthService } from "../../providers/auth-service/auth-service";
 import { AsistenciaProvider } from "../../providers/asistencia/asistencia";
 import { AsistenciaPage } from "../../pages/asistencia/asistencia";
+import { DatabaseService } from "../../services/database-service";
+
 
 
 /**
@@ -29,7 +31,11 @@ export class LoginPage {
               private menuCtrl:MenuController,
               private alertCtrl: AlertController,
               public authservice: AuthService,
-              private asistenciaProv: AsistenciaProvider) {
+              private asistenciaProv: AsistenciaProvider,
+              private dbService: DatabaseService
+            ) {
+              console.log("ACA EN LOGIN");
+              
 
   }
 
@@ -57,6 +63,7 @@ export class LoginPage {
 
         /* Hago setRoot para que no pueda volver atras con el boton del celular.
         Sino va a poder volver al login despues de loguearse*/
+        // this.dbService.resetDb();
         this.navCtrl.setRoot('HomePage');
 
       }else{

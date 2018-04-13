@@ -60,17 +60,17 @@ export class MyApp {
     this.showMenu = false;
     authservice.loadUserCredentials();
     if(this.authservice.isLoggedin && this.authservice.AuthToken){
-      // console.log("ACA1")
+      console.log("ACA1")
       this.userData = this.authservice.AuthToken
-        this.asistenciaProv.getAsistencia(this.userData.usuario.sfid).subscribe(response => {
+        // this.asistenciaProv.getAsistencia(this.userData.usuario.sfid).subscribe(response => {
 
-          this.asistencia = response.data;
+          this.asistencia = this.authservice.AuthToken.asistencia;
           this.rootPage = 'HomePage';
           this.appCtrl.navPop();
 
-        }, error => {
+        // }, error => {
 
-        })
+        // })
 
     }else{
       this.goToPage('LoginPage')
@@ -179,7 +179,7 @@ export class MyApp {
                 this.userData.clientes = response.data;
                 localStorage.setItem('currentUser', JSON.stringify(this.userData));
                 this.authservice.loadUserCredentials();
-                return
+                return;
             }, error => {
 
             })
@@ -203,8 +203,30 @@ export class MyApp {
 
   deshabilitarOpcion(tipo:string){
 
-      if(this.asistenciaProv.asistencia){
-          if(this.asistenciaProv.asistencia.length == 0){
+      // if(this.asistenciaProv.asistencia){
+      //     if(this.asistenciaProv.asistencia.length == 0){
+      //       if(tipo == 'Salida'){
+      //         return true;
+      //       }
+      //       if(tipo == 'Entrada'){
+      //         return false;
+      //       }
+      //     }
+      //     if(tipo == 'Salida' && this.asistenciaProv.asistencia[0].tipo__c == 'Entrada'){
+      //       return false
+      //     }
+      //     if(tipo == 'Entrada' && this.asistenciaProv.asistencia[0].tipo__c == 'Salida'){
+      //       return false
+      //     }
+      //     return true
+      // }
+      // return true;
+      
+      if(this.authservice.AuthToken){
+          // console.log("Tipo: " + tipo);
+          // console.log("authservice.AuthToken.asistencia.tipo__c: " + this.authservice.AuthToken.asistencia.tipo__c);
+          
+          if(this.authservice.AuthToken.asistencia.tipo__c == '' || this.authservice.AuthToken.asistencia.tipo__c == null || this.authservice.AuthToken.asistencia.tipo__c == 'Salida'){
             if(tipo == 'Salida'){
               return true;
             }
@@ -212,10 +234,10 @@ export class MyApp {
               return false;
             }
           }
-          if(tipo == 'Salida' && this.asistenciaProv.asistencia[0].tipo__c == 'Entrada'){
+          if(tipo == 'Salida' && this.authservice.AuthToken.asistencia.tipo__c == 'Entrada'){
             return false
           }
-          if(tipo == 'Entrada' && this.asistenciaProv.asistencia[0].tipo__c == 'Salida'){
+          if(tipo == 'Entrada' && this.authservice.AuthToken.asistencia.tipo__c == 'Salida'){
             return false
           }
           return true
@@ -243,11 +265,13 @@ export class MyApp {
 
   logout(){
 
-    this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{
+    // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{
 
-      this.asistencia = response.data;
+      // this.asistencia = response.data;
+      this.asistencia = this.authservice.AuthToken.asistencia;
 
-      if(this.asistencia.length != 0 && this.asistencia[0].tipo__c == 'Entrada'){
+      // if(this.asistencia.length != 0 && this.asistencia[0].tipo__c == 'Entrada'){
+      if(this.asistencia != '' && this.asistencia != null && this.asistencia.tipo__c == 'Entrada'){
         let alert = this.alertCtrl.create({
           title: "Error al cerrar sesión",
           subTitle: "Para cerrar sesión debe realizar la Salida Laboral.",
@@ -255,7 +279,7 @@ export class MyApp {
         });
         alert.present();
 
-      }else if(this.asistencia.length == 0 || (this.asistencia.length != 0 && this.asistencia[0].tipo__c == 'Salida')){
+      }else if(this.asistencia == '' || this.asistencia == null || (this.asistencia != '' && this.asistencia != null && this.asistencia.tipo__c == 'Salida')){
 
         let alert = this.alertCtrl.create({
           title: "Cerrar Sesión",
@@ -275,9 +299,9 @@ export class MyApp {
       }
 
       console.log(JSON.stringify(this.asistencia))
-    }, error => {
+    // }, error => {
 
-    })
+    // })
 
   }
 }

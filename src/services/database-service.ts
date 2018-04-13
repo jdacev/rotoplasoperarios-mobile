@@ -3,7 +3,9 @@ import { Platform } from 'ionic-angular';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { SyncProvider } from "../providers/sync/sync";
-import { TicketsProvider } from "../providers/tickets/tickets"
+import { TicketsProvider } from "../providers/tickets/tickets";
+import { Network } from '@ionic-native/network';
+
 
 
 @Injectable()
@@ -15,25 +17,38 @@ export class DatabaseService {
   constructor(private platform:Platform,
               private sqlite:SQLite,
               private syncProv:SyncProvider,
-              private ticketProv: TicketsProvider) {
+              private ticketProv: TicketsProvider,
+              private network: Network) {
     this.platform.ready().then(()=>{
       this.sqlite.create({
         name: 'rotoplas.db',
         location: 'default'
       })
       .then((db:SQLiteObject)=>{
+        console.log("ACA");
+        
         this.database = db;
+        
+        // if(this.network.type != 'none' && this.network.type != 'unknown'){
+          this.createTables().then(()=>{
+            //communicate we are ready!
+            this.dbReady.next(true);
+          });
+        // }
 
-        this.createTables().then(()=>{
-          //communicate we are ready!
-          this.dbReady.next(true);
-        });
       })
 
     });
   }
 
-  private createTables(){
+  resetDb(){
+    this.createTables().then(()=>{
+      //communicate we are ready!
+      this.dbReady.next(true);
+    });
+  }
+
+  createTables(){
     return this.database.executeSql(
       `CREATE TABLE IF NOT EXISTS oportunidades (
         id_case_sqllite INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -129,23 +144,27 @@ export class DatabaseService {
           observaciones__c TEXT
           );`,{} )
     }).then(()=>{
+      if(this.network.type != 'none' && this.network.type != 'unknown'){
         return this.database.executeSql(
-        `DELETE FROM preguntarutina;`,{} )
+        `DELETE FROM preguntarutina;`,{} ).then(()=>{
+          return this.database.executeSql(
+            `DELETE FROM tiporutina;`,{} )
+        }).then(()=>{
+            return this.database.executeSql(
+            `DELETE FROM motivooportunidad;`,{} )
+          }).then(()=>{
+            return this.database.executeSql(
+            `DELETE FROM descripciondefalla;`,{} )
+        }).then(()=>{
+            return this.database.executeSql(
+            `DELETE FROM motivodedesestabilizacion;`,{} )
+        }).then(()=>{
+          
+          this.insertarDatos();
+        })
+      }
     }).then(()=>{
-        return this.database.executeSql(
-        `DELETE FROM tiporutina;`,{} )
-    }).then(()=>{
-        return this.database.executeSql(
-        `DELETE FROM motivooportunidad;`,{} )
-      }).then(()=>{
-        return this.database.executeSql(
-        `DELETE FROM descripciondefalla;`,{} )
-    }).then(()=>{
-        return this.database.executeSql(
-        `DELETE FROM motivodedesestabilizacion;`,{} )
-    }).then(()=>{
-      
-      this.insertarDatos();
+        
       
     }).catch((err)=>console.log("error detected creating tables" + JSON.stringify(err)));
   }
@@ -239,7 +258,10 @@ export class DatabaseService {
  }
 
  getMotivosOportunidadesOffline(){
-    // console.log("EN EL SELECT DE GETMOTIVOFFLINE")
+   this.dbReady.next(true);
+   return this.isReady()
+   .then(()=>{
+    console.log("EN EL SELECT DE GETMOTIVOFFLINE")
     return this.database.executeSql("SELECT * from motivooportunidad", [])
       .then((data)=>{
         // console.log("DATA: "+ JSON.stringify(data));
@@ -248,9 +270,11 @@ export class DatabaseService {
         for(let i=0; i<data.rows.length; i++){
           motivos.push(data.rows.item(i));
         }
-        // console.log("DATA: " + JSON.stringify(motivos))
+        console.log("DATA: " + JSON.stringify(motivos))
         return motivos;
       })
+   });
+   
   }
 
   getDescripcionesFallaOffline(sfid:string){
@@ -288,7 +312,7 @@ export class DatabaseService {
       for (let i = 0; i < tipo.length; i++) {
         this.database.executeSql(`INSERT INTO tiporutina(sfid, nombre__c)
               VALUES ('${tipo[i].sfid}', '${tipo[i].nombre__c}');`, {}).then(()=>{
-                // console.log("AGREGUE tipoRutina")
+                console.log("AGREGUE tipoRutina")
               }).catch(err =>{
                 console.log("ERROR INSERT: " + JSON.stringify(err));
               })
@@ -302,7 +326,7 @@ export class DatabaseService {
     for (let i = 0; i < preguntas.length; i++) {
       this.database.executeSql(`INSERT INTO preguntarutina(name, turno__c, rutina__c, sfid, id, tipo_de_respuesta__c, idtiporutina__c, orden__c)
             VALUES ('${preguntas[i].name}', '${preguntas[i].turno__c}', '${preguntas[i].rutina__c}', '${preguntas[i].sfid}', '${preguntas[i].id}', '${preguntas[i].tipo_de_respuesta__c}', '${preguntas[i].idtiporutina__c}', '${preguntas[i].orden__c}');`, {}).then(()=>{
-              // console.log("AGREGUE preg. rutina")
+              console.log("AGREGUE preg. rutina")
             }).catch(err =>{
               console.log("ERROR INSERT: " + JSON.stringify(err));
             })
@@ -318,7 +342,7 @@ export class DatabaseService {
         
         this.database.executeSql(`INSERT INTO motivooportunidad(sfid, name)
               VALUES ('${motivos[i].sfid}', '${motivos[i].name}');`, {}).then(()=>{
-                // console.log("AGREGUE MOTIVO")
+                console.log("AGREGUE MOTIVO")
               }).catch(err =>{
                 console.log("ERROR INSERT MOTIVOS: " + JSON.stringify(err));
               })
@@ -333,7 +357,7 @@ export class DatabaseService {
     for (let i = 0; i < desc.length; i++) {
       this.database.executeSql(`INSERT INTO descripciondefalla(sfid, name, motivooportunidadc__c)
             VALUES ('${desc[i].sfid}', '${desc[i].name}', '${desc[i].motivooportunidadc__c}');`, {}).then(()=>{
-              // console.log("AGREGUE Descrip. de falla")
+              console.log("AGREGUE Descrip. de falla")
             }).catch(err =>{
               console.log("ERROR INSERT: " + JSON.stringify(err));
             })
@@ -344,12 +368,12 @@ export class DatabaseService {
   });
 
   this.ticketProv.getTodasMotivosDesestabilizaciones().subscribe(response =>{
-    // console.log("MOTIVOS DESEST: " + JSON.stringify(response));
+    console.log("MOTIVOS DESEST: " + JSON.stringify(response));
     var motivoDesest = response.data;
     for (let i = 0; i < motivoDesest.length; i++) {
       this.database.executeSql(`INSERT INTO motivodedesestabilizacion(sfid, name, descripcionfalla__c)
             VALUES ('${motivoDesest[i].sfid}', '${motivoDesest[i].name}', '${motivoDesest[i].descripcionfalla__c}');`, {}).then(()=>{
-              // console.log("AGREGUE motivo desestab.")
+              console.log("AGREGUE motivo desestab.")
             }).catch(err =>{
               console.log("ERROR INSERT: " + JSON.stringify(err));
             })

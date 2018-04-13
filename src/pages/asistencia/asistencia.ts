@@ -104,7 +104,8 @@ export class AsistenciaPage {
     //Realizo la entrada laboral del operador, indicando latitud y longitud actual.
     this.asistenciaProv.postAsistencia('Entrada', this.operador.sfid, this.lat, this.lng).then(response => {
       if(response){
-        this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid);
+        // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid);
+        this.authservice.AuthToken.asistencia.tipo__c = 'Entrada';
         this.showAlert("Entrada Laboral", "Entrada Exitosa", 'HomePage');
       }
     }, error => {

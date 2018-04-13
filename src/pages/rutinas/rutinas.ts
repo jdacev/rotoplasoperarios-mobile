@@ -58,18 +58,20 @@ export class RutinasPage {
   }
 
   irAPagina(pagina:string){
-    this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{
-      var asistencia = response.data;
-      if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
+    // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{
+      // var asistencia = response.data;
+      var asistencia = this.authservice.AuthToken.asistencia
+      // if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
+      if(asistencia == '' || asistencia == null || asistencia.tipo__c == 'Salida'){
         //this.navCtrl.push(pagina)
         //MOSTRAR ALERTA QUE NO HIZO EL CHECKIN
         this.showAlert('Rutinas', 'Para crear una rutina realice el Ingreso Laboral en la planta correspondiente.');
       }else{
         this.navCtrl.push(pagina)
       }
-    }, error => {
+    // }, error => {
 
-    })
+    // })
   }
 
   irADetalle(rutina){

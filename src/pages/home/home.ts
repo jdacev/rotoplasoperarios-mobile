@@ -3,7 +3,7 @@ import { IonicPage, NavParams, NavController, AlertController } from 'ionic-angu
 import { UsersProvider } from "../../providers/users/users";
 import { AuthService } from "../../providers/auth-service/auth-service";
 import { AsistenciaProvider } from "../../providers/asistencia/asistencia";
-import { DatabaseService } from "../../services/database-service";
+// import { DatabaseService } from "../../services/database-service";
 
 
 
@@ -21,13 +21,14 @@ export class HomePage {
               private _usersService : UsersProvider,
               public authservice: AuthService,
               private asistenciaProv: AsistenciaProvider,
-              private dbService: DatabaseService) {
+              // private dbService: DatabaseService
+            ) {
 
 
       this.authservice.loadUserCredentials();
       var data = this.authservice.AuthToken;
-      this.asistenciaProv.getAsistencia(data.usuario.sfid);
-      console.log(data);
+      // this.asistenciaProv.getAsistencia(data.usuario.sfid);
+      console.log(JSON.stringify(data));
 
   }
 
