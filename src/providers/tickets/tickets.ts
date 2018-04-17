@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { AlertController } from 'ionic-angular';
-import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
-
 import { URL_SERVICIOS } from "../../config/url.services";
 
 /*
@@ -15,11 +13,9 @@ import { URL_SERVICIOS } from "../../config/url.services";
 @Injectable()
 export class TicketsProvider {
 
-  private database: SQLiteObject;
 
   constructor(public http: Http,
-              private alertCtrl: AlertController,
-              private sqlite:SQLite,) {
+              private alertCtrl: AlertController) {
     // console.log('Hello TicketsProvider Provider');
   }
 

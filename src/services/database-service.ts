@@ -6,7 +6,10 @@ import { SyncProvider } from "../providers/sync/sync";
 import { TicketsProvider } from "../providers/tickets/tickets";
 import { Network } from '@ionic-native/network';
 import { AuthService } from "../providers/auth-service/auth-service";
+import { URL_SERVICIOS } from "../config/url.services";
 
+import { AlertController } from 'ionic-angular';
+import { Http } from '@angular/http';
 
 
 @Injectable()
@@ -20,7 +23,9 @@ export class DatabaseService {
               private syncProv:SyncProvider,
               private ticketProv: TicketsProvider,
               private network: Network,
-              public authservice: AuthService) {
+              public authservice: AuthService,
+              public http: Http,
+              private alertCtrl: AlertController) {
     this.platform.ready().then(()=>{
       this.sqlite.create({
         name: 'rotoplas.db',
@@ -28,9 +33,9 @@ export class DatabaseService {
       })
       .then((db:SQLiteObject)=>{
         // console.log("ACA");
-        
+
         this.database = db;
-        
+
         // if(this.network.type != 'none' && this.network.type != 'unknown'){
           this.createTables().then(()=>{
             //communicate we are ready!
@@ -72,7 +77,7 @@ export class DatabaseService {
         sfid TEXT PRIMARY KEY,
         name TEXT
         );`,{} )
-    
+
     }).then(()=>{
 
       return this.database.executeSql(
@@ -97,7 +102,7 @@ export class DatabaseService {
         sfid TEXT PRIMARY KEY,
         nombre__c TEXT
         );`,{} )
-        
+
     }).then(()=>{
       return this.database.executeSql(
       `CREATE TABLE IF NOT EXISTS preguntarutina (
@@ -147,13 +152,13 @@ export class DatabaseService {
             return this.database.executeSql(
             `DELETE FROM motivodedesestabilizacion;`,{} )
         }).then(()=>{
-          
+
           this.insertarDatos();
         })
       }
     }).then(()=>{
-        
-      
+
+
     }).catch((err)=>console.log("error detected creating tables" + JSON.stringify(err)));
   }
 
@@ -219,12 +224,12 @@ export class DatabaseService {
         // console.log("AGREGUE ACTIVIDADUTINA: " + JSON.stringify(actividadesRutina[i]));
       }, error =>{
         console.log("ERROR AGREGANDO:" + JSON.stringify(error));
-        
+
       })
-      
+
     }
 
-    
+
   }
 
   getOportunidades(){
@@ -260,7 +265,7 @@ export class DatabaseService {
         return rutinas;
           // return this.database.executeSql(`SELECT * FROM actividadrutina`, [])
           // .then((data2)=>{
-            
+
           //   let actividad = [];
           //   for(let i=0; i<data2.rows.length; i++){
           //     actividad.push(data2.rows.item(i));
@@ -268,7 +273,7 @@ export class DatabaseService {
           //   }
           //   console.log("actividadrutina: " + JSON.stringify(actividad));
           //   // return rutinas;
-           
+
           // })
       })
     })
@@ -347,7 +352,7 @@ export class DatabaseService {
     return this.database.executeSql("SELECT * from motivooportunidad", [])
       .then((data)=>{
         // console.log("DATA: "+ JSON.stringify(data));
-        
+
         let motivos = [];
         for(let i=0; i<data.rows.length; i++){
           motivos.push(data.rows.item(i));
@@ -356,7 +361,7 @@ export class DatabaseService {
         return motivos;
       })
    });
-   
+
   }
 
   getDescripcionesFallaOffline(sfid:string){
@@ -364,7 +369,7 @@ export class DatabaseService {
     return this.database.executeSql(`SELECT * FROM descripciondefalla WHERE motivooportunidadc__c = '${sfid}'`, [])
       .then((data)=>{
         // console.log("DATA: "+ JSON.stringify(data));
-        
+
         let desc = [];
         for(let i=0; i<data.rows.length; i++){
           desc.push(data.rows.item(i));
@@ -379,7 +384,7 @@ export class DatabaseService {
     return this.database.executeSql(`SELECT * FROM motivodedesestabilizacion WHERE descripcionfalla__c = '${sfid}'`, [])
       .then((data)=>{
         // console.log("DATA: "+ JSON.stringify(data));
-        
+
         let motivos = [];
         for(let i=0; i<data.rows.length; i++){
           motivos.push(data.rows.item(i));
@@ -421,7 +426,7 @@ export class DatabaseService {
       var motivos = response.data;
       for (let i = 0; i < motivos.length; i++) {
         // console.log("Voy a insertar: " + JSON.stringify(motivos[i]));
-        
+
         this.database.executeSql(`INSERT INTO motivooportunidad(sfid, name)
               VALUES ('${motivos[i].sfid}', '${motivos[i].name}');`, {}).then(()=>{
                 // console.log("AGREGUE MOTIVO")
@@ -467,6 +472,36 @@ export class DatabaseService {
 
 
  }
- 
+ postOportunidades(){
+       this.getOportunidades().then(response =>{
 
+         console.log(new Date(response[0].createddate_heroku__c).toISOString());
+         response[0].createddate_heroku__c = new Date(response[0].createddate_heroku__c).toISOString();
+         console.log("Primero: "+JSON.stringify(response));
+         let tickets ={
+           oportunidades: response
+         };
+
+        return new Promise(resolve =>{
+          this.http.post(URL_SERVICIOS + '/sync-oportunidades/', tickets).subscribe(response => {
+            console.log("Sincronizo correctamente");
+            resolve(response.json().id_case_heroku_c__c);
+           }, error =>{
+             console.log("Fallo sincronizacion");
+             this.showAlert("Falló al sincronizar las Oportunidades.", error);
+             resolve(null);
+           });
+         });
+       })
+     }
+     showAlert(title:string, subtitle:string) {
+       let alert = this.alertCtrl.create({
+         title: title,
+         subTitle: subtitle,
+         buttons: [{
+           text: 'Ok'
+         }]
+       });
+       alert.present();
+     }
 }

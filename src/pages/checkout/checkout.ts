@@ -319,13 +319,15 @@ export class CheckoutPage {
       let alert = this.alertCtrl.create({
         title: 'Salida Laboral',
         subTitle: 'Usted se encuentra a una distancia mayor a la establecida para realizar la Salida.',
-        buttons: [{text:'Salir Igual',//'Aceptar',
+        buttons: [{text:'Aceptar',
         handler: () => {
+              this.dbService.postOportunidades();
              this.postAsistencia();
            }}]
       });
       alert.present();
     }else{
+      this.dbService.postOportunidades();
       this.postAsistencia();
     }
 
