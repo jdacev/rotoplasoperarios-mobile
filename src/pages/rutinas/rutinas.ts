@@ -3,6 +3,8 @@ import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angu
 import { RutinasProvider } from '../../providers/rutinas/rutinas';
 import { AuthService } from "../../providers/auth-service/auth-service";
 import { AsistenciaProvider } from "../../providers/asistencia/asistencia";
+import { Network } from '@ionic-native/network';
+import { DatabaseService } from "../../services/database-service";
 
 /**
  * Generated class for the RutinasPage page.
@@ -27,7 +29,9 @@ export class RutinasPage {
               private rutinasProv: RutinasProvider,
               private authservice: AuthService,
               private alertCtrl: AlertController,
-              private asistenciaProv: AsistenciaProvider) {
+              private asistenciaProv: AsistenciaProvider,
+              private network: Network,
+              private dbService: DatabaseService) {
 
     this.listaAbierta = true;
     this.getRutinasUsuario();
@@ -81,15 +85,39 @@ export class RutinasPage {
   }
 
   getRutinasUsuario(){
+
+
     this.loading = true;
 
-    this.rutinasProv.getRutinasUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
-        this.rutinasList = data.data;
+    if(this.network.type == 'none' || this.network.type == 'unknown'){
+
+      this.dbService.getRutinasUsuarioOffline().then(response=>{
+        this.rutinasList = response;
         this.loading = false;
-    }, error =>{
+      }, error => {
+        console.log("ERROR EN GET RUTINASUSUARIOOFFLINE" + JSON.stringify(error));
         this.loading = false;
-        // console.log("Error: " + error);
-    })
+      })
+
+    }else{
+      // this.dbService.getRutinasUsuarioOffline().then(response=>{
+
+      // }, error => {
+      //   console.log("ERROR EN GET RUTINASUSUARIOOFFLINE" + JSON.stringify(error));
+        
+      // })
+
+      this.rutinasProv.getRutinasUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
+          this.rutinasList = data.data;
+          console.log("RUTINAS: " + JSON.stringify(this.rutinasList));
+          
+          this.loading = false;
+      }, error =>{
+          this.loading = false;
+          // console.log("Error: " + error);
+      })
+
+    }
   }
 
   showAlert(titulo:string, subtitulo:string) {

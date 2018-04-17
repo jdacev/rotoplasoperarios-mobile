@@ -49,7 +49,8 @@ export class NuevaRutinaPage {
     this.activities = [];
     this.tipoRutina = null;
     this.observacion = "";
-    this.getTipoRutinas();
+    // this.getTipoRutinas();
+    this.getTipoRutinasOffline();
   }
 
   ionViewDidLoad() {
@@ -91,11 +92,14 @@ export class NuevaRutinaPage {
   a una carpeta que 'rutinas' que le creo.
   */
   moverArchivo(images:string[], id){
-
     var dataDirectory=this.file.dataDirectory;
     var origen = dataDirectory + 'rutinas/'
     var sourceDirectory = images[0].substring(0, images[0].lastIndexOf('/') + 1);
     var destino = dataDirectory + 'rutinas/' + id.toString() + '/';
+    
+    console.log("ID EN MOVER ARCHIVO: " + id);
+    // console.log("ID EN MOVER ARCHIVO: " + JSON.stringify(id));
+    
 
     //Verifico si existe el directorio 'rutinas'.
     this.validarDirectorio(dataDirectory, 'rutinas').then(response=>{
@@ -164,7 +168,7 @@ export class NuevaRutinaPage {
   }
 /***********************************************************************/
 
-  getTipoRutinas(){//verificar si es online sino buscar en la base de datos local
+  getTipoRutinas(){
     this.rutinasProv.getTipoRutinas().subscribe(data=>{
       this.tipoRutinas = data.data;
     }, error=>{
@@ -172,27 +176,52 @@ export class NuevaRutinaPage {
     })
   }
 
+  getTipoRutinasOffline(){
+    this.dbService.getTipoRutinasOffline().then(response =>{
+      this.tipoRutinas = response;
+      // console.log("TIPO RUTINAS: " + JSON.stringify(response));
+      
+    }, error =>{
+      console.log("ERROR getTipoRutinas" + JSON.stringify(error));
+      
+    })
+  }
+
   getActividades(idTipoRutina:string, turno:string){
 
     if(idTipoRutina && turno){
-      this.rutinasProv.getPreguntasTipoRutina(idTipoRutina, turno).subscribe(data =>{
+        
+        
+        this.dbService.getPreguntasTipoRutinaOffline(idTipoRutina, turno).then(data =>{
+          // console.log("TIPOS RUTINA: " + JSON.stringify(data))
+          this.activities = data;
+            for (let i = 0; i < this.activities.length; i++) {
+              this.activities[i].observacion = '';
+              if(this.activities[i].tipo_de_respuesta__c){
+                this.activities[i].valor = false;
+              }else{
+                this.activities[i].valor = undefined;
+              }
+            }
+        })
+      // this.rutinasProv.getPreguntasTipoRutina(idTipoRutina, turno).subscribe(data =>{
 
-        // Agrego el campo observación vacío, y el tipo seteo el tipo de
-        //respuesta en null o en false.
-        this.activities = data.data;
-        for (let i = 0; i < this.activities.length; i++) {
-          this.activities[i].observacion = undefined;
-          if(this.activities[i].tipo_de_respuesta__c){
-            this.activities[i].valor = false;
-          }else{
-            this.activities[i].valor = undefined;
-          }
-        }
+      //   // Agrego el campo observación vacío, y el tipo seteo el tipo de
+      //   //respuesta en null o en false.
+      //   this.activities = data.data;
+      //   for (let i = 0; i < this.activities.length; i++) {
+      //     this.activities[i].observacion = undefined;
+      //     if(this.activities[i].tipo_de_respuesta__c){
+      //       this.activities[i].valor = false;
+      //     }else{
+      //       this.activities[i].valor = undefined;
+      //     }
+      //   }
 
-      }, error =>{
-        this.activities = [];
+      // }, error =>{
+      //   this.activities = [];
 
-      })
+      // })
     }
 
   }
@@ -217,7 +246,7 @@ export class NuevaRutinaPage {
             'id_pregunta_rutina__c': this.activities[i].sfid,
             'valor_si_no__c' : this.activities[i].tipo_de_respuesta__c ? this.activities[i].valor : null,
             'valornumerico__c' : !this.activities[i].tipo_de_respuesta__c ? this.activities[i].valor : null,
-            'observaciones__c' : this.activities[i].observaciones
+            'observaciones__c' : !this.activities[i].observaciones ? '' : this.activities[i].observaciones
           });
     }
 
@@ -226,37 +255,65 @@ export class NuevaRutinaPage {
       'idtiporutina__c' : this.tipoRutina,
       "idplanta__c": this.authservice.AuthToken.planta.sfid,
       'usuarioapp__c': this.authservice.AuthToken.usuario.sfid,
-      'rutaimagen__c': 'RUTA/IMAGEN/',
-      'createddate_heroku__c': new Date(),
+      'rutaimagen__c': '',
+      'createddate_heroku__c': (new Date()).toISOString(),
       'actividadrutina__c': listaActividades
     }
 
-    this.rutinasProv.crearRutina(data).then(response=>{
-      if(this.network.type == 'none' || this.network.type == 'unknown'){
-        if(response){
-          if(this.images.length > 0){
-            this.moverArchivo(this.images, response);
+    if(this.network.type == 'none' || this.network.type == 'unknown'){
+        this.dbService.crearRutinaOffline(data).then(response => {
+          console.log("RESPONSE: " + response);
+          console.log("RESPONSE: " + JSON.stringify(response));
+          if(response){
+            if(this.images.length > 0){
+              this.moverArchivo(this.images, response);
+            }
+            this.loading = false;
+            this.navCtrl.pop();
+          }else{
+            this.loading = false;
           }
-          this.loading = false;
-          this.navCtrl.pop();
-        }else{
-          this.loading = false;
-        }
-      }else{
-        if(response){
-          if(this.images.length > 0){
-            this.uploadImages(this.images, response);
+                
+        }, error=>{
+          console.log("ERROR CREANDO");
+          
+        })
+    }else{
+        // this.dbService.crearRutinaOffline(data).then(response => {
+        //   console.log("RESPONSE: " + response);
+        //   console.log("RESPONSE: " + JSON.stringify(response));
+        // }, error=>{
+        //   console.log("ERROR CREANDO");
+          
+        // })
+        this.rutinasProv.crearRutina(data).then(response=>{
+          if(this.network.type == 'none' || this.network.type == 'unknown'){
+            if(response){
+              if(this.images.length > 0){
+                this.moverArchivo(this.images, response);
+              }
+              this.loading = false;
+              this.navCtrl.pop();
+            }else{
+              this.loading = false;
+            }
+          }else{
+            if(response){
+              if(this.images.length > 0){
+                this.uploadImages(this.images, response);
+              }
+              this.loading = false;
+              this.navCtrl.pop();
+            }else{
+              this.loading = false;
+            }
           }
+    
+        }, error=>{
           this.loading = false;
-          this.navCtrl.pop();
-        }else{
-          this.loading = false;
-        }
-      }
-
-    }, error=>{
-      this.loading = false;
-    });
+        });
+      
+    }
   }
 
   uploadImages(images, id){

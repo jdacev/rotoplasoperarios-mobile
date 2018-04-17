@@ -295,7 +295,7 @@ export class NuevoTicketPage {
       'origin': 'App. Sistema de Monitoreo Sytesa',
       'idplanta__c': this.authservice.AuthToken.planta.sfid,
       'operadorapp__c': this.authservice.AuthToken.usuario.sfid,
-      'createddate_heroku__c': new Date(),
+      'createddate_heroku__c': (new Date()).toISOString(),
       'reason': this.motivoSeleccionado.name,
       'descripciondefalla__c' : this.descripcionSeleccionada ? this.descripcionSeleccionada.name : null,
       'motivodedesestabilizacion__c': this.motivoDesestabilizacionSeleccionado ? this.motivoDesestabilizacionSeleccionado.name : null,

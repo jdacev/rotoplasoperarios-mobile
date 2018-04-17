@@ -58,8 +58,11 @@ export class MyApp {
 
 
     this.showMenu = false;
-    authservice.loadUserCredentials();
+    this.authservice.loadUserCredentials();
+    
     if(this.authservice.isLoggedin && this.authservice.AuthToken){
+      console.log("AUTH:" + JSON.stringify(this.authservice.AuthToken));
+
       console.log("ACA1")
       this.userData = this.authservice.AuthToken
         // this.asistenciaProv.getAsistencia(this.userData.usuario.sfid).subscribe(response => {

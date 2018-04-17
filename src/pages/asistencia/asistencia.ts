@@ -106,6 +106,8 @@ export class AsistenciaPage {
       if(response){
         // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid);
         this.authservice.AuthToken.asistencia.tipo__c = 'Entrada';
+        localStorage.setItem('currentUser', JSON.stringify(this.authservice.AuthToken));
+        this.authservice.loadUserCredentials();
         this.showAlert("Entrada Laboral", "Entrada Exitosa", 'HomePage');
       }
     }, error => {

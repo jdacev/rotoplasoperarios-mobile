@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { SyncProvider } from "../providers/sync/sync";
 import { TicketsProvider } from "../providers/tickets/tickets";
 import { Network } from '@ionic-native/network';
+import { AuthService } from "../providers/auth-service/auth-service";
 
 
 
@@ -18,14 +19,15 @@ export class DatabaseService {
               private sqlite:SQLite,
               private syncProv:SyncProvider,
               private ticketProv: TicketsProvider,
-              private network: Network) {
+              private network: Network,
+              public authservice: AuthService) {
     this.platform.ready().then(()=>{
       this.sqlite.create({
         name: 'rotoplas.db',
         location: 'default'
       })
       .then((db:SQLiteObject)=>{
-        console.log("ACA");
+        // console.log("ACA");
         
         this.database = db;
         
@@ -65,11 +67,6 @@ export class DatabaseService {
       );`
     ,{})
     .then(()=>{
-        // this.ticketProv.getMotivosOportunidades().subscribe(response =>{
-
-        // }, error => {
-        //   console.log("ERROR en getmotivos" + JSON.stringify(error));
-        // })
       return this.database.executeSql(
       `CREATE TABLE IF NOT EXISTS motivooportunidad (
         sfid TEXT PRIMARY KEY,
@@ -93,14 +90,6 @@ export class DatabaseService {
         descripcionfalla__c TEXT
         );`,{} )
 
-    }).then(()=>{
-
-      return this.database.executeSql(
-      `CREATE TABLE IF NOT EXISTS tiporutina (
-        sfid TEXT PRIMARY KEY,
-        nombre__c TEXT
-        );`,{} )
-        
     }).then(()=>{
 
       return this.database.executeSql(
@@ -136,8 +125,7 @@ export class DatabaseService {
     }).then(()=>{
         return this.database.executeSql(
         `CREATE TABLE IF NOT EXISTS actividadrutina (
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          id_rutinas_heroku__c INTEGER,
+          id_rutina_sqllite INTEGER,
           id_pregunta_rutina__c INTEGER,
           valor_si_no__c INTEGER,
           valornumerico__c INTEGER,
@@ -204,6 +192,41 @@ export class DatabaseService {
     });
   }
 
+  crearRutinaOffline(data){
+    // return this.isReady()
+    // .then(()=>{
+      return this.database.executeSql(`INSERT INTO rutinas(observacion__c, idplanta__c, usuarioapp__c, idtiporutina__c, rutaimagen__c, createddate_heroku__c)
+            VALUES ('${data.observacion__c}', '${data.idplanta__c}', '${data.usuarioapp__c}', '${data.idtiporutina__c}', '${data.rutaimagen__c}', '${data.createddate_heroku__c}');`, {}).then((result)=>{
+        if(result.insertId){
+          // console.log("Result Rutina: " + result.insertId);
+          // console.log("CREE LA RUTINA.");
+          this.crearActividadRutinaOffline(result.insertId, data.actividadrutina__c);
+          return result.insertId;
+        }
+        // console.log("result: " + JSON.stringify(result));
+      })
+      .catch(er => {
+        console.log("ERROR:" + JSON.stringify(er));
+      })
+    // });
+  }
+
+  crearActividadRutinaOffline(id_rutinas_heroku__c, actividadesRutina){
+    // console.log("Por agregar ActividadesRutina: " + JSON.stringify(actividadesRutina));
+    for(let i in actividadesRutina){
+      this.database.executeSql("INSERT INTO actividadrutina (id_rutina_sqllite, id_pregunta_rutina__c," +
+      "valor_si_no__c, valornumerico__c, observaciones__c) VALUES ('" + id_rutinas_heroku__c + "', '" + actividadesRutina[i].id_pregunta_rutina__c +"', " + (actividadesRutina[i].valor_si_no__c ? 1 : 0) + ", " + (!actividadesRutina[i].valornumerico__c ? null: actividadesRutina[i].valornumerico__c) + ", '" + actividadesRutina[i].observaciones__c + "');" , {}).then((result)=>{
+        // console.log("AGREGUE ACTIVIDADUTINA: " + JSON.stringify(actividadesRutina[i]));
+      }, error =>{
+        console.log("ERROR AGREGANDO:" + JSON.stringify(error));
+        
+      })
+      
+    }
+
+    
+  }
+
   getOportunidades(){
     return this.isReady()
     .then(()=>{
@@ -218,17 +241,63 @@ export class DatabaseService {
     })
   }
 
+  getRutinasUsuarioOffline(){
+    return this.isReady()
+    .then(()=>{
+      var idPlanta = this.authservice.AuthToken.planta.sfid;
+      var idOperador = this.authservice.AuthToken.usuario.sfid;
+      // console.log("GET DE RUTINA 1");
+      // return this.database.executeSql(`SELECT rutinas.id_rutina_sqllite, preguntarutina.turno__c, tiporutina.nombre__c, actividadrutina.idrutina__c, rutinas.rutaimagen__c, rutinas.observacion__c, rutinas.idtiporutina__c, rutinas.usuarioapp__c, rutinas.idplanta__c, planta.formato__c, planta.determinante__c, createddate_heroku__c from preguntarutina LEFT JOIN actividadrutina ON (preguntarutina.sfid = actividadrutina.id_pregunta_rutina__c) INNER JOIN rutinas ON (rutinas.sfid = actividadrutina.idrutina__c) INNER JOIN tiporutina ON (tiporutina.sfid = rutinas.idtiporutina__c) WHERE idplanta__c = '${idPlanta}' and usuarioapp__c = ${idOperador} GROUP BY rutinas.id_rutinas_heroku__c, preguntarutina.turno__c, tiporutina.nombre__c, actividadrutina.idrutina__c, rutinas.rutaimagen__c, rutinas.observacion__c, rutinas.idtiporutina__c, rutinas.usuarioapp__c, rutinas.idplanta__c, rutinas.createddate, planta.formato__c, planta.determinante__c, createddate_heroku__c ORDER BY rutinas.createddate_heroku__c DESC`, [])
+      return this.database.executeSql(`SELECT rutinas.id_rutina_sqllite, preguntarutina.turno__c, tiporutina.nombre__c, rutinas.rutaimagen__c, rutinas.observacion__c, rutinas.idtiporutina__c, rutinas.usuarioapp__c, rutinas.idplanta__c, rutinas.createddate_heroku__c FROM rutinas INNER JOIN tiporutina ON (rutinas.idtiporutina__c = tiporutina.sfid) INNER JOIN actividadrutina ON (rutinas.id_rutina_sqllite = actividadrutina.id_rutina_sqllite) INNER JOIN preguntarutina ON (actividadrutina.id_pregunta_rutina__c = preguntarutina.sfid) WHERE rutinas.idplanta__c = '${idPlanta}' AND rutinas.usuarioapp__c = '${idOperador}' GROUP BY rutinas.id_rutina_sqllite, rutinas.rutaimagen__c, rutinas.observacion__c, rutinas.idtiporutina__c, rutinas.usuarioapp__c, rutinas.idplanta__c, rutinas.createddate_heroku__c, preguntarutina.turno__c ORDER BY rutinas.createddate_heroku__c DESC`, [])
+      .then((data)=>{
+        // console.log("GET DE RUTINA 2 ");
+        let rutinas = [];
+        for(let i=0; i<data.rows.length; i++){
+          rutinas.push(data.rows.item(i));
+          // console.log("GET DE RUTINA 3");
+        }
+        // console.log("RUTINAS: " + JSON.stringify(rutinas));
+        return rutinas;
+          // return this.database.executeSql(`SELECT * FROM actividadrutina`, [])
+          // .then((data2)=>{
+            
+          //   let actividad = [];
+          //   for(let i=0; i<data2.rows.length; i++){
+          //     actividad.push(data2.rows.item(i));
+          //     console.log("GET DE RUTINA 3");
+          //   }
+          //   console.log("actividadrutina: " + JSON.stringify(actividad));
+          //   // return rutinas;
+           
+          // })
+      })
+    })
+  }
+
+  getRespuestasActividadesOffline(idRutina){
+    return this.database.executeSql(`SELECT preguntarutina.name, actividadrutina.valor_si_no__c, actividadrutina.valornumerico__c, actividadrutina.observaciones__c FROM rutinas INNER JOIN actividadrutina ON (rutinas.id_rutina_sqllite = actividadrutina.id_rutina_sqllite) INNER JOIN preguntarutina ON (actividadrutina.id_pregunta_rutina__c = preguntarutina.sfid) WHERE rutinas.id_rutina_sqllite = '${idRutina}'`, [])
+      .then((data)=>{
+        let respuestas = [];
+        for(let i=0; i<data.rows.length; i++){
+          respuestas.push(data.rows.item(i));
+          // console.log("Respuesta:" + JSON.stringify(data.rows.item(i)))
+        }
+        // console.log("RESPUESTAS: " + JSON.stringify(respuestas))
+        return respuestas;
+    })
+  }
 
 
-  getTipoRutinas(){
-    this.database.executeSql("SELECT * from tiporutina", [])
+
+  getTipoRutinasOffline(){
+    return this.database.executeSql("SELECT * from tiporutina", [])
       .then((data)=>{
         let tipo = [];
         for(let i=0; i<data.rows.length; i++){
-          // tipo.push(data.rows.item(i));
+          tipo.push(data.rows.item(i));
           //console.log("DATA TipoRutina:" + JSON.stringify(data.rows.item(i)))
         }
-        // return oportunidades;
+        return tipo;
     })
   }
 
@@ -241,6 +310,19 @@ export class DatabaseService {
           // console.log("DATA PreguntaRutina:" + JSON.stringify(data.rows.item(i)))
         }
         // return oportunidades;
+    })
+  }
+
+  getPreguntasTipoRutinaOffline(idTipoRutina: string, turno:string){
+    // console.log("Buscando tipos rutina: ID: " + idTipoRutina + "turno: " + turno);
+    return this.database.executeSql(`SELECT * from preguntarutina where idtiporutina__c = '${idTipoRutina}' and turno__c = '${turno}' order by orden__c`, [])
+      .then((data)=>{
+        let tipo = [];
+        for(let i=0; i<data.rows.length; i++){
+          tipo.push(data.rows.item(i));
+          // console.log("DATA PREGUNTASTIPORUTINAOFFLINE: " + JSON.stringify(data.rows.item(i)))
+        }
+        return tipo;
     })
   }
 
@@ -261,7 +343,7 @@ export class DatabaseService {
    this.dbReady.next(true);
    return this.isReady()
    .then(()=>{
-    console.log("EN EL SELECT DE GETMOTIVOFFLINE")
+    // console.log("EN EL SELECT DE GETMOTIVOFFLINE")
     return this.database.executeSql("SELECT * from motivooportunidad", [])
       .then((data)=>{
         // console.log("DATA: "+ JSON.stringify(data));
@@ -270,7 +352,7 @@ export class DatabaseService {
         for(let i=0; i<data.rows.length; i++){
           motivos.push(data.rows.item(i));
         }
-        console.log("DATA: " + JSON.stringify(motivos))
+        // console.log("DATA: " + JSON.stringify(motivos))
         return motivos;
       })
    });
@@ -312,7 +394,7 @@ export class DatabaseService {
       for (let i = 0; i < tipo.length; i++) {
         this.database.executeSql(`INSERT INTO tiporutina(sfid, nombre__c)
               VALUES ('${tipo[i].sfid}', '${tipo[i].nombre__c}');`, {}).then(()=>{
-                console.log("AGREGUE tipoRutina")
+                // console.log("AGREGUE tipoRutina")
               }).catch(err =>{
                 console.log("ERROR INSERT: " + JSON.stringify(err));
               })
@@ -326,7 +408,7 @@ export class DatabaseService {
     for (let i = 0; i < preguntas.length; i++) {
       this.database.executeSql(`INSERT INTO preguntarutina(name, turno__c, rutina__c, sfid, id, tipo_de_respuesta__c, idtiporutina__c, orden__c)
             VALUES ('${preguntas[i].name}', '${preguntas[i].turno__c}', '${preguntas[i].rutina__c}', '${preguntas[i].sfid}', '${preguntas[i].id}', '${preguntas[i].tipo_de_respuesta__c}', '${preguntas[i].idtiporutina__c}', '${preguntas[i].orden__c}');`, {}).then(()=>{
-              console.log("AGREGUE preg. rutina")
+              // console.log("AGREGUE preg. rutina")
             }).catch(err =>{
               console.log("ERROR INSERT: " + JSON.stringify(err));
             })
@@ -342,7 +424,7 @@ export class DatabaseService {
         
         this.database.executeSql(`INSERT INTO motivooportunidad(sfid, name)
               VALUES ('${motivos[i].sfid}', '${motivos[i].name}');`, {}).then(()=>{
-                console.log("AGREGUE MOTIVO")
+                // console.log("AGREGUE MOTIVO")
               }).catch(err =>{
                 console.log("ERROR INSERT MOTIVOS: " + JSON.stringify(err));
               })
@@ -357,7 +439,7 @@ export class DatabaseService {
     for (let i = 0; i < desc.length; i++) {
       this.database.executeSql(`INSERT INTO descripciondefalla(sfid, name, motivooportunidadc__c)
             VALUES ('${desc[i].sfid}', '${desc[i].name}', '${desc[i].motivooportunidadc__c}');`, {}).then(()=>{
-              console.log("AGREGUE Descrip. de falla")
+              // console.log("AGREGUE Descrip. de falla")
             }).catch(err =>{
               console.log("ERROR INSERT: " + JSON.stringify(err));
             })
@@ -368,12 +450,12 @@ export class DatabaseService {
   });
 
   this.ticketProv.getTodasMotivosDesestabilizaciones().subscribe(response =>{
-    console.log("MOTIVOS DESEST: " + JSON.stringify(response));
+    // console.log("MOTIVOS DESEST: " + JSON.stringify(response));
     var motivoDesest = response.data;
     for (let i = 0; i < motivoDesest.length; i++) {
       this.database.executeSql(`INSERT INTO motivodedesestabilizacion(sfid, name, descripcionfalla__c)
             VALUES ('${motivoDesest[i].sfid}', '${motivoDesest[i].name}', '${motivoDesest[i].descripcionfalla__c}');`, {}).then(()=>{
-              console.log("AGREGUE motivo desestab.")
+              // console.log("AGREGUE motivo desestab.")
             }).catch(err =>{
               console.log("ERROR INSERT: " + JSON.stringify(err));
             })

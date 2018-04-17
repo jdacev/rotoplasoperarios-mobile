@@ -27,8 +27,12 @@ export class HomePage {
 
       this.authservice.loadUserCredentials();
       var data = this.authservice.AuthToken;
-      // this.asistenciaProv.getAsistencia(data.usuario.sfid);
-      console.log(JSON.stringify(data));
+      if(!data){
+        console.log("YENDO A LOGIN");
+        this.navCtrl.setRoot('LoginPage');
+        // this.asistenciaProv.getAsistencia(data.usuario.sfid);
+        console.log(JSON.stringify(data));
+      }
 
   }
 

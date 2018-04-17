@@ -337,7 +337,9 @@ export class CheckoutPage {
     this.asistenciaProv.postAsistencia('Salida', this.operador.sfid, this.lat, this.lng).then(response => {
       if(response){
         // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid);
-        this.authservice.AuthToken.asistencia.tipo__c == 'Salida';
+        this.authservice.AuthToken.asistencia.tipo__c = 'Salida';
+        localStorage.setItem('currentUser', JSON.stringify(this.authservice.AuthToken));
+        this.authservice.loadUserCredentials();
         if(this.images.length > 0){
           // this.moverArchivo(this.images);
           // console.log("response: " + response);
