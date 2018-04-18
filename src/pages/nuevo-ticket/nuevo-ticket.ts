@@ -297,8 +297,8 @@ export class NuevoTicketPage {
       'operadorapp__c': this.authservice.AuthToken.usuario.sfid,
       'createddate_heroku__c': (new Date()).toISOString(),
       'reason': this.motivoSeleccionado.name,
-      'descripciondefalla__c' : this.descripcionSeleccionada ? this.descripcionSeleccionada.name : null,
-      'motivodedesestabilizacion__c': this.motivoDesestabilizacionSeleccionado ? this.motivoDesestabilizacionSeleccionado.name : null,
+      'descripciondefalla__c' : (this.descripcionSeleccionada && this.descripcionSeleccionada != 'null') ? this.descripcionSeleccionada.name : '',
+      'motivodedesestabilizacion__c': (this.motivoDesestabilizacionSeleccionado && this.motivoDesestabilizacionSeleccionado != 'null') ? this.motivoDesestabilizacionSeleccionado.name : '',
       'accountid' : this.clienteSeleccionado
     }
 

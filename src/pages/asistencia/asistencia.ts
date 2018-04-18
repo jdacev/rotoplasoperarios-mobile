@@ -88,6 +88,7 @@ export class AsistenciaPage {
       let alert = this.alertCtrl.create({
         title: 'Entrada Laboral',
         subTitle: 'Usted se encuentra a una distancia mayor a la establecida para realizar el Ingreso.',
+        // buttons: ['Aceptar']
         buttons: [{text:'Entrar Igual',//'Aceptar',
         handler: () => {
              this.postAsistencia();
@@ -160,7 +161,8 @@ export class AsistenciaPage {
               console.log('Error getting location', error);
             });
         }, error => {
-          console.log('Error requesting location permissions', error)
+          console.log('Error requesting location permissions' + error)
+          console.log('Error requesting location permissions JSON: ' + JSON.stringify(error))
         });
       // }
 

@@ -43,6 +43,8 @@ export class DetalleRutinaPage {
       this.determinante = this.authservice.AuthToken.planta.determinante__c;
       this.formato = this.authservice.AuthToken.planta.formato__c;
 
+      this.images = [];
+
       // Recibo por parámetro todos los datos de la rutina.
       this.rutina = navParams.get('rutina')
 
