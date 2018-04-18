@@ -7,14 +7,17 @@ import { TicketsProvider } from "../providers/tickets/tickets";
 import { Network } from '@ionic-native/network';
 import { AuthService } from "../providers/auth-service/auth-service";
 import { URL_SERVICIOS } from "../config/url.services";
-
+import { File } from '@ionic-native/file';
 import { AlertController } from 'ionic-angular';
 import { Http } from '@angular/http';
+import { FileTransfer, FileUploadOptions, FileTransferObject  } from '@ionic-native/file-transfer';
 
 
 @Injectable()
 export class DatabaseService {
 
+  origen:string;
+  images:any=[];
   private database: SQLiteObject;
   private dbReady = new BehaviorSubject<boolean>(false);
 
@@ -25,7 +28,9 @@ export class DatabaseService {
               private network: Network,
               public authservice: AuthService,
               public http: Http,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController,
+              public file:File,
+              private transfer: FileTransfer) {
     this.platform.ready().then(()=>{
       this.sqlite.create({
         name: 'rotoplas.db',
@@ -472,6 +477,8 @@ export class DatabaseService {
 
 
  }
+
+ /*
  postOportunidades(){
        this.getOportunidades().then(response =>{
 
@@ -494,6 +501,7 @@ export class DatabaseService {
          });
        })
      }
+     */
      showAlert(title:string, subtitle:string) {
        let alert = this.alertCtrl.create({
          title: title,
@@ -504,4 +512,67 @@ export class DatabaseService {
        });
        alert.present();
      }
+    postOportunidades(){
+        this.origen = this.file.dataDirectory + 'tickets/';
+
+         this.getOportunidades().then(response =>{
+
+           for (var i in response) {
+
+               var subDir = response[i].id_case_sqllite.toString() + '/';
+
+               this.file.listDir(this.origen, subDir).then(response=>{
+                 for (let i = 0; i < response.length; i++) {
+                   this.images.push(response[i].nativeURL);
+                 }
+               }, error=>{
+                 console.log("falla file.listDir: "+JSON.stringify(error));
+                 //this.images = error;
+               });
+
+               this.ticketProv.createTicket(response[i]).then(id=>{
+                 if(id){
+                   if(this.images.length > 0){
+                     this.uploadImages(this.images, id);
+                   }
+                 }
+               }, error=>{
+               });
+           }
+        });
+      }
+
+      uploadImages(images, id){
+        let options: FileUploadOptions = {
+          fileKey: 'azureupload',
+          // fileName: fileName,
+          chunkedMode: false,
+          mimeType: "image/jpeg",
+          // mimeType: 'multipart/form-data',
+          // headers: {},
+          params : {'containername': "oportunidad" + id.toString()}
+        }
+
+        const fileTransfer: FileTransferObject = this.transfer.create();
+
+        for (let i = 0; i < images.length; i++) {
+          // console.log(images[i]);
+          options.fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[i].length);
+          fileTransfer.upload(images[i], URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
+          .then((data) => {
+            // console.log(data+" Uploaded Successfully");
+
+          }, (err) => {
+            console.log('Error:' + JSON.stringify(err));
+          });
+        }
+
+        // console.log("UPLOADING");
+        // console.log("Options:", options);
+        // console.log("Options: "+ options);
+        // console.log("Options: "+ JSON.stringify(options));
+
+
+
+      }
 }
