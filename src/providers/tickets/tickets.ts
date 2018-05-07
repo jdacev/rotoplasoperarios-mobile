@@ -3,6 +3,7 @@ import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { AlertController } from 'ionic-angular';
 import { URL_SERVICIOS } from "../../config/url.services";
+import { AuthService } from "../../providers/auth-service/auth-service";
 
 /*
   Generated class for the TicketsProvider provider.
@@ -15,7 +16,9 @@ export class TicketsProvider {
 
 
   constructor(public http: Http,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController,
+              public authservice: AuthService
+            ) {
     // console.log('Hello TicketsProvider Provider');
   }
 
@@ -75,7 +78,9 @@ export class TicketsProvider {
 
     return new Promise(resolve => {
         this.http.post(URL_SERVICIOS + '/ticket', data).subscribe(response => {
-          this.showAlert("Crear Oportunidad C", response.json().message);
+          if(this.authservice.AuthToken.asistencia.tipo__c == 'Entrada'){
+            this.showAlert("Crear Oportunidad C", response.json().message);
+          }
           resolve(response.json().id_case_heroku_c__c);
         }, error =>{
           this.showAlert("Error al crear Oportunidad C", error.json().message);

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { AlertController } from 'ionic-angular';
-
+import { AuthService } from "../../providers/auth-service/auth-service";
 import { URL_SERVICIOS } from "../../config/url.services";
 
 /*
@@ -15,7 +15,8 @@ import { URL_SERVICIOS } from "../../config/url.services";
 export class RutinasProvider {
 
   constructor(public http: Http,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController,
+              public authservice: AuthService) {
     // console.log('Hello RutinasProvider Provider');
   }
 
@@ -48,10 +49,12 @@ export class RutinasProvider {
   crearRutina(data){
     return new Promise(resolve => {
         this.http.post(URL_SERVICIOS + '/rutina', data).subscribe(response => {
-          this.showAlert("Crear Rutina", response.json().message);
-          resolve(response.json().id_rutina_heroku__c);
+          if(this.authservice.AuthToken.asistencia.tipo__c == 'Entrada'){
+            this.showAlert("Crear Rutina", response.json().message);
+            resolve(response.json().id_rutina_heroku__c);
+          }
         }, error =>{
-          this.showAlert("Error al crear Oportunidad C", error.json().message);
+          this.showAlert("Error al crear Rutina", error.json().message);
           resolve(false)
         });
     });

@@ -97,7 +97,7 @@ export class NuevaRutinaPage {
     var sourceDirectory = images[0].substring(0, images[0].lastIndexOf('/') + 1);
     var destino = dataDirectory + 'rutinas/' + id.toString() + '/';
     
-    console.log("ID EN MOVER ARCHIVO: " + id);
+    // console.log("ID EN MOVER ARCHIVO: " + id);
     // console.log("ID EN MOVER ARCHIVO: " + JSON.stringify(id));
     
 
@@ -197,7 +197,7 @@ export class NuevaRutinaPage {
           this.activities = data;
             for (let i = 0; i < this.activities.length; i++) {
               this.activities[i].observacion = '';
-              if(this.activities[i].tipo_de_respuesta__c){
+              if(this.activities[i].tipo_de_respuesta__c == 'true'){
                 this.activities[i].valor = false;
               }else{
                 this.activities[i].valor = undefined;
@@ -230,7 +230,7 @@ export class NuevaRutinaPage {
   //para deshabilitar el boton de crear
   respuestasIncompletas(){
     for (let i = 0; i < this.activities.length; i++) {
-        if(this.activities[i].valor == undefined || (!this.activities[i].tipo_de_respuesta__c && this.activities[i].valor == ""))
+        if(this.activities[i].valor == undefined || (this.activities[i].tipo_de_respuesta__c == 'false' && this.activities[i].valor == ""))
           return true;
     }
 
@@ -244,8 +244,8 @@ export class NuevaRutinaPage {
         listaActividades.push(
           {
             'id_pregunta_rutina__c': this.activities[i].sfid,
-            'valor_si_no__c' : this.activities[i].tipo_de_respuesta__c ? this.activities[i].valor : null,
-            'valornumerico__c' : !this.activities[i].tipo_de_respuesta__c ? this.activities[i].valor : null,
+            'valor_si_no__c' : this.activities[i].tipo_de_respuesta__c == 'true' ? this.activities[i].valor : null,
+            'valornumerico__c' :this.activities[i].tipo_de_respuesta__c  == 'false' ? this.activities[i].valor : null,
             'observaciones__c' : !this.activities[i].observaciones ? '' : this.activities[i].observaciones
           });
     }
@@ -261,9 +261,11 @@ export class NuevaRutinaPage {
     }
 
     if(this.network.type == 'none' || this.network.type == 'unknown'){
-        this.dbService.crearRutinaOffline(data).then(response => {
-          console.log("RESPONSE: " + response);
-          console.log("RESPONSE: " + JSON.stringify(response));
+      // console.log("rutina a crear OFFLINE: " + JSON.stringify(data));
+      
+      this.dbService.crearRutinaOffline(data).then(response => {
+          // console.log("RESPONSE: " + response);
+          // console.log("RESPONSE: " + JSON.stringify(response));
           if(response){
             if(this.images.length > 0){
               this.moverArchivo(this.images, response);
@@ -286,6 +288,7 @@ export class NuevaRutinaPage {
         //   console.log("ERROR CREANDO");
           
         // })
+        console.log("rutina a crear ONLINE: " + JSON.stringify(data));        
         this.rutinasProv.crearRutina(data).then(response=>{
           if(this.network.type == 'none' || this.network.type == 'unknown'){
             if(response){

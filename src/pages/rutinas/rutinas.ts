@@ -35,6 +35,7 @@ export class RutinasPage {
 
     this.listaAbierta = true;
     this.getRutinasUsuario();
+    this.dbService.getRutinasOffline();
   }
 
   ionViewDidLoad() {
@@ -109,7 +110,7 @@ export class RutinasPage {
 
       this.rutinasProv.getRutinasUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
           this.rutinasList = data.data;
-          console.log("RUTINAS: " + JSON.stringify(this.rutinasList));
+          // console.log("RUTINAS: " + JSON.stringify(this.rutinasList));
           
           this.loading = false;
       }, error =>{

@@ -68,6 +68,12 @@ export class CheckoutPage {
       this.lng = 0;
       this.cargarMapa();
       this.markerUsuario = null;
+      this.dbService.syncRutinas();
+      // this.dbService.getRutinasOffline().then(response=>{
+      //   console.log("RUTINAS EN CHECKOUT: " + JSON.stringify(response));
+      // }, error =>{
+      //   console.log("ERROR RUTINAS EN CHECKOUT: " + JSON.stringify(error));
+      // });
   }
 
   ionViewDidLoad() {
@@ -323,14 +329,16 @@ export class CheckoutPage {
         // buttons: ['Aceptar']
         buttons: [{text: 'Aceptar',
         handler: () => {
-              this.dbService.postOportunidades();
-             this.postAsistencia();
+              // this.dbService.syncOportunidades();
+              this.dbService.syncRutinas();
+            //  this.postAsistencia();
            }}]
       });
       alert.present();
     }else{
-      this.dbService.postOportunidades();
-      this.postAsistencia();
+      // this.dbService.syncOportunidades();
+      this.dbService.syncRutinas();
+      // this.postAsistencia();
     }
 
   }
@@ -372,18 +380,20 @@ export class CheckoutPage {
     // console.log("Options: " + JSON.stringify(options))
 
     const fileTransfer: FileTransferObject = this.transfer.create();
-
-    for (let i = 0; i < images.length; i++) {
-      // console.log(images[i]);
-      options.fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[i].length);
-      fileTransfer.upload(images[i], URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
+    images.forEach(image =>{
+      options.fileName = image.substring(image.lastIndexOf('/') + 1, image.length);
+      fileTransfer.upload(image, URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
       .then((data) => {
-        // console.log(data+" Uploaded Successfully");
-
+        console.log(data+" Uploaded Successfully");
+  
       }, (err) => {
         console.log('Error:' + JSON.stringify(err));
       });
-    }
+      
+    })
+    // for (let i = 0; i < images.length; i++) {
+      // console.log(images[i]);
+    // }
 
     // console.log("UPLOADING");
     // console.log("Options:", options);
