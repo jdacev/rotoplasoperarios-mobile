@@ -88,11 +88,11 @@ export class AsistenciaPage {
       let alert = this.alertCtrl.create({
         title: 'Entrada Laboral',
         subTitle: 'Usted se encuentra a una distancia mayor a la establecida para realizar el Ingreso.',
-        // buttons: ['Aceptar']
-        buttons: [{text:'Entrar Igual',//'Aceptar',
-        handler: () => {
-             this.postAsistencia();
-           }}]
+        buttons: ['Aceptar']
+        // buttons: [{text:'Entrar Igual',//'Aceptar',
+        // handler: () => {
+        //      this.postAsistencia();
+        //    }}]
       });
       alert.present();
     }else{
