@@ -253,6 +253,16 @@ export class DatabaseService {
     })
   }
 
+  getRutinaOfflineByRutina(idRutina){
+    var rutina;
+    return this.getRutinaFromSQliteByRutina(idRutina).then(data=>{
+      rutina = data;
+      return this.agregarActividades(rutina, function(rutina, actividades){
+        rutina.actividadrutina__c = actividades;
+      });
+    });
+  }
+
   getRutinasOffline(){
     var rutinas;
     return this.getRutinasUsuarioOffline().then(data=>{
@@ -284,10 +294,10 @@ export class DatabaseService {
             return rutinas;
           })
         }
-        
-      
-    
-      
+
+
+
+
       // this.http.post(URL_SERVICIOS + '/sync-oportunidades/', tickets).subscribe(response => {
       //   console.log("Sincronizo correctamente");
       //   resolve(response.json().id_case_heroku_c__c);
@@ -296,7 +306,23 @@ export class DatabaseService {
       //    this.showAlert("Falló al sincronizar las Oportunidades.", error);
       //    resolve(null);
       //  });
-     
+
+  }
+
+
+  getRutinaFromSQliteByRutina(idRutina){
+    return this.isReady()
+    .then(()=>{
+
+      return this.database.executeSql(`SELECT * FROM rutinas WHERE id_rutina_sqllite = '${idRutina}'`, [])
+      .then((data)=>{
+        let rutina = [];
+        for(let i=0; i<data.rows.length; i++){
+          rutina.push(data.rows.item(i));
+        }
+        return rutina;
+      })
+    })
   }
 
   getRutinasUsuarioOffline(){
@@ -526,7 +552,7 @@ export class DatabaseService {
 
  }
 
- 
+
      showAlert(title:string, subtitle:string) {
        let alert = this.alertCtrl.create({
          title: title,
@@ -544,7 +570,7 @@ export class DatabaseService {
 
     uploadRutinasImages(file, origen, subDir, rutina, rutinasProv, transfer, database){
       console.log("En update por listar archivos");
-      
+
       file.listDir(origen, subDir).then(data=>{
         console.log("Imagenes: " + JSON.stringify(data));
         var images = [];
@@ -552,17 +578,17 @@ export class DatabaseService {
         data.forEach(imagen => {
           images.push(imagen.nativeURL);
           console.log("Agregué imagen: " + JSON.stringify(imagen));
-          
+
         });
-      
+
         console.log("Por crear rutina");
-        
+
         rutinasProv.crearRutina(rutina).then(id=>{
 
             console.log("Entré a crear rutina online: " + JSON.stringify(rutina));
             console.log("Id generado creado: " + id);
-            
-            
+
+
             // database.executeSql(
             //   `DELETE FROM rutinas WHERE id_rutina_sqllite = '${rutina.id_rutina_sqllite}';`,{
 
@@ -580,26 +606,26 @@ export class DatabaseService {
                     // headers: {},
                     params : {'containername': "rutina" + id.toString()}
                   }
-          
+
                   const fileTransfer: FileTransferObject = transfer.create();
                     console.log("por subir imagenes");
-                    
+
                     images.forEach(image =>{
                     console.log("En foreach, imagen: " + image);
-                    
+
                     options.fileName = image.substring(image.lastIndexOf('/') + 1, image.length);
                     fileTransfer.upload(image, URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
                     .then((data) => {
                       console.log("SUBI CORRECTAMENTE EL ARCHIVO");
-                      
+
                     }, (err) => {
                       console.log('Error:' + JSON.stringify(err));
                     });
                   })
-                }            
+                }
         }, error=>{
           console.log("Error creando rutina: " + JSON.stringify(error));
-          
+
         });
       }, error=>{
         console.log("falla file.listDir: "+JSON.stringify(error));
@@ -609,18 +635,29 @@ export class DatabaseService {
     postRutinas(uploadRutinasImages){
       this.origen = this.file.dataDirectory + 'rutinas/';
 
-      this.getRutinasOffline().then(response => {
-          console.log("RUTINAS: " + JSON.stringify(response));
-          
-          response.forEach(rutina=>{
-            console.log("Rutina a subir: " + JSON.stringify(rutina));
-            
-            var subDir = rutina.id_rutina_sqllite.toString() + '/';
-            uploadRutinasImages(this.file, this.origen, subDir, rutina, this.rutinasProv,  this.transfer, this.database);
-          })
+      var rutinasLite = this.database.executeSql(` SELECT * FROM rutinas `, [])
+      .then((data)=>{
+        let rutinasLite = [];
+        for(let i=0; i<data.rows.length; i++){
+          rutinasLite.push(data.rows.item(i));
+        }
+
+        for(var i in rutinasLite) {
+          console.log("dentro del for rutinasLite:" + JSON.stringify(rutinasLite));
+
+          this.getRutinaOfflineByRutina(rutinasLite[i].id_rutina_sqllite).then(response => {
+
+              response.forEach(rutina=>{
+                console.log("Rutina a subir: " + JSON.stringify(rutina));
+                var subDir = rutina.id_rutina_sqllite.toString() + '/';
+                uploadRutinasImages(this.file, this.origen, subDir, rutina, this.rutinasProv,  this.transfer, this.database);
+              });
+          });
+        }
+        console.log("fuera del for rutinasLite:" + JSON.stringify(rutinasLite));
+        return rutinasLite;
       })
     }
-
 
 
     syncOportunidades(){
@@ -628,10 +665,10 @@ export class DatabaseService {
     }
 
     upload(file, origen, subDir, oportunidad, ticketProv, transfer, database){
-      
-      
+
+
       file.listDir(origen, subDir).then(data=>{
-        
+
         var images = [];
         for (let i = 0; i < data.length; i++) {
           images.push(data[i].nativeURL);
@@ -639,14 +676,14 @@ export class DatabaseService {
 
         ticketProv.createTicket(oportunidad).then(id=>{
           console.log("cree el ticket con id: " + id);
-          
-              
+
+
               database.executeSql(
                 `DELETE FROM oportunidades WHERE id_case_sqllite = '${oportunidad.id_case_sqllite}';`,{
 
                 });
                   console.log("BORRE case: " + oportunidad.id_case_sqllite);
-                
+
                   if(images.length > 0){
 
                     let options: FileUploadOptions = {
@@ -658,39 +695,39 @@ export class DatabaseService {
                       // headers: {},
                       params : {'containername': "oportunidad" + id.toString()}
                     }
-                    
+
                     const fileTransfer: FileTransferObject = transfer.create();
-            
+
                     images.forEach(image =>{
-                      
+
                       options.fileName = image.substring(image.lastIndexOf('/') + 1, image.length);
                       fileTransfer.upload(image, URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
                       .then((data) => {
-            
+
                       }, (err) => {
                         console.log('Error:' + JSON.stringify(err));
                       });
                     })
                   }
-                  
-                
-              
+
+
+
           }, error=>{
-            
+
           });
      }, error=>{
        console.log("falla file.listDir: "+JSON.stringify(error));
 
       }).then(response=>{
-       
+
      }).then(response=>{
-      
+
     });
     }
 
     postOportunidades(upload){
         this.origen = this.file.dataDirectory + 'tickets/';
-        
+
          this.getOportunidades().then(response =>{
 
              response.forEach(oportunidad =>{
@@ -698,13 +735,13 @@ export class DatabaseService {
 
                var subDir = oportunidad.id_case_sqllite.toString() + '/';
 
-               
+
                upload(this.file, this.origen, subDir, oportunidad, this.ticketProv,  this.transfer, this.database)
              })
 
 
         }).then(()=>{
-          
+
         });
       }
 
