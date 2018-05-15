@@ -581,19 +581,16 @@ export class DatabaseService {
 
         });
 
-        console.log("Por crear rutina");
+        console.log("POR CREAR RUTINA: " + JSON.stringify(rutina));
 
         rutinasProv.crearRutina(rutina).then(id=>{
 
             console.log("Entré a crear rutina online: " + JSON.stringify(rutina));
             console.log("Id generado creado: " + id);
 
-
-            // database.executeSql(
-            //   `DELETE FROM rutinas WHERE id_rutina_sqllite = '${rutina.id_rutina_sqllite}';`,{
-
-            //   })
-                // console.log("BORRE rutina: " + rutina.id_rutina_sqllite);
+            database.executeSql(
+              `DELETE FROM rutinas WHERE id_rutina_sqllite = '${rutina.id_rutina_sqllite}';`,{});
+              console.log("BORRE rutina: " + rutina.id_rutina_sqllite);
 
                 if(images.length > 0){
 
