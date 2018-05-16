@@ -68,7 +68,7 @@ export class CheckoutPage {
       this.lng = 0;
       this.cargarMapa();
       this.markerUsuario = null;
-      this.dbService.syncRutinas();
+      // this.dbService.syncRutinas();
       // this.dbService.getRutinasOffline().then(response=>{
       //   console.log("RUTINAS EN CHECKOUT: " + JSON.stringify(response));
       // }, error =>{
@@ -326,19 +326,19 @@ export class CheckoutPage {
       let alert = this.alertCtrl.create({
         title: 'Salida Laboral',
         subTitle: 'Usted se encuentra a una distancia mayor a la establecida para realizar la Salida.',
-        // buttons: ['Aceptar']
-        buttons: [{text: 'Aceptar',
-        handler: () => {
-              // this.dbService.syncOportunidades();
-              this.dbService.syncRutinas();
-            //  this.postAsistencia();
-           }}]
+        buttons: ['Aceptar']
+        // buttons: [{text: 'Aceptar',
+        // handler: () => {
+        //       // this.dbService.syncOportunidades();
+        //       this.dbService.syncRutinas();
+        //     //  this.postAsistencia();
+        //    }}]
       });
       alert.present();
     }else{
-      // this.dbService.syncOportunidades();
+      this.dbService.syncOportunidades();
       this.dbService.syncRutinas();
-      // this.postAsistencia();
+      this.postAsistencia();
     }
 
   }

@@ -590,6 +590,7 @@ export class DatabaseService {
 
             database.executeSql(
               `DELETE FROM rutinas WHERE id_rutina_sqllite = '${rutina.id_rutina_sqllite}';`,{});
+              
               console.log("BORRE rutina: " + rutina.id_rutina_sqllite);
 
                 if(images.length > 0){
