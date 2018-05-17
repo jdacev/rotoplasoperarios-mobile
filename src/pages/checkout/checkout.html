@@ -75,7 +75,7 @@
           </ion-fab>
         </ion-col>
 
-        <ion-col col-3>
+        <ion-col col-3 *ngIf="images.length < 3">
           <ion-fab>
             <button ion-fab mini color="danger" (click)="capturar()"><ion-icon name="add"></ion-icon></button>
           </ion-fab>
