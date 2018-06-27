@@ -10,7 +10,7 @@ import { AuthService } from "../providers/auth-service/auth-service";
 import { URL_SERVICIOS } from "../config/url.services";
 import { File } from '@ionic-native/file';
 import { AlertController } from 'ionic-angular';
-import { Http, Jsonp } from '@angular/http';
+import { Http } from '@angular/http';
 import { FileTransfer, FileUploadOptions, FileTransferObject  } from '@ionic-native/file-transfer';
 
 
@@ -46,6 +46,7 @@ export class DatabaseService {
         // if(this.network.type != 'none' && this.network.type != 'unknown'){
           this.createTables().then(()=>{
             //communicate we are ready!
+            this.actualizarTabla();
             this.dbReady.next(true);
           });
         // }
@@ -60,6 +61,15 @@ export class DatabaseService {
       //communicate we are ready!
       this.dbReady.next(true);
     });
+  }
+
+  async actualizarTabla() {
+    try {
+      await this.database.executeSql('ALTER TABLE actividadrutina ADD COLUMN foto1__c TEXT',{});
+      await this.database.executeSql('ALTER TABLE actividadrutina ADD COLUMN foto2__c TEXT',{});
+    } catch(e) {
+      console.log('Error: '+ JSON.stringify(e));
+    }
   }
 
   createTables(){
@@ -227,7 +237,10 @@ export class DatabaseService {
     // console.log("Por agregar ActividadesRutina: " + JSON.stringify(actividadesRutina));
     for(let i in actividadesRutina){
       this.database.executeSql("INSERT INTO actividadrutina (id_rutina_sqllite, id_pregunta_rutina__c," +
-      "valor_si_no__c, valornumerico__c, observaciones__c) VALUES ('" + id_rutinas_heroku__c + "', '" + actividadesRutina[i].id_pregunta_rutina__c +"', " + (actividadesRutina[i].valor_si_no__c ? 1 : 0) + ", " + (!actividadesRutina[i].valornumerico__c ? null: actividadesRutina[i].valornumerico__c) + ", '" + actividadesRutina[i].observaciones__c + "');" , {}).then((result)=>{
+      "valor_si_no__c, valornumerico__c, observaciones__c, foto1__c, foto2__c) VALUES ('" + id_rutinas_heroku__c + "', '" + 
+      actividadesRutina[i].id_pregunta_rutina__c +"', " + (actividadesRutina[i].valor_si_no__c ? 1 : 0) + ", " +
+       (!actividadesRutina[i].valornumerico__c ? null: actividadesRutina[i].valornumerico__c) + ", '" + 
+       actividadesRutina[i].observaciones__c + "','" + actividadesRutina[i].foto1__c + "','" + actividadesRutina[i].foto2__c + "');" , {}).then((result)=>{
         // console.log("AGREGUE ACTIVIDADUTINA: " + JSON.stringify(actividadesRutina[i]));
       }, error =>{
         console.log("ERROR AGREGANDO:" + JSON.stringify(error));
@@ -359,7 +372,7 @@ export class DatabaseService {
   }
 
   getRespuestasActividadesOffline(idRutina){
-    return this.database.executeSql(`SELECT actividadrutina.id_pregunta_rutina__c, preguntarutina.name, actividadrutina.valor_si_no__c, actividadrutina.valornumerico__c, actividadrutina.observaciones__c FROM rutinas INNER JOIN actividadrutina ON (rutinas.id_rutina_sqllite = actividadrutina.id_rutina_sqllite) INNER JOIN preguntarutina ON (actividadrutina.id_pregunta_rutina__c = preguntarutina.sfid) WHERE rutinas.id_rutina_sqllite = '${idRutina}'`, [])
+    return this.database.executeSql(`SELECT actividadrutina.id_pregunta_rutina__c, preguntarutina.name, actividadrutina.valor_si_no__c, actividadrutina.valornumerico__c, actividadrutina.observaciones__c, actividadrutina.foto1__c, actividadrutina.foto2__c FROM rutinas INNER JOIN actividadrutina ON (rutinas.id_rutina_sqllite = actividadrutina.id_rutina_sqllite) INNER JOIN preguntarutina ON (actividadrutina.id_pregunta_rutina__c = preguntarutina.sfid) WHERE rutinas.id_rutina_sqllite = '${idRutina}'`, [])
       .then((data)=>{
         let respuestas = [];
         for(let i=0; i<data.rows.length; i++){

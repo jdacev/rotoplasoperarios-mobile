@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
@@ -9,6 +9,7 @@ import { DatabaseService } from "../../services/database-service";
 import { NetworkService } from "../../services/network-service";
 import { Network } from '@ionic-native/network';
 import { URL_SERVICIOS } from "../../config/url.services";
+import { Slides } from 'ionic-angular';
 
 @IonicPage()
 @Component({
@@ -16,6 +17,7 @@ import { URL_SERVICIOS } from "../../config/url.services";
   templateUrl: 'nueva-rutina.html',
 })
 export class NuevaRutinaPage {
+  @ViewChild(Slides) slides: Slides;
 
   loading:boolean;
   ptarName:string;
@@ -26,6 +28,7 @@ export class NuevaRutinaPage {
   tipoRutinas = [];
   tipoRutina:string;
   observacion:string;
+  actividadActual = [];
 
   images = [];
 
@@ -64,6 +67,12 @@ export class NuevaRutinaPage {
 
   //Método para capturar imágenes y guardarlas en un array.
   capturar(){
+    let idx = this.slides.getActiveIndex();
+    // console.log(this.activities[idx]);
+    if(this.activities[idx].foto1__c !== undefined && this.activities[idx].foto2__c !== undefined) {
+      this.presentToast('Soló puedo agregar dos fotos por actividad');
+      return;
+    };
     const options: CameraOptions = {
       quality: 50,
       destinationType: this.camera.DestinationType.FILE_URI,
@@ -71,10 +80,18 @@ export class NuevaRutinaPage {
       encodingType: this.camera.EncodingType.JPEG,
       mediaType: this.camera.MediaType.PICTURE
     }
-
     this.camera.getPicture(options).then((imagePath) => {
-      this.images.push(imagePath)
+      let fileName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.length);
+      if(this.activities[idx].foto1__c === undefined) {
+        this.activities[idx].foto1__c = fileName;
+      } else if(this.activities[idx].foto1__c !== undefined) {
+        this.activities[idx].foto2__c = fileName;
+      }
 
+      this.images.push({
+        path:imagePath,
+        metada:this.activities[idx]
+      });
     }, (err) => {
      // Handle error
     });
@@ -91,10 +108,10 @@ export class NuevaRutinaPage {
   /*Muevo el archivo de la carpeta donde se guarda la imagen capturada,
   a una carpeta que 'rutinas' que le creo.
   */
-  moverArchivo(images:string[], id){
+  moverArchivo(images:any[], id){
     var dataDirectory=this.file.dataDirectory;
     var origen = dataDirectory + 'rutinas/'
-    var sourceDirectory = images[0].substring(0, images[0].lastIndexOf('/') + 1);
+    var sourceDirectory = images[0].path.substring(0, images[0].path.lastIndexOf('/') + 1);
     var destino = dataDirectory + 'rutinas/' + id.toString() + '/';
     
     // console.log("ID EN MOVER ARCHIVO: " + id);
@@ -129,7 +146,7 @@ export class NuevaRutinaPage {
       //Muevo todas las imágenes al nuevo directorio.
       for (let i = 0; i < images.length; i++) {
 
-          var fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[0].length);
+          var fileName = images[i].path.substring(images[i].path.lastIndexOf('/') + 1, images[0].path.length);
 
 
           this.file.moveFile(sourceDirectory,fileName,destino,fileName)
@@ -246,7 +263,9 @@ export class NuevaRutinaPage {
             'id_pregunta_rutina__c': this.activities[i].sfid,
             'valor_si_no__c' : this.activities[i].tipo_de_respuesta__c == 'true' ? this.activities[i].valor : null,
             'valornumerico__c' :this.activities[i].tipo_de_respuesta__c  == 'false' ? this.activities[i].valor : null,
-            'observaciones__c' : !this.activities[i].observaciones ? '' : this.activities[i].observaciones
+            'observaciones__c' : !this.activities[i].observaciones ? '' : this.activities[i].observaciones,
+            'foto1__c': !this.activities[i].foto1__c ? '' : this.activities[i].foto1__c,
+            'foto2__c': !this.activities[i].foto2__c ? '' : this.activities[i].foto2__c
           });
     }
 
@@ -333,9 +352,12 @@ export class NuevaRutinaPage {
     const fileTransfer: FileTransferObject = this.transfer.create();
 
     for (let i = 0; i < images.length; i++) {
+      // enviar metada imagen
+      options.params.metada = images[i].metada;
+
       // console.log(images[i]);
-      options.fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[i].length);
-      fileTransfer.upload(images[i], URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
+      options.fileName = images[i].path.substring(images[i].path.lastIndexOf('/') + 1, images[i].path.length);
+      fileTransfer.upload(images[i].path, URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
       .then((data) => {
         // console.log(data+" Uploaded Successfully");
 
@@ -348,7 +370,6 @@ export class NuevaRutinaPage {
     // console.log("Options:", options);
     // console.log("Options: "+ options);
     // console.log("Options: "+ JSON.stringify(options));
-
 
 
   }

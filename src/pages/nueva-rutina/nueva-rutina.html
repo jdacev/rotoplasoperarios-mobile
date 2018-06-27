@@ -94,6 +94,8 @@
         </ion-item>
         <br><br>
 
+
+
       </ion-slide>
 
     </ion-slides>
@@ -113,10 +115,10 @@
 
       <ion-col col-3 *ngFor="let image of images; let i = index">
         <ion-thumbnail>
-          <img [src]="image" alt="">
+          <img [src]="image.path" alt="">
         </ion-thumbnail>
         <ion-fab *ngIf="images.length > 0" class="fabDeleteImagen">
-          <button class="botonEliminarImagen" (click)="eliminarImagen(i, image)" color="dark" ion-fab mini><ion-icon name="close"></ion-icon></button>
+          <button class="botonEliminarImagen" (click)="eliminarImagen(i, image.path)" color="dark" ion-fab mini><ion-icon name="close"></ion-icon></button>
         </ion-fab>
       </ion-col>
 
