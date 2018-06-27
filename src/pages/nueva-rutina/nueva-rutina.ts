@@ -70,7 +70,7 @@ export class NuevaRutinaPage {
     let idx = this.slides.getActiveIndex();
     // console.log(this.activities[idx]);
     if(this.activities[idx].foto1__c !== undefined && this.activities[idx].foto2__c !== undefined) {
-      this.presentToast('Soló puedo agregar dos fotos por actividad');
+      this.presentToast('Soló puede agregar dos imagénes por actividad');
       return;
     };
     const options: CameraOptions = {
