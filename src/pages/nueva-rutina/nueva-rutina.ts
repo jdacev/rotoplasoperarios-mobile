@@ -31,6 +31,7 @@ export class NuevaRutinaPage {
   actividadActual = [];
 
   images = [];
+  imagesFiltro = [];
 
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
@@ -78,7 +79,8 @@ export class NuevaRutinaPage {
       destinationType: this.camera.DestinationType.FILE_URI,
       sourceType: this.camera.PictureSourceType.CAMERA,
       encodingType: this.camera.EncodingType.JPEG,
-      mediaType: this.camera.MediaType.PICTURE
+      mediaType: this.camera.MediaType.PICTURE,
+      correctOrientation: true
     }
     this.camera.getPicture(options).then((imagePath) => {
       let fileName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.length);
@@ -92,6 +94,10 @@ export class NuevaRutinaPage {
         path:imagePath,
         metada:this.activities[idx]
       });
+      this.imagesFiltro.push({
+        path:imagePath,
+        metada:this.activities[idx]
+      })
     }, (err) => {
      // Handle error
     });
@@ -177,11 +183,23 @@ export class NuevaRutinaPage {
   }
 
   //Función que elimina una imagen capturada.
-  eliminarImagen(pos:number, imagen:string){
-    var directorio = imagen.substring(0, imagen.lastIndexOf('/') + 1);
-    var nombreArchivo = imagen.substring(imagen.lastIndexOf('/') + 1, imagen.length);
+  eliminarImagen(pos:number, imagen:any){
+    var directorio = imagen.path.substring(0, imagen.path.lastIndexOf('/') + 1);
+    var nombreArchivo = imagen.path.substring(imagen.path.lastIndexOf('/') + 1, imagen.path.length);
     this.file.removeFile(directorio, nombreArchivo);
-    this.images.splice(pos, 1)
+    // this.images.splice(pos, 1)
+    
+    for(let i=0; i<this.activities.length; i++) {
+      if(this.images[i] === imagen) {
+        this.images.splice(i,1);
+      }
+      if(this.activities[i].foto1__c === imagen.path.substring(imagen.path.lastIndexOf('/') + 1, imagen.path.length)) {
+        delete this.activities[i].foto1__c;
+      } else if(this.activities[i].foto2__c === imagen.path.substring(imagen.path.lastIndexOf('/') + 1, imagen.path.length)) {
+        delete this.activities[i].foto2__c;
+      }
+    }
+    this.slideChanged();
   }
 /***********************************************************************/
 
@@ -372,6 +390,13 @@ export class NuevaRutinaPage {
     // console.log("Options: "+ JSON.stringify(options));
 
 
+  }
+
+  slideChanged() {
+    let currentIndex = this.slides.getActiveIndex();
+    this.imagesFiltro = this.images.filter((item) => {
+      return item.metada == this.activities[currentIndex];
+    });
   }
 
 }
