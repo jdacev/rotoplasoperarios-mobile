@@ -21,6 +21,7 @@ import { FileOpener } from '@ionic-native/file-opener';
 import { DocumentViewer } from '@ionic-native/document-viewer';
 import { SQLite } from '@ionic-native/sqlite';
 import { Network } from '@ionic-native/network';
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 
 
 //servicios
@@ -69,6 +70,7 @@ import { SyncProvider } from '../providers/sync/sync';
     AsistenciaProvider,
     GoogleMaps,
     Geolocation,
+    BackgroundGeolocation,
     LocationAccuracy,
     PlantasProvider,
     FileOpener,
