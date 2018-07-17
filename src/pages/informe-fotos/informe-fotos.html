@@ -1,0 +1,97 @@
+<ion-header>
+  <ion-navbar hideBackButton color="blueRotoplas">
+
+    <ion-buttons left>
+      <button ion-button icon-only menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+
+    <ion-title text-center style="padding-right:60px">
+      Crear Informe fotografico
+    </ion-title>
+
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <h5 class="titulo">
+    Información de Planta
+  </h5>
+
+  <ion-item>
+    <ion-label>
+      <b>Planta</b>
+    </ion-label>
+    <ion-input disabled text-right type="text" [(ngModel)]="ptarName"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>
+      <b>Determinante</b>
+    </ion-label>
+    <ion-input disabled text-right type="text" [(ngModel)]="determinante"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>
+      <b>Formato</b>
+    </ion-label>
+    <ion-input disabled text-right type="text" [(ngModel)]="formato"></ion-input>
+  </ion-item>
+
+  <h5 class="titulo">
+    Observación
+  </h5>
+
+  <ion-item>
+    <ion-textarea rows="4" type="text" [(ngModel)]="observacion"></ion-textarea>
+  </ion-item>
+
+  <h5 class="titulo">
+    Evidencias
+  </h5>
+
+  <ion-grid>
+
+    <ion-row>
+
+      <ion-col col-3 *ngFor="let image of imagesFiltro; let i = index">
+        <ion-thumbnail>
+          <img [src]="image.path" alt="">
+        </ion-thumbnail>
+        <ion-fab *ngIf="images.length > 0" class="fabDeleteImagen">
+          <button class="botonEliminarImagen" (click)="eliminarImagen(i, image)" color="dark" ion-fab mini>
+            <ion-icon name="close"></ion-icon>
+          </button>
+        </ion-fab>
+      </ion-col>
+
+      <ion-col col-3 *ngIf="images.length < 40">
+        <ion-fab>
+          <button ion-fab mini color="danger" (click)="capturar()">
+            <ion-icon name="add"></ion-icon>
+          </button>
+        </ion-fab>
+      </ion-col>
+
+    </ion-row>
+  </ion-grid>
+
+  <ion-row>
+
+    <ion-col text-right>
+      <button ion-button color="blueRotoplas" (click)="crearInforme()" *ngIf="!loading">Crear</button>
+      <button ion-button color="blueRotoplas" ion-button disabled class="loginButton" *ngIf="loading">
+        <ion-spinner></ion-spinner>
+      </button>
+    </ion-col>
+    <ion-col text-left>
+      <button ion-button color="blueRotoplas" (click)="cancel()">Cancelar</button>
+    </ion-col>
+  </ion-row>
+
+</ion-content>

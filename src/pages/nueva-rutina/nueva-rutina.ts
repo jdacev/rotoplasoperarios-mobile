@@ -126,11 +126,11 @@ export class NuevaRutinaPage {
 
       this.images.push({
         path: imagePath,
-        metada: metadata
+        metadata: metadata
       });
       this.imagesFiltro.push({
         path: imagePath,
-        metada: metadata
+        metadata: metadata
       });
 
       localStorage.setItem('actividad-parcial-img',JSON.stringify(this.images));
@@ -416,7 +416,7 @@ export class NuevaRutinaPage {
 
     for (let i = 0; i < images.length; i++) {
       // enviar metada imagen
-      options.params.metada = images[i].metada;
+      options.params.metadata = images[i].metadata;
 
       // console.log(images[i]);
       options.fileName = images[i].path.substring(images[i].path.lastIndexOf('/') + 1, images[i].path.length);
