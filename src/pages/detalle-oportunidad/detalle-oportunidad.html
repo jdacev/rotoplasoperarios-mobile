@@ -43,6 +43,13 @@
   </h5>
 
   <ion-item>
+    <ion-label style="white-space: normal"><b>Etapa</b></ion-label>
+    <ion-label text-right>{{ticket.status}}</ion-label>
+  </ion-item>
+  
+    <br>
+
+  <ion-item>
     <ion-label style="white-space: normal"><b>Motivo</b></ion-label>
     <ion-label text-right>{{ticket.reason}}</ion-label>
     <!-- <ion-select style="width: 50%" [(ngModel)]="motivoSeleccionado" (ionChange)="getDescripcionMotivos(motivoSeleccionado)">

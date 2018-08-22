@@ -6,12 +6,9 @@ import { Keyboard } from '@ionic-native/keyboard';
 
 import { File } from '@ionic-native/file';
 
-import { LocalNotifications } from '@ionic-native/local-notifications';
+//import { FirebaseMessaging } from '@ionic-native/firebase-messaging';
 import { FileOpener } from '@ionic-native/file-opener';
 import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-viewer';
-import { BackgroundGeolocation, BackgroundGeolocationConfig, BackgroundGeolocationResponse } from '@ionic-native/background-geolocation';
-
-
 
 import { AuthService } from "../providers/auth-service/auth-service";
 import { AsistenciaProvider } from "../providers/asistencia/asistencia";
@@ -21,6 +18,12 @@ import { NetworkService } from "../services/network-service";
 import { HomePage } from '../pages/home/home';
 import { LoginPage } from '../pages/login/login';
 import { AsistenciaPage } from '../pages/asistencia/asistencia';
+import { Geolocation } from '@ionic-native/geolocation';
+import { PresenciaPlantaProvider } from '../providers/presencia-planta/presencia-planta';
+import * as moment from 'moment';
+moment.locale('es');
+import { Observable } from 'Rxjs/rx';
+import { Subscription } from "rxjs/Subscription";
 
 @Component({
   templateUrl: 'app.html'
@@ -50,15 +53,18 @@ export class MyApp {
     private fileOpener: FileOpener,
     private document: DocumentViewer,
     private networkService: NetworkService,
-    private backgroundGeolocation: BackgroundGeolocation) {
+    //private firebaseMessaging: FirebaseMessaging,
+    private geolocation: Geolocation,
+    private _presencia: PresenciaPlantaProvider
+  ) {
 
     platform.ready().then(() => {
+      //this.revisarNotificaciones();
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       keyboard.disableScroll(true);
       statusBar.styleDefault();
       splashScreen.hide();
-      this.revisarUbicacion();
     });
 
 
@@ -75,10 +81,6 @@ export class MyApp {
       this.asistencia = this.authservice.AuthToken.asistencia;
       this.rootPage = 'HomePage';
       this.appCtrl.navPop();
-
-      // }, error => {
-
-      // })
 
     } else {
       this.goToPage('LoginPage')
@@ -115,15 +117,7 @@ export class MyApp {
       openWith: { enabled: false }
     }
 
-    this.document.viewDocument(url, 'application/pdf', options)
-
-    // InAppBrowser()
-    // this.file.checkFile(this.file.applicationDirectory + 'www/assets/', 'Manual-Tipo-A.pdf').then(_ => console.log('File exists: www/assets/')).catch(err => console.log('File doesnt exist'));
-    //
-    // console.log('abriendo archivo: url: ' + this.file.applicationDirectory + 'www/assets/' + 'Manual-Tipo-A.pdf');
-    // this.fileOpener.open(this.file.applicationDirectory + 'www/assets/' + 'Manual-Tipo-A', 'application/pdf')
-    //   .then(() => {console.log('File is opened')}, error => {console.log(error); console.log(JSON.stringify(error))})
-    //   .catch(e => {console.log('Error openening file'); console.log(e)});
+    this.document.viewDocument(url, 'application/pdf', options);
 
   }
 
@@ -165,7 +159,13 @@ export class MyApp {
         });
       }
 
-
+      alert.addButton({
+        text: 'Cancelar',
+        handler: selected => {
+          console.log('CANCEL')
+          return
+        }
+      });
       alert.addButton({
         text: 'Aceptar',
         handler: selected => {
@@ -194,13 +194,6 @@ export class MyApp {
 
         }
       });
-      alert.addButton({
-        text: 'Cancelar',
-        handler: selected => {
-          console.log('CANCEL')
-          return
-        }
-      });
 
       alert.present();
 
@@ -210,29 +203,7 @@ export class MyApp {
   }
 
   deshabilitarOpcion(tipo: string) {
-
-    // if(this.asistenciaProv.asistencia){
-    //     if(this.asistenciaProv.asistencia.length == 0){
-    //       if(tipo == 'Salida'){
-    //         return true;
-    //       }
-    //       if(tipo == 'Entrada'){
-    //         return false;
-    //       }
-    //     }
-    //     if(tipo == 'Salida' && this.asistenciaProv.asistencia[0].tipo__c == 'Entrada'){
-    //       return false
-    //     }
-    //     if(tipo == 'Entrada' && this.asistenciaProv.asistencia[0].tipo__c == 'Salida'){
-    //       return false
-    //     }
-    //     return true
-    // }
-    // return true;
-
     if (this.authservice.AuthToken) {
-      // console.log("Tipo: " + tipo);
-      // console.log("authservice.AuthToken.asistencia.tipo__c: " + this.authservice.AuthToken.asistencia.tipo__c);
 
       if (this.authservice.AuthToken.asistencia.tipo__c == '' || this.authservice.AuthToken.asistencia.tipo__c == null || this.authservice.AuthToken.asistencia.tipo__c == 'Salida') {
         if (tipo == 'Salida') {
@@ -258,6 +229,7 @@ export class MyApp {
 
     this.asistenciaProv.postAsistencia('Salida', this.userData.usuario.sfid, this.authservice.AuthToken.planta.billinglatitude, this.authservice.AuthToken.planta.billinglatitude).then(response => {
       if (response) {
+        localStorage.removeItem('ausencia');
         this.asistenciaProv.getAsistencia(this.userData.usuario.sfid).subscribe(resp => {
           this.asistencia = resp.data;
         }, error => {
@@ -273,17 +245,13 @@ export class MyApp {
 
   logout() {
 
-    // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{
-
-    // this.asistencia = response.data;
     this.asistencia = this.authservice.AuthToken.asistencia;
 
-    // if(this.asistencia.length != 0 && this.asistencia[0].tipo__c == 'Entrada'){
     if (this.asistencia != '' && this.asistencia != null && this.asistencia.tipo__c == 'Entrada') {
       let alert = this.alertCtrl.create({
         title: "Error al cerrar sesión",
         subTitle: "Para cerrar sesión debe realizar la Salida Laboral.",
-        buttons: ['Aceptar', 'Cancelar']
+        buttons: ['Aceptar']
       });
       alert.present();
 
@@ -292,53 +260,106 @@ export class MyApp {
       let alert = this.alertCtrl.create({
         title: "Cerrar Sesión",
         subTitle: "¿Seguro que desea cerrar sesión?",
-        buttons: [{
-          text: 'Aceptar',
-          handler: data => {
-            this.menuCtrl.close();
-            let nav = this.appCtrl.getRootNav();
-            this.authservice.logout();
-            nav.setRoot('LoginPage');
-          }
-        }, 'Cancelar']
+        buttons: [
+          'Cancelar', {
+            text: 'Aceptar',
+            handler: data => {
+              this.menuCtrl.close();
+              let nav = this.appCtrl.getRootNav();
+              this.authservice.logout();
+              nav.setRoot('LoginPage');
+            }
+          }]
       });
       alert.present();
 
     }
 
     console.log(JSON.stringify(this.asistencia))
-    // }, error => {
-
-    // })
 
   }
 
-  revisarUbicacion() {
-    const config: BackgroundGeolocationConfig = {
-      desiredAccuracy: 10,
-      stationaryRadius: 20,
-      distanceFilter: 30,
-      debug: false, //  enable this hear sounds for background-geolocation life-cycle.
-      stopOnTerminate: false, // enable this to clear background location settings when the app terminates
-      notificationText: 'Seguimiento al dispositivo'
-    };
+  esAusenciaLaboral() {
+    let ausencia = JSON.parse(localStorage.getItem('ausencia'));
 
-    this.backgroundGeolocation.configure(config)
-      .subscribe((location: BackgroundGeolocationResponse) => {
+    if (ausencia) {
+      let horaInicio = moment().set({ hour: ausencia.horaini.split(':')[0], minute: ausencia.horaini.split(':')[1], second: 0 });
+      let horaFin = moment().set({ hour: ausencia.horafin.split(':')[0], minute: ausencia.horafin.split(':')[1], second: 59 });
+      let horaactual = moment();
+      console.log('inicio: ', horaInicio);
+      console.log('fin: ', horaFin);
+      console.log('actual: ', horaactual);
+      return horaactual.isBetween(horaInicio, horaFin);
 
-        console.log(location);
+    }
+    return false;
+  }
 
-        // IMPORTANT:  You must execute the finish method here to inform the native plugin that you're finished,
-        // and the background-task may be completed.  You must do this regardless if your HTTP request is successful or not.
-        // IF YOU DON'T, ios will CRASH YOUR APP for spending too much time in the background.
-        this.backgroundGeolocation.finish(); // FOR IOS ONLY
+  /* revisarNotificaciones() {
 
+    this.firebaseMessaging.onMessage().subscribe(resp => {
+      console.log('foreground notificacion:', resp);
+
+      // UBICACION
+      if (resp.tipo_notificacion === 'Ubicación') {
+        this.geolocation.getCurrentPosition().then((resp) => {
+          if (!this.authservice.validaUbicacion(resp.coords.latitude, resp.coords.longitude) && !this.esAusenciaLaboral()) {
+            // enviar notificacion de que no esta en la planta
+            let data = {
+              'operador': this.authservice.AuthToken.usuario.name,
+              'sfid': this.authservice.AuthToken.usuario.sfid,
+              'geocerca': this.authservice.AuthToken.planta.radio__c,
+              'planta': this.authservice.AuthToken.planta.name,
+              'fecha': moment().format('MMMM DD YYYY, h:mm:ss a'),
+              'latitud': resp.coords.latitude,
+              'longitud': resp.coords.longitude
+            };
+            this._presencia.enviarUbicacionEmal(data).subscribe((resp) => {
+              console.log('respuesta: ', resp);
+            });
+          }
+        });
+      } else {
+        //PRESENCIA
+        let tarea = Observable.interval(100000).subscribe(() => {
+          console.log('ejecutando interval');
+          let data = {
+            'operador': this.authservice.AuthToken.usuario.name,
+            'sfid': this.authservice.AuthToken.usuario.sfid,
+            'geocerca': this.authservice.AuthToken.planta.radio__c,
+            'planta': this.authservice.AuthToken.planta.name,
+            'fecha': moment().format('MMMM DD YYYY, h:mm:ss a')
+          };
+          this._presencia.revisionPresenciaPlanta(data).subscribe((resp) => {
+            console.log('respuesta presencia: ', resp);
+          });
+          tarea.unsubscribe();
+        });
+      }
+    });
+
+    this.firebaseMessaging.onBackgroundMessage().subscribe(resp => {
+      console.log('background notificacion: ', resp);
+      this.geolocation.getCurrentPosition().then((resp) => {
+        if (!this.authservice.validaUbicacion(resp.coords.latitude, resp.coords.longitude) && !this.esAusenciaLaboral()) {
+          // enviar notificacion de que no esta en la planta
+          let data = {
+            'operador': this.authservice.AuthToken.usuario.name,
+            'sfid': this.authservice.AuthToken.usuario.sfid,
+            'geocerca': this.authservice.AuthToken.planta.radio__c,
+            'planta': this.authservice.AuthToken.planta.name,
+            'fecha': moment().format('MMMM DD YYYY, h:mm:ss a'),
+            'latitud': resp.coords.latitude,
+            'longitud': resp.coords.longitude
+          };
+          this._presencia.enviarUbicacionEmal(data).subscribe((resp) => {
+            console.log('respuesta: ', resp);
+          });
+
+        }
       });
+    });
+  } */
 
-    // start recording location
-    this.backgroundGeolocation.start();
 
-    // If you wish to turn OFF background-tracking, call the #stop method.
-    // this.backgroundGeolocation.stop();
-  }
 }

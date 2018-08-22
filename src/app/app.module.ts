@@ -21,7 +21,9 @@ import { FileOpener } from '@ionic-native/file-opener';
 import { DocumentViewer } from '@ionic-native/document-viewer';
 import { SQLite } from '@ionic-native/sqlite';
 import { Network } from '@ionic-native/network';
-import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
+import { LocalNotifications } from '@ionic-native/local-notifications';
+//import { FirebaseMessaging } from '@ionic-native/firebase-messaging';
+import { FCM } from '@ionic-native/fcm';
 
 
 //servicios
@@ -34,6 +36,7 @@ import { PlantasProvider } from '../providers/plantas/plantas';
 import { DatabaseService } from '../services/database-service';
 import { NetworkService } from '../services/network-service';
 import { SyncProvider } from '../providers/sync/sync';
+import { PresenciaPlantaProvider } from '../providers/presencia-planta/presencia-planta';
 
 
 @NgModule({
@@ -44,11 +47,11 @@ import { SyncProvider } from '../providers/sync/sync';
     BrowserModule,
     HttpModule,
     IonicModule.forRoot(MyApp, {
-            // scrollPadding: false,
-            scrollAssist: false,
-            autoFocusAssist: false,
-            platforms:{ios:{statusbarPadding:true}}
-        })
+      // scrollPadding: false,
+      scrollAssist: false,
+      autoFocusAssist: false,
+      platforms: { ios: { statusbarPadding: true } }
+    })
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -59,7 +62,7 @@ import { SyncProvider } from '../providers/sync/sync';
     SplashScreen,
     Keyboard,
     AlertController,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    { provide: ErrorHandler, useClass: IonicErrorHandler },
     UsersProvider,
     AuthService,
     Camera,
@@ -70,7 +73,6 @@ import { SyncProvider } from '../providers/sync/sync';
     AsistenciaProvider,
     GoogleMaps,
     Geolocation,
-    BackgroundGeolocation,
     LocationAccuracy,
     PlantasProvider,
     FileOpener,
@@ -81,7 +83,11 @@ import { SyncProvider } from '../providers/sync/sync';
     Network,
     FileTransferObject,
     FileTransfer,
-    SyncProvider
+    SyncProvider,
+    LocalNotifications,
+    //FirebaseMessaging,
+    FCM,
+    PresenciaPlantaProvider
   ]
 })
-export class AppModule {}
+export class AppModule { }

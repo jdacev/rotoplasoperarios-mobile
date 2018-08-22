@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 /**
- * Generated class for the InformeFotosPage page.
+ * Generated class for the AusenicaLaboralNuevoPage page.
  *
  * See https://ionicframework.com/docs/components/#navigation for more info on
  * Ionic pages and navigation.
@@ -10,16 +10,16 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 @IonicPage()
 @Component({
-  selector: 'page-informe-fotos',
-  templateUrl: 'informe-fotos.html',
+  selector: 'page-ausenica-laboral-nuevo',
+  templateUrl: 'ausenica-laboral-nuevo.html',
 })
-export class InformeFotosPage {
+export class AusenicaLaboralNuevoPage {
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad InformeFotosPage');
+    console.log('ionViewDidLoad AusenicaLaboralNuevoPage');
   }
 
 }

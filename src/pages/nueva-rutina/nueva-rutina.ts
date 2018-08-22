@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, LoadingController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
 import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
@@ -11,6 +11,7 @@ import { Network } from '@ionic-native/network';
 import { URL_SERVICIOS } from "../../config/url.services";
 import { Slides } from 'ionic-angular';
 import { Geolocation } from '@ionic-native/geolocation';
+
 
 @IonicPage()
 @Component({
@@ -30,9 +31,10 @@ export class NuevaRutinaPage {
   tipoRutina: string;
   observacion: string;
   actividadActual = [];
-  planta:any;
-  lat:any;
-  lng:any;
+  planta: any;
+  lat: any;
+  lng: any;
+  salirSinGuardar: boolean = true;
 
   images = [];
   imagesFiltro = [];
@@ -48,6 +50,7 @@ export class NuevaRutinaPage {
     private networkService: NetworkService,
     private network: Network,
     private geolocation: Geolocation,
+    public loadingCtrl: LoadingController,
     private transfer: FileTransfer) {
 
     this.loading = false;
@@ -69,29 +72,14 @@ export class NuevaRutinaPage {
 
   //Vuelvo a la pantalla anterior.
   cancel() {
+    this.salirSinGuardar = true;
     this.navCtrl.pop();
   }
 
   //Método para capturar imágenes y guardarlas en un array.
   capturar() {
-    this.geolocation.getCurrentPosition().then((resp) => {
-      this.lat = resp.coords.latitude;
-      this.lng = resp.coords.longitude;
-      if(this.authservice.validaUbicacion(this.lat, this.lng)) {
-        this.presentToast('Usted se encuentra a una distancia mayor a la establecida para tomar fotografías');
-        return;
-      }
-    }).catch((error) => {
-      console.log('Error getting location', error);
-    });
-
-
     let idx = this.slides.getActiveIndex();
-    // console.log(this.activities[idx]);
-    if (this.activities[idx].foto1__c !== undefined && this.activities[idx].foto2__c !== undefined) {
-      this.presentToast('Soló puede agregar dos imagénes por actividad');
-      return;
-    };
+    let sinFotoOcupada = [];
     const options: CameraOptions = {
       quality: 40,
       destinationType: this.camera.DestinationType.FILE_URI,
@@ -100,57 +88,111 @@ export class NuevaRutinaPage {
       mediaType: this.camera.MediaType.PICTURE,
       correctOrientation: true
     }
-    this.camera.getPicture(options).then((imagePath) => {
-      let fileName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.length);
 
-      if (this.activities[idx].foto1__c === undefined) {
-        this.activities[idx].foto1__c = fileName;
-      } else if (this.activities[idx].foto1__c !== undefined) {
-        this.activities[idx].foto2__c = fileName;
-      }
-
-      let metadata = {
-        id: this.activities[idx].id,
-        idtiporutina__c: this.activities[idx].idtiporutina__c,
-        actividad: this.activities[idx].name.normalize('NFD').replace(/[\u0300-\u036f]/g, ""),
-        orden__c: this.activities[idx].orden__c,
-        rutina__c: this.activities[idx].rutina__c,
-        sfid: this.activities[idx].sfid,
-        tipo_de_respuesta__c: this.activities[idx].tipo_de_respuesta__c || '-',
-        turno__c: this.activities[idx].turno__c || '-',
-        valor: this.activities[idx].valor || '-',
-        observacion: this.activities[idx].observacion.normalize('NFD').replace(/[\u0300-\u036f]/g, "") || '-',
-        latitude: this.lat || '-',
-        longitude: this.lng || '-'
-      };
-
-      this.images.push({
-        path: imagePath,
-        metadata: metadata
-      });
-      this.imagesFiltro.push({
-        path: imagePath,
-        metadata: metadata
-      });
-
-      localStorage.setItem('actividad-parcial-img',JSON.stringify(this.images));
-      localStorage.setItem('actividad-parcial', JSON.stringify(this.activities));
-    }, (err) => {
-      // Handle error
-    });
-  }
-
-  private clean(obj) {
-    for (var propName in obj) { 
-      if (obj[propName] === null || obj[propName] === undefined) {
-        delete obj[propName];
+    for (let i = 1; i <= this.authservice.AuthToken.variables.fotos_por_actividad_rutina__c; i++) {
+      if (this.activities[idx]['foto' + i + '__c'] === undefined) {
+        sinFotoOcupada.push(0);
       }
     }
+
+    if (sinFotoOcupada.length === 0) {
+      this.presentToast('Crear rutina', 'Soló puede agregar ' + this.authservice.AuthToken.variables.fotos_por_actividad_rutina__c + ' imagénes por actividad');
+      return;
+    }
+
+    let loading = this.loadingCtrl.create({
+      content: 'Por favor espere...'
+    });
+    loading.present();
+
+    let metadata = {
+      id: this.activities[idx].id,
+      idtiporutina__c: this.activities[idx].idtiporutina__c,
+      actividad: this.activities[idx].name.normalize('NFD').replace(/[\u0300-\u036f]/g, ""),
+      orden__c: this.activities[idx].orden__c,
+      rutina__c: this.activities[idx].rutina__c,
+      sfid: this.activities[idx].sfid,
+      tipo_de_respuesta__c: this.activities[idx].tipo_de_respuesta__c || '-',
+      turno__c: this.activities[idx].turno__c || '-',
+      valor: this.activities[idx].valor || '-',
+      observacion: this.activities[idx].observaciones.normalize('NFD').replace(/[\u0300-\u036f]/g, "") || '-',
+      latitude: '-',
+      longitude: '-',
+      planta_id: this.authservice.AuthToken.planta.sfid,
+      planta: this.authservice.AuthToken.planta.name,
+      enlinea: 'ON LINE'
+    };
+
+    if (this.network.type == 'none' || this.network.type == 'unknown') {
+      loading.dismiss();
+      this.camera.getPicture(options).then((imagePath) => {
+        let fileName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.length);
+
+        for (let i = 1; i <= this.authservice.AuthToken.variables.fotos_por_actividad_rutina__c; i++) {
+          if (this.activities[idx]['foto' + i + '__c'] === undefined) {
+            this.activities[idx]['foto' + i + '__c'] = fileName;
+            break;
+          }
+        }
+        this.images.push({
+          path: imagePath,
+          metadata: metadata
+        });
+        this.imagesFiltro.push({
+          path: imagePath,
+          metadata: metadata
+        });
+
+      }).catch((error) => {
+        console.log('Error getting location', error);
+      });
+
+
+    } else {
+      this.geolocation.getCurrentPosition().then((resp) => {
+        this.lat = resp.coords.latitude;
+        this.lng = resp.coords.longitude;
+        if (this.authservice.validaUbicacion(this.lat, this.lng)) {
+          this.presentToast('Crear rutina', 'Usted se encuentra a una distancia mayor a la establecida para tomar fotografías');
+          return;
+        }
+        loading.dismiss();
+
+        this.camera.getPicture(options).then((imagePath) => {
+          let fileName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.length);
+
+          for (let i = 1; i <= this.authservice.AuthToken.variables.fotos_por_actividad_rutina__c; i++) {
+            if (this.activities[idx]['foto' + i + '__c'] === undefined) {
+              this.activities[idx]['foto' + i + '__c'] = fileName;
+              break;
+            }
+          }
+          metadata.latitude = this.lat;
+          metadata.longitude = this.lng;
+
+          this.images.push({
+            path: imagePath,
+            metadata: metadata
+          });
+          this.imagesFiltro.push({
+            path: imagePath,
+            metadata: metadata
+          });
+
+        }).catch((error) => {
+          console.log('Error getting location', error);
+        });
+      }, (err) => {
+        // Handle error
+      });
+    }
+
   }
 
-  private presentToast(text) {
+  private presentToast(title, subtitle) {
     let toast = this.alertCtrl.create({
-      message: text,
+      title: title,
+      subTitle: subtitle,
       buttons: ['Aceptar']
     });
     toast.present();
@@ -164,11 +206,6 @@ export class NuevaRutinaPage {
     var origen = dataDirectory + 'rutinas/'
     var sourceDirectory = images[0].path.substring(0, images[0].path.lastIndexOf('/') + 1);
     var destino = dataDirectory + 'rutinas/' + id.toString() + '/';
-
-    // console.log("ID EN MOVER ARCHIVO: " + id);
-    // console.log("ID EN MOVER ARCHIVO: " + JSON.stringify(id));
-
-
     //Verifico si existe el directorio 'rutinas'.
     this.validarDirectorio(dataDirectory, 'rutinas').then(response => {
       if (response) {
@@ -238,10 +275,11 @@ export class NuevaRutinaPage {
       if (this.images[i] === imagen) {
         this.images.splice(i, 1);
       }
-      if (this.activities[i].foto1__c === imagen.path.substring(imagen.path.lastIndexOf('/') + 1, imagen.path.length)) {
-        delete this.activities[i].foto1__c;
-      } else if (this.activities[i].foto2__c === imagen.path.substring(imagen.path.lastIndexOf('/') + 1, imagen.path.length)) {
-        delete this.activities[i].foto2__c;
+      for (let x = 1; x <= this.authservice.AuthToken.variables.fotos_por_actividad_rutina__c; x++) {
+        if (this.activities[i][`foto${x}__c`] === imagen.path.substring(imagen.path.lastIndexOf('/') + 1, imagen.path.length)) {
+          delete this.activities[i][`foto${x}__c`];
+          break;
+        }
       }
     }
     this.slideChanged();
@@ -284,24 +322,6 @@ export class NuevaRutinaPage {
           }
         }
       })
-      // this.rutinasProv.getPreguntasTipoRutina(idTipoRutina, turno).subscribe(data =>{
-
-      //   // Agrego el campo observación vacío, y el tipo seteo el tipo de
-      //   //respuesta en null o en false.
-      //   this.activities = data.data;
-      //   for (let i = 0; i < this.activities.length; i++) {
-      //     this.activities[i].observacion = undefined;
-      //     if(this.activities[i].tipo_de_respuesta__c){
-      //       this.activities[i].valor = false;
-      //     }else{
-      //       this.activities[i].valor = undefined;
-      //     }
-      //   }
-
-      // }, error =>{
-      //   this.activities = [];
-
-      // })
     }
 
   }
@@ -319,17 +339,37 @@ export class NuevaRutinaPage {
 
   crearRutina() {
     this.loading = true;
+    if (this.network.type == 'none' || this.network.type == 'unknown') {
+      this.crearRutinaGuardar();
+    } else {
+      this.geolocation.getCurrentPosition().then((resp) => {
+        this.lat = resp.coords.latitude;
+        this.lng = resp.coords.longitude;
+        if (this.authservice.validaUbicacion(this.lat, this.lng)) {
+          this.presentToast('Crear rutina', 'Usted se encuentra a una distancia mayor a la establecida para crear una rutina');
+          this.loading = false;
+        } else {
+          this.crearRutinaGuardar();
+        }
+      });
+    }
+  }
+
+  crearRutinaGuardar() {
     var listaActividades = [];
     for (let i = 0; i < this.activities.length; i++) {
-      listaActividades.push(
-        {
-          'id_pregunta_rutina__c': this.activities[i].sfid,
-          'valor_si_no__c': this.activities[i].tipo_de_respuesta__c == 'true' ? this.activities[i].valor : null,
-          'valornumerico__c': this.activities[i].tipo_de_respuesta__c == 'false' ? this.activities[i].valor : null,
-          'observaciones__c': !this.activities[i].observaciones ? '' : this.activities[i].observaciones,
-          'foto1__c': !this.activities[i].foto1__c ? '' : this.activities[i].foto1__c,
-          'foto2__c': !this.activities[i].foto2__c ? '' : this.activities[i].foto2__c
-        });
+
+      let actividad = {
+        'id_pregunta_rutina__c': this.activities[i].sfid,
+        'valor_si_no__c': this.activities[i].tipo_de_respuesta__c == 'true' ? this.activities[i].valor : null,
+        'valornumerico__c': this.activities[i].tipo_de_respuesta__c == 'false' ? this.activities[i].valor : null,
+        'observaciones__c': !this.activities[i].observaciones ? '' : this.activities[i].observaciones
+      };
+
+      for (let x = 1; x <= this.authservice.AuthToken.variables.fotos_por_actividad_rutina__c; x++) {
+        actividad[`foto${x}__c`] = !this.activities[i][`foto${x}__c`] ? '' : this.activities[i][`foto${x}__c`];
+      }
+      listaActividades.push(actividad);
     }
 
     var data = {
@@ -339,8 +379,9 @@ export class NuevaRutinaPage {
       'usuarioapp__c': this.authservice.AuthToken.usuario.sfid,
       'rutaimagen__c': '',
       'createddate_heroku__c': (new Date()).toISOString(),
-      'actividadrutina__c': listaActividades
-    }
+      'actividadrutina__c': listaActividades,
+      'fotos_por_actividad': this.authservice.AuthToken.variables.fotos_por_actividad_rutina__c
+    };
 
     if (this.network.type == 'none' || this.network.type == 'unknown') {
       // console.log("rutina a crear OFFLINE: " + JSON.stringify(data));
@@ -353,6 +394,7 @@ export class NuevaRutinaPage {
             this.moverArchivo(this.images, response);
           }
           this.loading = false;
+          this.salirSinGuardar = false;
           this.navCtrl.pop();
         } else {
           this.loading = false;
@@ -363,13 +405,6 @@ export class NuevaRutinaPage {
 
       })
     } else {
-      // this.dbService.crearRutinaOffline(data).then(response => {
-      //   console.log("RESPONSE: " + response);
-      //   console.log("RESPONSE: " + JSON.stringify(response));
-      // }, error=>{
-      //   console.log("ERROR CREANDO");
-
-      // })
       console.log("rutina a crear ONLINE: " + JSON.stringify(data));
       this.rutinasProv.crearRutina(data).then(response => {
         if (this.network.type == 'none' || this.network.type == 'unknown') {
@@ -378,6 +413,7 @@ export class NuevaRutinaPage {
               this.moverArchivo(this.images, response);
             }
             this.loading = false;
+            this.salirSinGuardar = false;
             this.navCtrl.pop();
           } else {
             this.loading = false;
@@ -388,6 +424,7 @@ export class NuevaRutinaPage {
               this.uploadImages(this.images, response);
             }
             this.loading = false;
+            this.salirSinGuardar = false;
             this.navCtrl.pop();
           } else {
             this.loading = false;
@@ -397,7 +434,6 @@ export class NuevaRutinaPage {
       }, error => {
         this.loading = false;
       });
-
     }
   }
 
@@ -428,20 +464,45 @@ export class NuevaRutinaPage {
           console.log('Error:' + JSON.stringify(err));
         });
     }
-
-    // console.log("UPLOADING");
-    // console.log("Options:", options);
-    // console.log("Options: "+ options);
-    // console.log("Options: "+ JSON.stringify(options));
-
-
   }
 
   slideChanged() {
     let currentIndex = this.slides.getActiveIndex();
     this.imagesFiltro = this.images.filter((item) => {
-      return item.metada == this.activities[currentIndex];
+      return item.metadata.id == this.activities[currentIndex].id;
     });
+  }
+
+  async ionViewCanLeave() {
+    if (this.salirSinGuardar && this.images.length > 0) {
+      const shouldLeave = await this.confirmarAbandonar();
+      return shouldLeave;
+    } else {
+      return true;
+    }
+
+  }
+
+  confirmarAbandonar(): Promise<Boolean> {
+    let resolveLeaving;
+    const canLeave = new Promise<Boolean>(resolve => resolveLeaving = resolve);
+    const alert = this.alertCtrl.create({
+      title: '¿Está seguro?',
+      subTitle: 'Esta por abandonar la creación de una rutina, se perderan sus cambios.',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          handler: () => resolveLeaving(false)
+        },
+        {
+          text: 'Aceptar',
+          handler: () => resolveLeaving(true)
+        }
+      ]
+    });
+    alert.present();
+    return canLeave
   }
 
 }

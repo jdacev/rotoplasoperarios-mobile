@@ -15,6 +15,8 @@
 
       <button ion-item [disabled]="deshabilitarOpcion('Salida')" (click)="goToPage('CheckoutPage')">Salida Laboral</button>
 
+      <button ion-item [disabled]="deshabilitarOpcion('Salida')" (click)="goToPage('AusenciaLaborarPage')">Ausencia laboral</button>
+
       <button ion-item (click)="showSubMenu()">Manual del Operador</button>
       <div *ngIf="showMenu">
         <button ion-item submenu-item (click)="descargar('A')">Tipo A</button>
