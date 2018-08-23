@@ -1,8 +1,8 @@
 {
   "name": "rotoplas",
-  "app_id": "b6afc332",
-  "type": "ionic-angular",
   "integrations": {
     "cordova": {}
-  }
+  },
+  "type": "ionic-angular",
+  "pro_id": "b6afc332"
 }
