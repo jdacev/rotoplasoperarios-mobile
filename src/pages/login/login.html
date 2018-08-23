@@ -1,17 +1,11 @@
 <ion-header>
-
   <ion-navbar color="blueRotoplas">
     <ion-title text-center>Inicio de Sesión</ion-title>
   </ion-navbar>
-
 </ion-header>
-
-
 <ion-content>
   <img src="assets/rotoplas-logo.PNG" padding>
-
   <ion-list>
-
     <ion-item>
       <ion-label floating>Usuario</ion-label>
       <ion-input type="text" [(ngModel)] = "usercreds.name" text-lowercase></ion-input>
@@ -21,9 +15,7 @@
       <ion-label floating>Contraseña</ion-label>
       <ion-input type="password" [(ngModel)] = "usercreds.password"></ion-input>
     </ion-item>
-
   </ion-list>
-
   <div text-center>
     <button color="blueRotoplas" ion-button [disabled]="!usercreds.name || !usercreds.password" (click)="login(usercreds)" class="loginButton" *ngIf="!loading">Iniciar Sesión</button>
     <button color="blueRotoplas" ion-button disabled class="loginButton" *ngIf="loading"><ion-spinner></ion-spinner></button>
@@ -31,7 +23,5 @@
   <div text-center>
     <button color="blueRotoplas" class="forgotPass" ion-button clear color="primary" icon-left (click)="forgotPassword()">Olvidé mi contraseña</button>
   </div>
-
-
-
 </ion-content>
+<ion-footer padding text-right>OFFLINE QA - Versión 2.2.1</ion-footer>
