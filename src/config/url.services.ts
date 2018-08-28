@@ -1,1 +1,1 @@
-export const URL_SERVICIOS = "https://rotoplasqa.herokuapp.com/api"; /*quality-assurance*/
+export const URL_SERVICIOS = "https://rotoplasprod.herokuapp.com/api"; /*production*/
