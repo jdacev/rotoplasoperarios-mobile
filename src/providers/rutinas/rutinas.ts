@@ -49,8 +49,10 @@ export class RutinasProvider {
   crearRutina(data){
     return new Promise(resolve => {
         this.http.post(URL_SERVICIOS + '/rutina', data).subscribe(response => {
-          if(this.authservice.AuthToken.asistencia.tipo__c == 'Entrada'){
+          if (this.authservice.AuthToken.asistencia.tipo__c == 'Entrada'){
             this.showAlert("Crear Rutina", response.json().message);
+            resolve(response.json().id_rutina_heroku__c);
+          } else if (this.authservice.AuthToken.asistencia.tipo__c == 'Salida'){
             resolve(response.json().id_rutina_heroku__c);
           }
         }, error =>{
