@@ -59,77 +59,14 @@ export class AuthService {
             var usuario = data.usuario
             var planta = data.planta;
             var token = data.token;
+            var asistencia = data.asistencia;
+            console.log("AUTH CUANDO ME LOGUEO: " + JSON.stringify(data));
+            console.log("AUTH CUANDO ME LOGUEO: " + data);
             headers.append('Authorization', 'Basic ' + token);
-            // if(usuario.activoc__c == true){
+     
+            this.storeUserCredentials(data);   //CAMBIAR ESTO POR EL TOKEN
+            resolve(true);
 
-              // var plantas = [{
-              //                 'id': 1,
-              //                 'name': 'Planta 1'
-              //               },
-              //               {
-              //                 'id': 2,
-              //                 'name': 'Planta 2'
-              //               },{
-              //                 'id': 3,
-              //                 'name': 'Planta 3'
-              //               }]
-
-              // if(planta == 0){
-              //     this.showAlert("Sin Plantas Asignadas","El usuario no se encuentra asignado a ninguna planta. Comuníquese con su supervisor.");
-              //     resolve(false);
-              // }else{  //SI TENGO UNA SOLA PLANTA VOY DIRECTAMENTE A HOME
-
-                this.storeUserCredentials(data);   //CAMBIAR ESTO POR EL TOKEN
-                resolve(true);
-
-              // }
-
-              // if(plantas.length > 1){
-              //     let alert = this.alertCtrl.create();
-              //     alert.setTitle('Selección de Planta');
-              //
-              //     // Now we add the radio buttons
-              //     for(let i=0; i< plantas.length; i++) {
-              //         let check;
-              //         if(i == 0){
-              //           check = true
-              //         }
-              //         else{
-              //           check = false;
-              //         }
-              //
-              //         alert.addInput({
-              //           type: 'radio',
-              //           label: plantas[i].name,
-              //           value: plantas[i].id.toString(),
-              //           checked: check
-              //         });
-              //     }
-              //
-              //
-              //     alert.addButton({
-              //       text: 'Seleccionar',
-              //       handler: selected => {
-              //         this.storeUserCredentials(data);   //CAMBIAR ESTO POR EL TOKEN
-              //         resolve(true);
-              //       }
-              //     });
-              //     alert.addButton({
-              //       text: 'Cancelar',
-              //       handler: selected => {
-              //         resolve(false);
-              //       }
-              //     });
-              //     // alert.addButton('Cancelar');
-              //     alert.present();
-              // }
-
-
-            // }
-            // else{
-            //   this.showAlert("Error al iniciar sesión", "El usuario se encuentra inactivo");
-            //   resolve(false);
-            // }
         }, error =>{
           this.showAlert("Error al iniciar sesión", error.json().message);
           resolve(false);

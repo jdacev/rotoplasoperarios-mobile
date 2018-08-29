@@ -2,8 +2,13 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { Camera, CameraOptions } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { RutinasProvider } from "../../providers/rutinas/rutinas";
 import { AuthService } from "../../providers/auth-service/auth-service";
+import { DatabaseService } from "../../services/database-service";
+import { NetworkService } from "../../services/network-service";
+import { Network } from '@ionic-native/network';
+import { URL_SERVICIOS } from "../../config/url.services";
 
 @IonicPage()
 @Component({
@@ -12,6 +17,7 @@ import { AuthService } from "../../providers/auth-service/auth-service";
 })
 export class NuevaRutinaPage {
 
+  loading:boolean;
   ptarName:string;
   ptarDate:string;
   formato:string;
@@ -29,7 +35,13 @@ export class NuevaRutinaPage {
               private authservice: AuthService,
               private camera: Camera,
               private file: File,
-              private alertCtrl: AlertController) {
+              private alertCtrl: AlertController,
+              private dbService: DatabaseService,
+              private networkService: NetworkService,
+              private network: Network,
+              private transfer: FileTransfer) {
+
+    this.loading = false;
     this.ptarName = this.authservice.AuthToken.planta.name;
     this.ptarDate = new Date().toISOString();
     this.determinante = this.authservice.AuthToken.planta.determinante__c;
@@ -37,17 +49,20 @@ export class NuevaRutinaPage {
     this.activities = [];
     this.tipoRutina = null;
     this.observacion = "";
-    this.getTipoRutinas();
+    // this.getTipoRutinas();
+    this.getTipoRutinasOffline();
   }
 
   ionViewDidLoad() {
     // console.log('ionViewDidLoad NuevaRutinaPage');
   }
 
+  //Vuelvo a la pantalla anterior.
   cancel(){
     this.navCtrl.pop();
   }
 
+  //Método para capturar imágenes y guardarlas en un array.
   capturar(){
     const options: CameraOptions = {
       quality: 50,
@@ -58,7 +73,6 @@ export class NuevaRutinaPage {
     }
 
     this.camera.getPicture(options).then((imagePath) => {
-      // this.presentToast("Imagen Capturada: " + imagePath);
       this.images.push(imagePath)
 
     }, (err) => {
@@ -74,33 +88,45 @@ export class NuevaRutinaPage {
     toast.present();
   }
 
+  /*Muevo el archivo de la carpeta donde se guarda la imagen capturada,
+  a una carpeta que 'rutinas' que le creo.
+  */
   moverArchivo(images:string[], id){
-
     var dataDirectory=this.file.dataDirectory;
     var origen = dataDirectory + 'rutinas/'
     var sourceDirectory = images[0].substring(0, images[0].lastIndexOf('/') + 1);
     var destino = dataDirectory + 'rutinas/' + id.toString() + '/';
+    
+    // console.log("ID EN MOVER ARCHIVO: " + id);
+    // console.log("ID EN MOVER ARCHIVO: " + JSON.stringify(id));
+    
+
+    //Verifico si existe el directorio 'rutinas'.
     this.validarDirectorio(dataDirectory, 'rutinas').then(response=>{
-      if(response)
+      if(response){
+        //Existe la carpeta
         this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
-      else(response)
+      }
+      else{
+        //NO Existe la carpeta 'rutinas', entonces la creo
         this.file.createDir(dataDirectory, 'rutinas', false).then(data=>{
           this.crearCarpetasId(origen, sourceDirectory, destino, images, id);
         }, err =>{
 
-          // this.presentToast('Error al crear la carpeta Rutinas: ' + err);
         });
+      }
     }, error =>{
 
     })
 
-
   }
 
+  //Funcion que crea una carpeta con el nombre del ID para guardar las imágenes.
   crearCarpetasId(origen, sourceDirectory, destino, images, id){
-
+    //Creo la carpeta con el nombre {ID}
     this.file.createDir(origen, id.toString(), false).then(data=>{
 
+      //Muevo todas las imágenes al nuevo directorio.
       for (let i = 0; i < images.length; i++) {
 
           var fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[0].length);
@@ -111,15 +137,16 @@ export class NuevaRutinaPage {
             file=>{
 
             }, error => {
-            // this.presentToast("ERROR MOVIENDO: " + error.message + "   ...error: " + error)
+
           })
       }
 
     }, err =>{
-      // this.presentToast('Error al crear la carpeta id: ' + err)
+
     });
   }
 
+  // Funcion que verifica si existe un subdirectorio
   validarDirectorio(dataDirectory, subDirectorio){
     return new Promise(resolve=>{
       this.file.checkDir(dataDirectory, subDirectorio)
@@ -128,18 +155,18 @@ export class NuevaRutinaPage {
                 })
                 .catch(err => {
                   resolve(false);
-                  // this.presentToast('Error al crear Directorio: ' + err)
-                  // });
       });
     });
   }
 
+  //Función que elimina una imagen capturada.
   eliminarImagen(pos:number, imagen:string){
     var directorio = imagen.substring(0, imagen.lastIndexOf('/') + 1);
     var nombreArchivo = imagen.substring(imagen.lastIndexOf('/') + 1, imagen.length);
     this.file.removeFile(directorio, nombreArchivo);
     this.images.splice(pos, 1)
   }
+/***********************************************************************/
 
   getTipoRutinas(){
     this.rutinasProv.getTipoRutinas().subscribe(data=>{
@@ -149,32 +176,61 @@ export class NuevaRutinaPage {
     })
   }
 
+  getTipoRutinasOffline(){
+    this.dbService.getTipoRutinasOffline().then(response =>{
+      this.tipoRutinas = response;
+      // console.log("TIPO RUTINAS: " + JSON.stringify(response));
+      
+    }, error =>{
+      console.log("ERROR getTipoRutinas" + JSON.stringify(error));
+      
+    })
+  }
+
   getActividades(idTipoRutina:string, turno:string){
-    // console.log(id);
+
     if(idTipoRutina && turno){
-      this.rutinasProv.getPreguntasTipoRutina(idTipoRutina, turno).subscribe(data =>{
-        // console.log("data: " + data.data[0].name);
-        this.activities = data.data;
-        for (let i = 0; i < this.activities.length; i++) {
-          this.activities[i].observacion = undefined;
-          if(this.activities[i].tipo_de_respuesta__c){
-            this.activities[i].valor = false;
-          }else{
-            this.activities[i].valor = undefined;
-          }
-        }
-        // console.log(this.activities);
-      }, error =>{
-        this.activities = [];
-        // console.log("Error: " + error);
-      })
+        
+        
+        this.dbService.getPreguntasTipoRutinaOffline(idTipoRutina, turno).then(data =>{
+          // console.log("TIPOS RUTINA: " + JSON.stringify(data))
+          this.activities = data;
+            for (let i = 0; i < this.activities.length; i++) {
+              this.activities[i].observacion = '';
+              if(this.activities[i].tipo_de_respuesta__c == 'true'){
+                this.activities[i].valor = false;
+              }else{
+                this.activities[i].valor = undefined;
+              }
+            }
+        })
+      // this.rutinasProv.getPreguntasTipoRutina(idTipoRutina, turno).subscribe(data =>{
+
+      //   // Agrego el campo observación vacío, y el tipo seteo el tipo de
+      //   //respuesta en null o en false.
+      //   this.activities = data.data;
+      //   for (let i = 0; i < this.activities.length; i++) {
+      //     this.activities[i].observacion = undefined;
+      //     if(this.activities[i].tipo_de_respuesta__c){
+      //       this.activities[i].valor = false;
+      //     }else{
+      //       this.activities[i].valor = undefined;
+      //     }
+      //   }
+
+      // }, error =>{
+      //   this.activities = [];
+
+      // })
     }
 
   }
 
+  //Método que verifica si hay alguna respuesta incompleta
+  //para deshabilitar el boton de crear
   respuestasIncompletas(){
     for (let i = 0; i < this.activities.length; i++) {
-        if(this.activities[i].valor == undefined || (!this.activities[i].tipo_de_respuesta__c && this.activities[i].valor == ""))
+        if(this.activities[i].valor == undefined || (this.activities[i].tipo_de_respuesta__c == 'false' && this.activities[i].valor == ""))
           return true;
     }
 
@@ -182,14 +238,15 @@ export class NuevaRutinaPage {
   }
 
   crearRutina(){
+    this.loading = true;
     var listaActividades = [];
     for (let i = 0; i < this.activities.length; i++) {
         listaActividades.push(
           {
             'id_pregunta_rutina__c': this.activities[i].sfid,
-            'valor_si_no__c' : this.activities[i].tipo_de_respuesta__c ? this.activities[i].valor : null,
-            'valornumerico__c' : !this.activities[i].tipo_de_respuesta__c ? this.activities[i].valor : null,
-            'observaciones__c' : this.activities[i].observaciones
+            'valor_si_no__c' : this.activities[i].tipo_de_respuesta__c == 'true' ? this.activities[i].valor : null,
+            'valornumerico__c' :this.activities[i].tipo_de_respuesta__c  == 'false' ? this.activities[i].valor : null,
+            'observaciones__c' : !this.activities[i].observaciones ? '' : this.activities[i].observaciones
           });
     }
 
@@ -198,24 +255,102 @@ export class NuevaRutinaPage {
       'idtiporutina__c' : this.tipoRutina,
       "idplanta__c": this.authservice.AuthToken.planta.sfid,
       'usuarioapp__c': this.authservice.AuthToken.usuario.sfid,
-      'rutaimagen__c': 'RUTA/IMAGEN/',
+      'rutaimagen__c': '',
+      'createddate_heroku__c': (new Date()).toISOString(),
       'actividadrutina__c': listaActividades
     }
-    // console.log(data)
 
-    // console.log(data);
-    this.rutinasProv.crearRutina(data).then(response=>{
-      if(response){
-        if(this.images.length > 0){
-          this.moverArchivo(this.images, response);
-        }
-        this.navCtrl.pop();
-      }else{
+    if(this.network.type == 'none' || this.network.type == 'unknown'){
+      // console.log("rutina a crear OFFLINE: " + JSON.stringify(data));
+      
+      this.dbService.crearRutinaOffline(data).then(response => {
+          // console.log("RESPONSE: " + response);
+          // console.log("RESPONSE: " + JSON.stringify(response));
+          if(response){
+            if(this.images.length > 0){
+              this.moverArchivo(this.images, response);
+            }
+            this.loading = false;
+            this.navCtrl.pop();
+          }else{
+            this.loading = false;
+          }
+                
+        }, error=>{
+          console.log("ERROR CREANDO");
+          
+        })
+    }else{
+        // this.dbService.crearRutinaOffline(data).then(response => {
+        //   console.log("RESPONSE: " + response);
+        //   console.log("RESPONSE: " + JSON.stringify(response));
+        // }, error=>{
+        //   console.log("ERROR CREANDO");
+          
+        // })
+        console.log("rutina a crear ONLINE: " + JSON.stringify(data));        
+        this.rutinasProv.crearRutina(data).then(response=>{
+          if(this.network.type == 'none' || this.network.type == 'unknown'){
+            if(response){
+              if(this.images.length > 0){
+                this.moverArchivo(this.images, response);
+              }
+              this.loading = false;
+              this.navCtrl.pop();
+            }else{
+              this.loading = false;
+            }
+          }else{
+            if(response){
+              if(this.images.length > 0){
+                this.uploadImages(this.images, response);
+              }
+              this.loading = false;
+              this.navCtrl.pop();
+            }else{
+              this.loading = false;
+            }
+          }
+    
+        }, error=>{
+          this.loading = false;
+        });
+      
+    }
+  }
 
-      }
-    }, error=>{
+  uploadImages(images, id){
+    let options: FileUploadOptions = {
+      fileKey: 'azureupload',
+      // fileName: fileName,
+      chunkedMode: false,
+      mimeType: "image/jpeg",
+      // mimeType: 'multipart/form-data',
+      // headers: {},
+      params : {'containername': "rutina" + id.toString()}
+    }
 
-    });
+    const fileTransfer: FileTransferObject = this.transfer.create();
+
+    for (let i = 0; i < images.length; i++) {
+      // console.log(images[i]);
+      options.fileName = images[i].substring(images[i].lastIndexOf('/') + 1, images[i].length);
+      fileTransfer.upload(images[i], URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
+      .then((data) => {
+        // console.log(data+" Uploaded Successfully");
+
+      }, (err) => {
+        console.log('Error:' + JSON.stringify(err));
+      });
+    }
+
+    // console.log("UPLOADING");
+    // console.log("Options:", options);
+    // console.log("Options: "+ options);
+    // console.log("Options: "+ JSON.stringify(options));
+
+
+
   }
 
 }

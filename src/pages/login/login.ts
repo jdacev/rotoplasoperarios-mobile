@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, MenuController, AlertController } from 'ionic-angular';
 import { AuthService } from "../../providers/auth-service/auth-service";
+import { AsistenciaProvider } from "../../providers/asistencia/asistencia";
+import { AsistenciaPage } from "../../pages/asistencia/asistencia";
+import { DatabaseService } from "../../services/database-service";
+
+
 
 /**
  * Generated class for the LoginPage page.
@@ -25,36 +30,42 @@ export class LoginPage {
               public navParams: NavParams,
               private menuCtrl:MenuController,
               private alertCtrl: AlertController,
-              public authservice: AuthService) {
+              public authservice: AuthService,
+              private asistenciaProv: AsistenciaProvider,
+              private dbService: DatabaseService
+            ) {
+              console.log("ACA EN LOGIN");
+              
 
-    // authservice.loadUserCredentials();
-    // if(this.authservice.isLoggedin && this.authservice.AuthToken){
-    //   this.navCtrl.setRoot('HomePage');
-    // }
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad LoginPage');
+    // console.log('ionViewDidLoad LoginPage');
   }
 
   ionViewDidEnter() {
-    //to disable menu, or
+    // Deshabilito el menú en esta pantalla cuando entro
     this.menuCtrl.enable(false);
   }
 
   ionViewWillLeave() {
-    // to enable menu.
+    // Habilito el menú en esta pantalla cuando salgo
     this.menuCtrl.enable(true);
   }
 
   login(user){
-    // this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
+
 
     this.loading = true;
     this.authservice.authenticate(user.name.toLowerCase(), user.password).then(data => {
       if(data) {
         this.loading = false;
-        this.navCtrl.setRoot('HomePage');  //setRoot para que no pueda volver atras con el boton del celular sino va a poder vovler al login despues de loguearse
+
+        /* Hago setRoot para que no pueda volver atras con el boton del celular.
+        Sino va a poder volver al login despues de loguearse*/
+        // this.dbService.resetDb();
+        this.navCtrl.setRoot('HomePage');
+
       }else{
         this.loading = false;
         this.usercreds.password = "";
@@ -64,8 +75,9 @@ export class LoginPage {
   }
 
   forgotPassword(){
-    this.navCtrl.push('PasswordRecoveryPage'); //push para levantar una pagina de recuperar contraseña y que pueda
-                                              // volver atras al login
+  /*push para levantar una pagina de recuperar contraseña y que pueda
+  volver atras al login*/
+    this.navCtrl.push('PasswordRecoveryPage');
   }
 
 }

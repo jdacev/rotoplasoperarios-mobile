@@ -1,7 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { RutinasProvider } from '../../providers/rutinas/rutinas';
 import { AuthService } from "../../providers/auth-service/auth-service";
+import { AsistenciaProvider } from "../../providers/asistencia/asistencia";
+import { Network } from '@ionic-native/network';
+import { DatabaseService } from "../../services/database-service";
 
 /**
  * Generated class for the RutinasPage page.
@@ -24,10 +27,15 @@ export class RutinasPage {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private rutinasProv: RutinasProvider,
-              private authservice: AuthService) {
+              private authservice: AuthService,
+              private alertCtrl: AlertController,
+              private asistenciaProv: AsistenciaProvider,
+              private network: Network,
+              private dbService: DatabaseService) {
 
     this.listaAbierta = true;
     this.getRutinasUsuario();
+    this.dbService.getRutinasOffline();
   }
 
   ionViewDidLoad() {
@@ -55,7 +63,20 @@ export class RutinasPage {
   }
 
   irAPagina(pagina:string){
-    this.navCtrl.push(pagina)
+    // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{
+      // var asistencia = response.data;
+      var asistencia = this.authservice.AuthToken.asistencia
+      // if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
+      if(asistencia == '' || asistencia == null || asistencia.tipo__c == 'Salida'){
+        //this.navCtrl.push(pagina)
+        //MOSTRAR ALERTA QUE NO HIZO EL CHECKIN
+        this.showAlert('Rutinas', 'Para crear una rutina realice el Ingreso Laboral en la planta correspondiente.');
+      }else{
+        this.navCtrl.push(pagina)
+      }
+    // }, error => {
+
+    // })
   }
 
   irADetalle(rutina){
@@ -65,15 +86,48 @@ export class RutinasPage {
   }
 
   getRutinasUsuario(){
+
+
     this.loading = true;
-    
-    this.rutinasProv.getRutinasUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
-        this.rutinasList = data.data;
+
+    if(this.network.type == 'none' || this.network.type == 'unknown'){
+
+      this.dbService.getRutinasUsuarioOffline().then(response=>{
+        this.rutinasList = response;
         this.loading = false;
-    }, error =>{
+      }, error => {
+        console.log("ERROR EN GET RUTINASUSUARIOOFFLINE" + JSON.stringify(error));
         this.loading = false;
-        // console.log("Error: " + error);
-    })
+      })
+
+    }else{
+      // this.dbService.getRutinasUsuarioOffline().then(response=>{
+
+      // }, error => {
+      //   console.log("ERROR EN GET RUTINASUSUARIOOFFLINE" + JSON.stringify(error));
+        
+      // })
+
+      this.rutinasProv.getRutinasUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
+          this.rutinasList = data.data;
+          // console.log("RUTINAS: " + JSON.stringify(this.rutinasList));
+          
+          this.loading = false;
+      }, error =>{
+          this.loading = false;
+          // console.log("Error: " + error);
+      })
+
+    }
+  }
+
+  showAlert(titulo:string, subtitulo:string) {
+    let alert = this.alertCtrl.create({
+      title: titulo,
+      subTitle: subtitulo,
+      buttons: ['Aceptar']
+    });
+    alert.present();
   }
 
 }

@@ -1,7 +1,11 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { TicketsProvider } from '../../providers/tickets/tickets';
 import { AuthService } from "../../providers/auth-service/auth-service";
+import { AsistenciaProvider } from "../../providers/asistencia/asistencia";
+import { DatabaseService } from "../../services/database-service";
+import { NetworkService } from "../../services/network-service";
+import { Network } from '@ionic-native/network';
 
 /**
  * Generated class for the OportunidadesPage page.
@@ -24,10 +28,21 @@ export class OportunidadesPage {
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private ticketsProv: TicketsProvider,
-              private authservice: AuthService) {
+              private authservice: AuthService,
+              private asistenciaProv: AsistenciaProvider,
+              private alertCtrl: AlertController,
+              private dbService: DatabaseService,
+              private networkService: NetworkService,
+              private network: Network) {
 
     this.listaAbierta = true;
-    this.getTicketsUsuario();
+    console.log("getOportunidadesOffline");
+    if(this.network.type == 'none' || this.network.type == 'unknown'){
+        console.log("getOportunidadesOffline");
+        this.getOportunidadesOffline();
+    }else{
+      this.getOportunidadesOnline();
+    }
   }
 
   ionViewDidLoad() {
@@ -35,12 +50,18 @@ export class OportunidadesPage {
 
   }
 
+  //Refresher
   doRefresh(refresher) {
-    // console.log('Begin async operation', refresher);
 
     setTimeout(() => {
       // console.log('Async operation has ended');
-      this.getTicketsUsuario();
+      if(this.network.type == 'none' || this.network.type == 'unknown'){
+          this.getOportunidadesOffline();
+      }
+      else{
+          this.getOportunidadesOnline();
+      }
+
       refresher.complete();
     }, 2000);
   }
@@ -54,19 +75,36 @@ export class OportunidadesPage {
 
     }
   }
-
+/********************************************/
   irAPagina(pagina:string){
-    this.navCtrl.push(pagina)
+    /*this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid).subscribe(response =>{*/
+      // var asistencia = this.asistenciaProv.asistencia;//response.data;//obtener de providers/asistencia
+      var asistencia = this.authservice.AuthToken.asistencia;
+      console.log("ASISTENCIA: " + JSON.stringify(asistencia.tipo__c))
+      // if(asistencia.length == 0 || asistencia[0].tipo__c == 'Salida'){
+        if(asistencia == null || asistencia.tipo__c == 'Salida'){
+        //this.navCtrl.push(pagina)
+        //MOSTRAR ALERTA QUE NO HIZO EL CHECKIN
+        this.showAlert('Oportunidades C', 'Para crear una oportunidad realice el Ingreso Laboral en la planta correspondiente.');
+      }else{
+        this.navCtrl.push(pagina)
+      }
+  /*  }, error => {
+
+  })*/
   }
 
   irADetalle(ticket){
-    console.log("YENDO A TICKET")
+    console.log("ticket: " + JSON.stringify(ticket));
+    console.log("YENDO A TICKET");
     this.navCtrl.push('DetalleOportunidadPage', {
       ticket: ticket
+    }).catch(err => {
+      console.log("ERROR: " + JSON.stringify(err));
     })
   }
 
-  getTicketsUsuario(){
+  getOportunidadesOnline(){
     this.loading = true;
     this.ticketsProv.getTicketsUsuario(this.authservice.AuthToken.planta.sfid, this.authservice.AuthToken.usuario.sfid).subscribe(data =>{
 
@@ -80,6 +118,29 @@ export class OportunidadesPage {
         this.loading = false;
         console.log("Error: " + error);
     })
+  }
+
+  getOportunidadesOffline(){
+    this.loading = true;
+    console.log("buscando tickets");
+    
+    this.dbService.getOportunidades().then(result => {
+      console.log("result: " + JSON.stringify(result));
+      this.loading = false;
+      this.ticketList = result;
+    }, error =>{
+      console.log("ERROR buscando oportunidades Offline: " + JSON.stringify(error));
+      
+    })
+  }
+
+  showAlert(titulo:string, subtitulo:string) {
+    let alert = this.alertCtrl.create({
+      title: titulo,
+      subTitle: subtitulo,
+      buttons: ['Aceptar']
+    });
+    alert.present();
   }
 
 }

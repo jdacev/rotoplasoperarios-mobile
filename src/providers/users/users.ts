@@ -10,7 +10,7 @@ export class UsersProvider {
   data:any[] = [];
 
   constructor(public http: Http) {
-    console.log('Hello UsersProvider Provider');
+    // console.log('Hello UsersProvider Provider');
   }
 
   traerAlgo(){

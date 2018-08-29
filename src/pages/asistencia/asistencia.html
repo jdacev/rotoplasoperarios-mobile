@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-navbar hideBackButton color="blueRotoplas">
+
+    <ion-buttons left>
+      <button ion-button icon-only menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+
+    <ion-title text-center style="padding-right:60px">
+      Entrada Laboral
+    </ion-title>
+
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <h5 class="titulo">
+    Información de Planta
+  </h5>
+
+  <ion-item>
+    <ion-label><b>Operador</b></ion-label>
+    <ion-label text-right>{{operador.name}}</ion-label>
+  </ion-item>
+
+  <ion-item>
+    <ion-label><b>Planta</b></ion-label>
+    <ion-label style="white-space: pre-wrap" text-right>{{planta.name}}</ion-label>
+  </ion-item>
+
+  <ion-item>
+    <ion-label><b>Ubicación</b></ion-label>
+    <ion-label style="white-space: pre-wrap" text-right>{{ubicacion}}</ion-label>
+  </ion-item>
+
+  <br>
+
+  <h5 class="titulo">
+    Geolocalización
+  </h5>
+
+  <ion-row>
+
+    <ion-col text-center>
+      <button ion-button (click)="obtenerUbicacion()">Ubícame</button>
+    </ion-col>
+
+    <ion-col text-center>
+      <button ion-button [disabled]="!markerUsuario" (click)="guardar()">Guardar</button>
+    </ion-col>
+
+  </ion-row>
+
+  <div id="map_canvas"></div>
+
+</ion-content>

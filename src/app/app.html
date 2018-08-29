@@ -7,19 +7,24 @@
   </ion-header>
 
   <ion-content>
-    <ion-list>
+    <ion-list id="sidenav">
 
       <button ion-item (click)="goToPage( homePage )">Inicio</button>
 
-      <button ion-item disabled>Entrada Laboral</button>
+      <button ion-item [disabled]="deshabilitarOpcion('Entrada')" (click)="goToPage('AsistenciaPage')">Entrada Laboral</button>
 
-      <button ion-item disabled>Salida Laboral</button>
+      <button ion-item [disabled]="deshabilitarOpcion('Salida')" (click)="goToPage('CheckoutPage')">Salida Laboral</button>
 
-      <button ion-item disabled>Manual del Operador</button>
+      <button ion-item (click)="showSubMenu()">Manual del Operador</button>
+      <div *ngIf="showMenu">
+        <button ion-item submenu-item (click)="descargar('A')">Tipo A</button>
+        <button ion-item submenu-item (click)="descargar('B')">Tipo B</button>
+        <button ion-item submenu-item (click)="descargar('I')">Tipo I-2017</button>
+      </div>
 
       <button ion-item disabled>Información SYTESA</button>
 
-      <button ion-item disabled>{{authservice.AuthToken ? authservice.AuthToken.planta.name : ''}}</button>
+      <button ion-item (click)="cambiarPlanta()">{{authservice.AuthToken ? authservice.AuthToken.planta.name : ''}}</button>
 
       <button ion-item (click)="logout()">Cerrar Sesión</button>
 

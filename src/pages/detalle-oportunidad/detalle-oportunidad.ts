@@ -4,7 +4,7 @@ import { File } from '@ionic-native/file';
 import { AuthService } from "../../providers/auth-service/auth-service";
 import { TicketsProvider } from "../../providers/tickets/tickets";
 import { PhotoViewer } from '@ionic-native/photo-viewer';
-
+import { Network } from '@ionic-native/network';
 
 /**
  * Generated class for the DetalleOportunidadPage page.
@@ -21,12 +21,11 @@ import { PhotoViewer } from '@ionic-native/photo-viewer';
 export class DetalleOportunidadPage {
 
   ticket:any;
-  images:any;
+  images:any=[];
   origen:string;
   ptarName:string;
   description:string;
   cliente:any;
-  // imagen:string = "file:///data/user/0/rotoplas.app/files/tickets/137/1512419963664.jpg";
 
 
   constructor(public navCtrl: NavController,
@@ -34,44 +33,87 @@ export class DetalleOportunidadPage {
               private file: File,
               private authservice: AuthService,
               private ticketsProv: TicketsProvider,
-              private photoViewer: PhotoViewer) {
+              private photoViewer: PhotoViewer,
+              private network: Network) {
 
     this.ptarName = this.authservice.AuthToken.planta.name;
+
+    // Recibo por parámetro todos los datos del ticket.
     this.ticket = navParams.get('ticket')
+    console.log("Se recibio ticket: "+ JSON.stringify(this.ticket));
+    //Get para traer el Cliente
+    if(this.network.type != 'none' && this.network.type != 'unknown'){
+        this.ticketsProv.getTicket(this.ticket.id_case_heroku_c__c).subscribe(response =>{
+          this.cliente = response.data;
+        }, error =>{
 
-    this.ticketsProv.getTicket(this.ticket.id_case_heroku_c__c).subscribe(response =>{
-      this.cliente = response.data;
-    }, error =>{
+        })
 
-    })
+        this.ticketsProv.getImagenes(this.ticket.id_case_heroku_c__c).subscribe(response=>{
+          console.log("IMAGES: " + response)
+          console.log("IMAGES: " + JSON.stringify(response))
+          if(response.blobs){
+            this.images = response.blobs;
+            console.log(this.images);
+          }
+          else{
+            this.images = [];
+          }
+        }, error =>{
+          console.log("ERROR:" + JSON.stringify(error));
+        })
+      }else{
+        let clientes = this.authservice.AuthToken.clientes;
+        console.log("ACCOUNTID = " + this.ticket.accountid);
+        
+        for (let i = 0; i < clientes.length; i++) {
+          console.log("Cliente:" + JSON.stringify(clientes[i]));
+          
+          if(clientes[i].sfid == this.ticket.accountid){
+            this.cliente = clientes[i];
+            break;
+          }
+          
+        }
 
-    if(this.ticket.description == "" || this.ticket.description == null){
+        // Levanto las imágenes que se encuentren dentro de la carpeta 'tickets/{IdTicket}'
+         this.origen = file.dataDirectory + 'tickets/';
+         if(this.ticket.id_case_heroku_c__c){
+           var subDir = this.ticket.id_case_heroku_c__c.toString() + '/';
+         }else{
+           var subDir = this.ticket.id_case_sqllite.toString() + '/';
+           console.log("id_case_sqllite: "+this.ticket.id_case_sqllite);
+         }
+         console.log("busco destino: "+ this.origen + subDir);
+
+         file.listDir(this.origen, subDir).then(response=>{
+           for (let i = 0; i < response.length; i++) {
+               this.images.push(response[i].nativeURL);
+           }
+
+
+         }, error=>{
+           console.log("falla file.listDir: "+JSON.stringify(error));
+           //this.images = error;
+         });
+
+      }
+
+    if(this.ticket.description == "" || this.ticket.description == null || this.ticket.description == 'null'){
       this.description = "---"
     }else{
       this.description = this.ticket.description;
     }
 
-    this.origen = file.dataDirectory + 'tickets/'
-    var subDir = this.ticket.id_case_heroku_c__c.toString() + '/';
-    // console.log('Orinen: ' + this.origen);
 
-    file.listDir(this.origen, subDir).then(response=>{
-      // console.log('response[0]: ' + response[0]);
-      // console.log('response Json stringify: ' + JSON.stringify(response))
-      // console.log('RUTA: ' + response[0].nativeURL);
-      this.images = response;
 
-    }, error=>{
-      this.images = error;
-      // console.log('error: ' + JSON.stringify(error));
-    });
+
+
 
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad DetalleOportunidadPage');
-  }
 
+  //Abre la imagen en un visor al seleccionarla
   abrirImagen(path:string){
     this.photoViewer.show(path);
   }

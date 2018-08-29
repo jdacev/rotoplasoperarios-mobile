@@ -12,13 +12,28 @@ import { MyApp } from './app.component';
 //plugins
 import { Camera } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer';
 import { PhotoViewer } from '@ionic-native/photo-viewer';
+import { GoogleMaps } from '@ionic-native/google-maps';
+import { Geolocation } from '@ionic-native/geolocation';
+import { LocationAccuracy } from '@ionic-native/location-accuracy';
+import { FileOpener } from '@ionic-native/file-opener';
+import { DocumentViewer } from '@ionic-native/document-viewer';
+import { SQLite } from '@ionic-native/sqlite';
+import { Network } from '@ionic-native/network';
+
 
 //servicios
 import { UsersProvider } from '../providers/users/users';
 import { AuthService } from '../providers/auth-service/auth-service';
 import { RutinasProvider } from '../providers/rutinas/rutinas';
 import { TicketsProvider } from '../providers/tickets/tickets';
+import { AsistenciaProvider } from '../providers/asistencia/asistencia';
+import { PlantasProvider } from '../providers/plantas/plantas';
+import { DatabaseService } from '../services/database-service';
+import { NetworkService } from '../services/network-service';
+import { SyncProvider } from '../providers/sync/sync';
+
 
 @NgModule({
   declarations: [
@@ -50,7 +65,21 @@ import { TicketsProvider } from '../providers/tickets/tickets';
     File,
     RutinasProvider,
     TicketsProvider,
-    PhotoViewer
+    PhotoViewer,
+    AsistenciaProvider,
+    GoogleMaps,
+    Geolocation,
+    LocationAccuracy,
+    PlantasProvider,
+    FileOpener,
+    DocumentViewer,
+    SQLite,
+    DatabaseService,
+    NetworkService,
+    Network,
+    FileTransferObject,
+    FileTransfer,
+    SyncProvider
   ]
 })
 export class AppModule {}
