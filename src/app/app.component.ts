@@ -6,7 +6,7 @@ import { Keyboard } from '@ionic-native/keyboard';
 
 import { File } from '@ionic-native/file';
 
-//import { FirebaseMessaging } from '@ionic-native/firebase-messaging';
+import { FCM } from '@ionic-native/fcm';
 import { FileOpener } from '@ionic-native/file-opener';
 import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-viewer';
 
@@ -24,6 +24,11 @@ import * as moment from 'moment';
 moment.locale('es');
 import { Observable } from 'Rxjs/rx';
 import { Subscription } from "rxjs/Subscription";
+import {
+  BackgroundGeolocation,
+  BackgroundGeolocationConfig,
+  BackgroundGeolocationResponse
+} from '@ionic-native/background-geolocation';
 
 @Component({
   templateUrl: 'app.html'
@@ -53,18 +58,32 @@ export class MyApp {
     private fileOpener: FileOpener,
     private document: DocumentViewer,
     private networkService: NetworkService,
-    //private firebaseMessaging: FirebaseMessaging,
+    private fcm: FCM,
     private geolocation: Geolocation,
-    private _presencia: PresenciaPlantaProvider
+    private _presencia: PresenciaPlantaProvider,
+    private backgroundGeolocation: BackgroundGeolocation
   ) {
 
     platform.ready().then(() => {
-      //this.revisarNotificaciones();
+      this.revisarNotificaciones();
+      if (localStorage.getItem('presencia-planta-hora')) {
+        this.alertCtrl.create({
+          title: 'Presencia en planta',
+          subTitle: 'Se ha confirmado su presencia',
+          buttons: ['Aceptar']
+        }).present();
+        localStorage.removeItem('presencia-planta-hora');
+      }
+
+      if (localStorage.getItem('hora-laboral')) {
+        this.revisionUbicacion();
+      }
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
       keyboard.disableScroll(true);
       statusBar.styleDefault();
       splashScreen.hide();
+
     });
 
 
@@ -295,53 +314,72 @@ export class MyApp {
     return false;
   }
 
-  /* revisarNotificaciones() {
+  revisarNotificaciones() {
+    this.fcm.onNotification().subscribe((data: any) => {
+      if (data.wasTapped) {
+        console.log("Received in background");
+        this.alertCtrl.create({
+          title: 'Presencia en planta',
+          subTitle: 'Se ha confirmado su presencia',
+          buttons: ['Aceptar']
+        }).present();;
+        localStorage.removeItem('presencia-planta-hora');
+      } else {
+        console.log("Received in foreground");
+        this.alertCtrl.create({
+          title: 'Presencia en planta',
+          subTitle: 'Se ha confirmado su presencia',
+          buttons: ['Aceptar']
+        }).present();;
+        localStorage.removeItem('presencia-planta-hora');
+      };
+    });
 
-    this.firebaseMessaging.onMessage().subscribe(resp => {
-      console.log('foreground notificacion:', resp);
+  }
 
-      // UBICACION
-      if (resp.tipo_notificacion === 'Ubicación') {
-        this.geolocation.getCurrentPosition().then((resp) => {
-          if (!this.authservice.validaUbicacion(resp.coords.latitude, resp.coords.longitude) && !this.esAusenciaLaboral()) {
-            // enviar notificacion de que no esta en la planta
+  revisionUbicacion() {
+    const config: BackgroundGeolocationConfig = {
+      desiredAccuracy: 10,
+      stationaryRadius: 0,
+      distanceFilter: 0,
+      debug: false,
+      stopOnTerminate: false,
+      notificationTitle: 'Rastreo activado',
+      notificationText: 'Ubicación establecida',
+      // Android only section
+      startOnBoot: true,
+      startForeground: true,
+      interval: parseInt(this.authservice.AuthToken.variables.minutos_para_presencia__c) * 1000 * 60
+    };
+    console.info('=rotoplas=configuracion geo:', config);
+    console.info('=rotoplas=iniciando');
+
+    this.backgroundGeolocation
+      .configure(config)
+      .subscribe((location: BackgroundGeolocationResponse) => {
+
+        if (localStorage.getItem('presencia-planta-hora')) {
+          let hora = localStorage.getItem('presencia-planta-hora');
+          if (moment().isAfter(hora)) {
+            //PRESENCIA
+            console.log('ejecutando interval');
             let data = {
               'operador': this.authservice.AuthToken.usuario.name,
               'sfid': this.authservice.AuthToken.usuario.sfid,
               'geocerca': this.authservice.AuthToken.planta.radio__c,
               'planta': this.authservice.AuthToken.planta.name,
-              'fecha': moment().format('MMMM DD YYYY, h:mm:ss a'),
-              'latitud': resp.coords.latitude,
-              'longitud': resp.coords.longitude
+              'fecha': moment().format('MMMM DD YYYY, h:mm:ss a')
             };
-            this._presencia.enviarUbicacionEmal(data).subscribe((resp) => {
-              console.log('respuesta: ', resp);
+            this._presencia.revisionPresenciaPlanta(data).subscribe((resp) => {
+              console.log('respuesta presencia: ', resp);
             });
           }
-        });
-      } else {
-        //PRESENCIA
-        let tarea = Observable.interval(100000).subscribe(() => {
-          console.log('ejecutando interval');
-          let data = {
-            'operador': this.authservice.AuthToken.usuario.name,
-            'sfid': this.authservice.AuthToken.usuario.sfid,
-            'geocerca': this.authservice.AuthToken.planta.radio__c,
-            'planta': this.authservice.AuthToken.planta.name,
-            'fecha': moment().format('MMMM DD YYYY, h:mm:ss a')
-          };
-          this._presencia.revisionPresenciaPlanta(data).subscribe((resp) => {
-            console.log('respuesta presencia: ', resp);
-          });
-          tarea.unsubscribe();
-        });
-      }
-    });
+        }
+        localStorage.setItem('presencia-planta-hora', moment().format('YYYY-MM-DD HH:mm'));
 
-    this.firebaseMessaging.onBackgroundMessage().subscribe(resp => {
-      console.log('background notificacion: ', resp);
-      this.geolocation.getCurrentPosition().then((resp) => {
-        if (!this.authservice.validaUbicacion(resp.coords.latitude, resp.coords.longitude) && !this.esAusenciaLaboral()) {
+
+        console.info('=rotoplas=localizacion:', location);
+        if (this.authservice.validaUbicacion(location.latitude, location.longitude) && !this.esAusenciaLaboral()) {
           // enviar notificacion de que no esta en la planta
           let data = {
             'operador': this.authservice.AuthToken.usuario.name,
@@ -349,17 +387,17 @@ export class MyApp {
             'geocerca': this.authservice.AuthToken.planta.radio__c,
             'planta': this.authservice.AuthToken.planta.name,
             'fecha': moment().format('MMMM DD YYYY, h:mm:ss a'),
-            'latitud': resp.coords.latitude,
-            'longitud': resp.coords.longitude
+            'latitud': location.latitude,
+            'longitud': location.longitude
           };
-          this._presencia.enviarUbicacionEmal(data).subscribe((resp) => {
-            console.log('respuesta: ', resp);
+          this._presencia.enviarUbicacionEmal(data).subscribe((resp: any) => {
+            console.info('=rotoplas=respuesta: ', JSON.parse(resp));
           });
-
         }
       });
-    });
-  } */
+    // start recording location
+    this.backgroundGeolocation.start();
+  }
 
 
 }

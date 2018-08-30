@@ -3,7 +3,14 @@ import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angu
 import { AuthService } from "../../providers/auth-service/auth-service";
 import { AsistenciaProvider } from "../../providers/asistencia/asistencia";
 import { PresenciaPlantaProvider } from "../../providers/presencia-planta/presencia-planta";
-//import { FirebaseMessaging } from '@ionic-native/firebase-messaging';
+import {
+  BackgroundGeolocation,
+  BackgroundGeolocationConfig,
+  BackgroundGeolocationResponse
+} from '@ionic-native/background-geolocation';
+import { FCM } from '@ionic-native/fcm';
+import * as moment from 'moment';
+moment.locale('es');
 
 import {
   GoogleMaps,
@@ -14,6 +21,7 @@ import {
   MarkerOptions,
   Marker
 } from '@ionic-native/google-maps';
+
 import { Geolocation } from '@ionic-native/geolocation';
 import { LocationAccuracy } from '@ionic-native/location-accuracy';
 
@@ -41,7 +49,9 @@ export class AsistenciaPage {
     private googleMaps: GoogleMaps,
     private alertCtrl: AlertController,
     private asistenciaProv: AsistenciaProvider,
-    //private firebaseMessaging: FirebaseMessaging
+    private fcm: FCM,
+    private backgroundGeolocation: BackgroundGeolocation,
+    private _presencia: PresenciaPlantaProvider
   ) {
 
     this.operador = this.authservice.AuthToken.usuario;
@@ -87,12 +97,11 @@ export class AsistenciaPage {
       });
       alert.present();
     } else {
-      //this.firebaseMessaging.subscribe('ubicacion');
-      //this.firebaseMessaging.getToken().then(token => {
-      //console.log('token device: ', token);
-      let token = '';
-      this.postAsistencia(token);
-      //});
+      this.fcm.subscribeToTopic('ubicacion');
+      this.fcm.getToken().then(token => {
+        this.postAsistencia(token);
+      });
+      this.revisionUbicacion();
     }
 
   }
@@ -230,6 +239,85 @@ export class AsistenciaPage {
       }]
     });
     alert.present();
+  }
+
+  esAusenciaLaboral() {
+    let ausencia = JSON.parse(localStorage.getItem('ausencia'));
+
+    if (ausencia) {
+      let horaInicio = moment().set({ hour: ausencia.horaini.split(':')[0], minute: ausencia.horaini.split(':')[1], second: 0 });
+      let horaFin = moment().set({ hour: ausencia.horafin.split(':')[0], minute: ausencia.horafin.split(':')[1], second: 59 });
+      let horaactual = moment();
+      console.log('inicio: ', horaInicio);
+      console.log('fin: ', horaFin);
+      console.log('actual: ', horaactual);
+      return horaactual.isBetween(horaInicio, horaFin);
+
+    }
+    return false;
+  }
+
+  revisionUbicacion() {
+    localStorage.setItem('hora-laboral', '1');
+    const config: BackgroundGeolocationConfig = {
+      desiredAccuracy: 10,
+      stationaryRadius: 0,
+      distanceFilter: 0,
+      debug: false,
+      stopOnTerminate: false,
+      notificationTitle: 'Rastreo activado',
+      notificationText: 'Ubicación establecida',
+      // Android only section
+      startOnBoot: true,
+      startForeground: true,
+      interval: parseInt(this.authservice.AuthToken.variables.minutos_para_presencia__c) * 1000 * 60
+    };
+    console.info('=rotoplas=configuracion geo:', config);
+    console.info('=rotoplas=iniciando');
+
+    this.backgroundGeolocation
+      .configure(config)
+      .subscribe((location: BackgroundGeolocationResponse) => {
+
+        if (localStorage.getItem('presencia-planta-hora')) {
+          let hora = localStorage.getItem('presencia-planta-hora');
+          if (moment().isAfter(hora)) {
+            //PRESENCIA
+            console.log('ejecutando interval');
+            let data = {
+              'operador': this.authservice.AuthToken.usuario.name,
+              'sfid': this.authservice.AuthToken.usuario.sfid,
+              'geocerca': this.authservice.AuthToken.planta.radio__c,
+              'planta': this.authservice.AuthToken.planta.name,
+              'fecha': moment().format('MMMM DD YYYY, h:mm:ss a')
+            };
+            this._presencia.revisionPresenciaPlanta(data).subscribe((resp) => {
+              console.log('respuesta presencia: ', resp);
+            });
+          }
+        }
+        localStorage.setItem('presencia-planta-hora', moment().format('YYYY-MM-DD HH:mm'));
+
+
+        console.info('=rotoplas=localizacion:', location);
+        if (this.authservice.validaUbicacion(location.latitude, location.longitude) && !this.esAusenciaLaboral()) {
+          // enviar notificacion de que no esta en la planta
+          let data = {
+            'operador': this.authservice.AuthToken.usuario.name,
+            'sfid': this.authservice.AuthToken.usuario.sfid,
+            'geocerca': this.authservice.AuthToken.planta.radio__c,
+            'planta': this.authservice.AuthToken.planta.name,
+            'fecha': moment().format('MMMM DD YYYY, h:mm:ss a'),
+            'latitud': location.latitude,
+            'longitud': location.longitude
+          };
+          this._presencia.enviarUbicacionEmal(data).subscribe((resp: any) => {
+            console.info('=rotoplas=respuesta: ', JSON.parse(resp));
+          });
+        }
+      });
+    // start recording location
+    this.backgroundGeolocation.start();
   }
 
 }

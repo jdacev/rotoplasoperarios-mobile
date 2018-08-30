@@ -67,7 +67,7 @@ export class DatabaseService {
     try {
       for (let i = 1; i <= this.authservice.AuthToken.variables.fotos_por_actividad_rutina__c; i++) {
         let sql =
-          await this.database.executeSql(`ALTER TABLE actividadrutina ADD COLUMN foto${i}__c TEXT`, {});
+          await this.database.executeSql(`ALTER TABLE actividadrutina ADD COLUMN foto${i}__c TEXT`, <any>{});
       }
     } catch (e) {
       console.log('error al agregar columna fotos..', e);
@@ -89,13 +89,13 @@ export class DatabaseService {
         accountid TEXT,
         createddate_heroku__c TEXT
       );`
-      , {})
+      , <any><any>{})
       .then(() => {
         return this.database.executeSql(
           `CREATE TABLE IF NOT EXISTS motivooportunidad (
         sfid TEXT PRIMARY KEY,
         name TEXT
-        );`, {})
+        );`, <any><any>{})
 
       }).then(() => {
 
@@ -104,7 +104,7 @@ export class DatabaseService {
         sfid TEXT PRIMARY KEY,
         name TEXT,
         motivooportunidadc__c TEXT
-        );`, {})
+        );`, <any><any>{})
       }).then(() => {
 
         return this.database.executeSql(
@@ -112,7 +112,7 @@ export class DatabaseService {
         sfid TEXT PRIMARY KEY,
         name TEXT,
         descripcionfalla__c TEXT
-        );`, {})
+        );`, <any>{})
 
       }).then(() => {
 
@@ -120,7 +120,7 @@ export class DatabaseService {
           `CREATE TABLE IF NOT EXISTS tiporutina (
         sfid TEXT PRIMARY KEY,
         nombre__c TEXT
-        );`, {})
+        );`, <any>{})
 
       }).then(() => {
         return this.database.executeSql(
@@ -133,7 +133,7 @@ export class DatabaseService {
         tipo_de_respuesta__c TEXT,
         orden__c INTEGER,
         idtiporutina__c TEXT
-        );`, {})
+        );`, <any>{})
       }).then(() => {
         return this.database.executeSql(
           `CREATE TABLE IF NOT EXISTS rutinas (
@@ -145,7 +145,7 @@ export class DatabaseService {
         rutaimagen__c TEXT,
         createddate_heroku__c TEXT,
         FOREIGN KEY(idtiporutina__c) REFERENCES tiporutina(sfid)
-        );`, {})
+        );`, <any>{})
       }).then(() => {
         return this.database.executeSql(
           `CREATE TABLE IF NOT EXISTS actividadrutina (
@@ -154,22 +154,22 @@ export class DatabaseService {
           valor_si_no__c INTEGER,
           valornumerico__c INTEGER,
           observaciones__c TEXT
-          );`, {})
+          );`, <any>{})
       }).then(() => {
         if (this.network.type != 'none' && this.network.type != 'unknown') {
           return this.database.executeSql(
-            `DELETE FROM preguntarutina;`, {}).then(() => {
+            `DELETE FROM preguntarutina;`, <any>{}).then(() => {
               return this.database.executeSql(
-                `DELETE FROM tiporutina;`, {})
+                `DELETE FROM tiporutina;`, <any>{})
             }).then(() => {
               return this.database.executeSql(
-                `DELETE FROM motivooportunidad;`, {})
+                `DELETE FROM motivooportunidad;`, <any>{})
             }).then(() => {
               return this.database.executeSql(
-                `DELETE FROM descripciondefalla;`, {})
+                `DELETE FROM descripciondefalla;`, <any>{})
             }).then(() => {
               return this.database.executeSql(
-                `DELETE FROM motivodedesestabilizacion;`, {})
+                `DELETE FROM motivodedesestabilizacion;`, <any>{})
             }).then(() => {
 
               this.insertarDatos();
@@ -203,7 +203,7 @@ export class DatabaseService {
     return this.isReady()
       .then(() => {
         return this.database.executeSql(`INSERT INTO oportunidades(description, enviaagua__c, origin, idplanta__c, operadorapp__c, reason, descripciondefalla__c, motivodedesestabilizacion__c, accountid, createddate_heroku__c)
-            VALUES ('${data.description}', '${data.enviaagua__c}', '${data.origin}', '${data.idplanta__c}', '${data.operadorapp__c}', '${data.reason}', '${data.descripciondefalla__c}', '${data.motivodedesestabilizacion__c}', '${data.accountid}', '${data.createddate_heroku__c}');`, {}).then((result) => {
+            VALUES ('${data.description}', '${data.enviaagua__c}', '${data.origin}', '${data.idplanta__c}', '${data.operadorapp__c}', '${data.reason}', '${data.descripciondefalla__c}', '${data.motivodedesestabilizacion__c}', '${data.accountid}', '${data.createddate_heroku__c}');`, <any>{}).then((result) => {
             if (result.insertId) {
               return this.getOportunidad(result.insertId);
             }
@@ -218,7 +218,7 @@ export class DatabaseService {
     // return this.isReady()
     // .then(()=>{
     return this.database.executeSql(`INSERT INTO rutinas(observacion__c, idplanta__c, usuarioapp__c, idtiporutina__c, rutaimagen__c, createddate_heroku__c)
-            VALUES ('${data.observacion__c}', '${data.idplanta__c}', '${data.usuarioapp__c}', '${data.idtiporutina__c}', '${data.rutaimagen__c}', '${data.createddate_heroku__c}');`, {}).then((result) => {
+            VALUES ('${data.observacion__c}', '${data.idplanta__c}', '${data.usuarioapp__c}', '${data.idtiporutina__c}', '${data.rutaimagen__c}', '${data.createddate_heroku__c}');`, <any>{}).then((result) => {
         if (result.insertId) {
           // console.log("Result Rutina: " + result.insertId);
           // console.log("CREE LA RUTINA.");
@@ -272,7 +272,7 @@ export class DatabaseService {
       sql += sqlFotosValues;
       sql += ')';
 
-      this.database.executeSql(sql, {}).then((result) => {
+      this.database.executeSql(sql, <any>{}).then((result) => {
       }, error => {
         console.log("ERROR AGREGANDO:" + JSON.stringify(error));
       })
@@ -484,7 +484,7 @@ export class DatabaseService {
       var tipo = response.data;
       for (let i = 0; i < tipo.length; i++) {
         this.database.executeSql(`INSERT INTO tiporutina(sfid, nombre__c)
-              VALUES ('${tipo[i].sfid}', '${tipo[i].nombre__c}');`, {}).then(() => {
+              VALUES ('${tipo[i].sfid}', '${tipo[i].nombre__c}');`, <any>{}).then(() => {
           }).catch(err => {
             console.log("ERROR INSERT: " + JSON.stringify(err));
           })
@@ -495,7 +495,7 @@ export class DatabaseService {
       var preguntas = response.data;
       for (let i = 0; i < preguntas.length; i++) {
         this.database.executeSql(`INSERT INTO preguntarutina(name, turno__c, rutina__c, sfid, id, tipo_de_respuesta__c, idtiporutina__c, orden__c)
-            VALUES ('${preguntas[i].name}', '${preguntas[i].turno__c}', '${preguntas[i].rutina__c}', '${preguntas[i].sfid}', '${preguntas[i].id}', '${preguntas[i].tipo_de_respuesta__c}', '${preguntas[i].idtiporutina__c}', '${preguntas[i].orden__c}');`, {}).then(() => {
+            VALUES ('${preguntas[i].name}', '${preguntas[i].turno__c}', '${preguntas[i].rutina__c}', '${preguntas[i].sfid}', '${preguntas[i].id}', '${preguntas[i].tipo_de_respuesta__c}', '${preguntas[i].idtiporutina__c}', '${preguntas[i].orden__c}');`, <any>{}).then(() => {
           }).catch(err => {
             console.log("ERROR INSERT: " + JSON.stringify(err));
           })
@@ -508,7 +508,7 @@ export class DatabaseService {
         // console.log("Voy a insertar: " + JSON.stringify(motivos[i]));
 
         this.database.executeSql(`INSERT INTO motivooportunidad(sfid, name)
-              VALUES ('${motivos[i].sfid}', '${motivos[i].name}');`, {}).then(() => {
+              VALUES ('${motivos[i].sfid}', '${motivos[i].name}');`, <any>{}).then(() => {
             // console.log("AGREGUE MOTIVO")
           }).catch(err => {
             console.log("ERROR INSERT MOTIVOS: " + JSON.stringify(err));
@@ -523,7 +523,7 @@ export class DatabaseService {
       var desc = response.data;
       for (let i = 0; i < desc.length; i++) {
         this.database.executeSql(`INSERT INTO descripciondefalla(sfid, name, motivooportunidadc__c)
-            VALUES ('${desc[i].sfid}', '${desc[i].name}', '${desc[i].motivooportunidadc__c}');`, {}).then(() => {
+            VALUES ('${desc[i].sfid}', '${desc[i].name}', '${desc[i].motivooportunidadc__c}');`, <any>{}).then(() => {
             // console.log("AGREGUE Descrip. de falla")
           }).catch(err => {
             console.log("ERROR INSERT: " + JSON.stringify(err));
@@ -539,7 +539,7 @@ export class DatabaseService {
       var motivoDesest = response.data;
       for (let i = 0; i < motivoDesest.length; i++) {
         this.database.executeSql(`INSERT INTO motivodedesestabilizacion(sfid, name, descripcionfalla__c)
-            VALUES ('${motivoDesest[i].sfid}', '${motivoDesest[i].name}', '${motivoDesest[i].descripcionfalla__c}');`, {}).then(() => {
+            VALUES ('${motivoDesest[i].sfid}', '${motivoDesest[i].name}', '${motivoDesest[i].descripcionfalla__c}');`, <any>{}).then(() => {
             // console.log("AGREGUE motivo desestab.")
           }).catch(err => {
             console.log("ERROR INSERT: " + JSON.stringify(err));
@@ -589,10 +589,10 @@ export class DatabaseService {
         console.log("Id generado creado: " + id);
 
         database.executeSql(
-          `DELETE FROM rutinas WHERE id_rutina_sqllite = '${rutina.id_rutina_sqllite}';`, {});
+          `DELETE FROM rutinas WHERE id_rutina_sqllite = '${rutina.id_rutina_sqllite}';`, <any>{});
 
         database.executeSql(
-          `DELETE FROM actividadrutina WHERE id_rutina_sqllite = '${rutina.id_rutina_sqllite}';`, {});
+          `DELETE FROM actividadrutina WHERE id_rutina_sqllite = '${rutina.id_rutina_sqllite}';`, <any>{});
 
         console.log("BORRE rutina: " + rutina.id_rutina_sqllite);
 

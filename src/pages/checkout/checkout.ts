@@ -9,6 +9,9 @@ import { DatabaseService } from "../../services/database-service";
 import { NetworkService } from "../../services/network-service";
 import { Network } from '@ionic-native/network';
 import { URL_SERVICIOS } from "../../config/url.services";
+import {
+  BackgroundGeolocation
+} from '@ionic-native/background-geolocation';
 
 import {
   GoogleMaps,
@@ -59,6 +62,7 @@ export class CheckoutPage {
     private dbService: DatabaseService,
     private networkService: NetworkService,
     private network: Network,
+    private backgroundGeolocation: BackgroundGeolocation,
     private transfer: FileTransfer) {
 
     this.operador = this.authservice.AuthToken.usuario;
@@ -336,9 +340,12 @@ export class CheckoutPage {
       });
       alert.present();
     } else {
+      localStorage.removeItem('ausencia');
+      localStorage.removeItem('hora-laboral');
       this.dbService.syncOportunidades();
       this.dbService.syncRutinas();
       this.postAsistencia();
+      this.backgroundGeolocation.stop();
     }
 
   }
@@ -348,7 +355,6 @@ export class CheckoutPage {
   postAsistencia() {
     this.asistenciaProv.postAsistencia('Salida', this.operador.sfid, this.lat, this.lng).then(response => {
       if (response) {
-        localStorage.removeItem('ausencia');
         // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid);
         this.authservice.AuthToken.asistencia.tipo__c = 'Salida';
         localStorage.setItem('currentUser', JSON.stringify(this.authservice.AuthToken));

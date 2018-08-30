@@ -22,7 +22,7 @@ import { DocumentViewer } from '@ionic-native/document-viewer';
 import { SQLite } from '@ionic-native/sqlite';
 import { Network } from '@ionic-native/network';
 import { LocalNotifications } from '@ionic-native/local-notifications';
-//import { FirebaseMessaging } from '@ionic-native/firebase-messaging';
+import { BackgroundGeolocation } from '@ionic-native/background-geolocation';
 import { FCM } from '@ionic-native/fcm';
 
 
@@ -85,7 +85,7 @@ import { PresenciaPlantaProvider } from '../providers/presencia-planta/presencia
     FileTransfer,
     SyncProvider,
     LocalNotifications,
-    //FirebaseMessaging,
+    BackgroundGeolocation,
     FCM,
     PresenciaPlantaProvider
   ]
