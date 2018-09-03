@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "866815175815",
+    "firebase_url": "https://rotoplas-6db6a.firebaseio.com",
+    "project_id": "rotoplas-6db6a",
+    "storage_bucket": "rotoplas-6db6a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:866815175815:android:0ca6405b29b24d6f",
+        "android_client_info": {
+          "package_name": "rotoplas.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "866815175815-r7s7cggguc94ioilu6kgbesfrtgl1rid.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9XSkUeePOMR1-uGWjG2qqZGQXCC33SbM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
