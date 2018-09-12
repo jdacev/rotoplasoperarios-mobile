@@ -628,7 +628,7 @@ export class DatabaseService {
             let metadata = {
               id: '-',
               idtiporutina__c: rutina.idtiporutina__c,
-              actividad: actividadMeta[0].name.normalize('NFD').replace(/[\u0300-\u036f]/g, ""),
+              actividad: actividadMeta[0].name.normalize('NFKD').replace(/[\u0300-\u036f]/g, ""),
               orden__c: '-',
               rutina__c: '-',
               sfid: actividadMeta[0].id_pregunta_rutina__c,
@@ -636,7 +636,7 @@ export class DatabaseService {
               turno__c: '-',
               valornumerico__c: actividadMeta[0].valornumerico__c || '-',
               valor_si_no__c: actividadMeta[0].valor_si_no__c || '-',
-              observacion: actividadMeta[0].observaciones__c.normalize('NFD').replace(/[\u0300-\u036f]/g, "") || '-',
+              observacion: actividadMeta[0].observaciones__c.normalize('NFKD').replace(/[\u0300-\u036f]/g, "") || '-',
               latitude: '-',
               longitude: '-',
               planta_id: rutina.idplanta__c.sfid,
@@ -698,9 +698,9 @@ export class DatabaseService {
 
   upload(file, origen, subDir, oportunidad, ticketProv, transfer, database) {
 
-
+    console.log('Origin oportunidades: ', origen);
     file.listDir(origen, subDir).then(data => {
-
+      console.log('imagen oportunidad antes push: ', data);
       var images = [];
       for (let i = 0; i < data.length; i++) {
         images.push(data[i].nativeURL);
@@ -731,6 +731,9 @@ export class DatabaseService {
           const fileTransfer: FileTransferObject = transfer.create();
 
           images.forEach(image => {
+
+            console.log('Imagen a subir oportunidad: ', options);
+            console.log('Subiendo oportunidad: ', image);
 
             options.fileName = image.substring(image.lastIndexOf('/') + 1, image.length);
             fileTransfer.upload(image, URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
@@ -768,7 +771,7 @@ export class DatabaseService {
         var subDir = oportunidad.id_case_sqllite.toString() + '/';
 
 
-        upload(this.file, this.origen, subDir, oportunidad, this.ticketProv, this.transfer, this.database)
+        upload(this.file, this.file.dataDirectory + 'tickets/', subDir, oportunidad, this.ticketProv, this.transfer, this.database)
       })
 
 
@@ -794,6 +797,7 @@ export class DatabaseService {
     images.forEach(image => {
 
       // console.log(images[i]);
+
       options.fileName = image.substring(image.lastIndexOf('/') + 1, image.length);
       fileTransfer.upload(image, URL_SERVICIOS + '/azurecrearcontenedorsubirimagen', options)
         .then((data) => {

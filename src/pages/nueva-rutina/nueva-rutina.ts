@@ -86,7 +86,9 @@ export class NuevaRutinaPage {
       sourceType: this.camera.PictureSourceType.CAMERA,
       encodingType: this.camera.EncodingType.JPEG,
       mediaType: this.camera.MediaType.PICTURE,
-      correctOrientation: true
+      correctOrientation: true,
+      targetWidth: 1024,
+      targetHeight: 1280
     }
 
     for (let i = 1; i <= this.authservice.AuthToken.variables.fotos_por_actividad_rutina__c; i++) {
@@ -108,14 +110,14 @@ export class NuevaRutinaPage {
     let metadata = {
       id: this.activities[idx].id,
       idtiporutina__c: this.activities[idx].idtiporutina__c,
-      actividad: this.activities[idx].name !== undefined ? this.activities[idx].name.normalize('NFD').replace(/[\u0300-\u036f]/g, "") : this.activities[idx].name,
+      actividad: this.activities[idx].name !== undefined ? this.activities[idx].name.normalize('NFKD').replace(/[\u0300-\u036f]/g, "") : this.activities[idx].name,
       orden__c: this.activities[idx].orden__c,
-      rutina__c: this.activities[idx].rutina__c,
+      rutina__c: this.activities[idx].rutina__c === 'null' ? '-' : this.activities[idx].rutina__c,
       sfid: this.activities[idx].sfid,
       tipo_de_respuesta__c: this.activities[idx].tipo_de_respuesta__c || '-',
       turno__c: this.activities[idx].turno__c || '-',
       valor: this.activities[idx].valor || '-',
-      observacion: this.activities[idx].observacion ? this.activities[idx].observaciones.normalize('NFD').replace(/[\u0300-\u036f]/g, "") || '-' : this.activities[idx].observacion,
+      observacion: this.activities[idx].observacion === '' ? this.activities[idx].observacion.normalize('NFKD').replace(/[\u0300-\u036f]/g, "") || '-' : this.activities[idx].observacion,
       latitude: '-',
       longitude: '-',
       planta_id: this.authservice.AuthToken.planta.sfid,
@@ -146,10 +148,8 @@ export class NuevaRutinaPage {
       }).catch((error) => {
         console.log('Error getting location', error);
       });
-
-
     } else {
-      this.geolocation.getCurrentPosition().then((resp) => {
+      this.geolocation.getCurrentPosition({ timeout: 15000 }).then((resp) => {
         this.lat = resp.coords.latitude;
         this.lng = resp.coords.longitude;
         if (this.authservice.validaUbicacion(this.lat, this.lng)) {
@@ -183,6 +183,29 @@ export class NuevaRutinaPage {
           console.log('Error getting location', error);
         });
       }, (err) => {
+        console.log('Error gps:', err);
+        loading.dismiss();
+        this.camera.getPicture(options).then((imagePath) => {
+          let fileName = imagePath.substring(imagePath.lastIndexOf('/') + 1, imagePath.length);
+
+          for (let i = 1; i <= this.authservice.AuthToken.variables.fotos_por_actividad_rutina__c; i++) {
+            if (this.activities[idx]['foto' + i + '__c'] === undefined) {
+              this.activities[idx]['foto' + i + '__c'] = fileName;
+              break;
+            }
+          }
+          this.images.push({
+            path: imagePath,
+            metadata: metadata
+          });
+          this.imagesFiltro.push({
+            path: imagePath,
+            metadata: metadata
+          });
+
+        }).catch((error) => {
+          console.log('Error getting location', error);
+        });
         // Handle error
       });
     }

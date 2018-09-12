@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, Platform } from 'ionic-angular';
 import { AuthService } from "../../providers/auth-service/auth-service";
 import { AsistenciaProvider } from "../../providers/asistencia/asistencia";
 import { PresenciaPlantaProvider } from "../../providers/presencia-planta/presencia-planta";
@@ -51,7 +51,8 @@ export class AsistenciaPage {
     private asistenciaProv: AsistenciaProvider,
     private fcm: FCM,
     private backgroundGeolocation: BackgroundGeolocation,
-    private _presencia: PresenciaPlantaProvider
+    private _presencia: PresenciaPlantaProvider,
+    private platform: Platform
   ) {
 
     this.operador = this.authservice.AuthToken.usuario;
@@ -129,47 +130,51 @@ export class AsistenciaPage {
   }
 
   //Obtengo la ubicación del dispositivo utilizando el GPS
-  obtenerUbicacion() {
+  async obtenerUbicacion() {
+    await this.platform.ready();
+
     this.locationAccuracy.canRequest().then((canRequest: boolean) => {
       // if(canRequest) {
       // the accuracy option will be ignored by iOS
       //En caso de que no esté prendido, solicito acceso para activarlo
-      this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY).then(() => {
+      this.locationAccuracy.request(this.locationAccuracy.REQUEST_PRIORITY_HIGH_ACCURACY)
+        .then(() => {
 
-        //Si me da acceso, obtengo la posición
 
-        this.geolocation.getCurrentPosition().then((resp) => {
-          this.lat = resp.coords.latitude;
-          this.lng = resp.coords.longitude;
+          //Si me da acceso, obtengo la posición
+          this.geolocation.getCurrentPosition()
+            .then((resp) => {
+              this.lat = resp.coords.latitude;
+              this.lng = resp.coords.longitude;
 
-          this.map.moveCamera({
-            target: { lat: this.lat, lng: this.lng }
-          });
+              this.map.moveCamera({
+                target: { lat: this.lat, lng: this.lng }
+              });
 
-          //Si ya existe un marcador en el mapa del usuario, lo remuevo.
-          if (this.markerUsuario) {
-            this.markerUsuario.remove()
-          }
+              //Si ya existe un marcador en el mapa del usuario, lo remuevo.
+              if (this.markerUsuario) {
+                this.markerUsuario.remove()
+              }
 
-          //Agrego el marcador de la posición actual.
-          this.map.addMarker({
-            title: this.operador.name,
-            icon: 'red',
-            animation: 'DROP',
-            position: { lat: this.lat, lng: this.lng }
-          }).then(response => {
-            this.markerUsuario = response;
-          });
+              //Agrego el marcador de la posición actual.
+              this.map.addMarker({
+                title: this.operador.name,
+                icon: 'red',
+                animation: 'DROP',
+                position: { lat: this.lat, lng: this.lng }
+              }).then(response => {
+                this.markerUsuario = response;
+              });
 
-          console.log("Lat: " + resp.coords.latitude);
-          console.log("Lng: " + resp.coords.longitude);
-        }).catch((error) => {
-          console.log('Error getting location', error);
+              console.log("Lat: " + resp.coords.latitude);
+              console.log("Lng: " + resp.coords.longitude);
+            }).catch((error) => {
+              console.log('Error getting location', error);
+            });
+        }, error => {
+          console.log('Error requesting location permissions' + error)
+          console.log('Error requesting location permissions JSON: ' + JSON.stringify(error))
         });
-      }, error => {
-        console.log('Error requesting location permissions' + error)
-        console.log('Error requesting location permissions JSON: ' + JSON.stringify(error))
-      });
       // }
 
     });
@@ -261,28 +266,60 @@ export class AsistenciaPage {
     localStorage.setItem('hora-laboral', '1');
     const config: BackgroundGeolocationConfig = {
       desiredAccuracy: 10,
-      stationaryRadius: 100000,
-      distanceFilter: 100000,
+      stationaryRadius: 0,
+      distanceFilter: 0,
       debug: false,
       stopOnTerminate: false,
       notificationTitle: 'Rastreo activado',
       notificationText: 'Ubicación establecida',
-      // Android only section
-      startOnBoot: true,
-      startForeground: true,
-      activitiesInterval: parseInt(this.authservice.AuthToken.variables.minutos_para_presencia__c) * 1000 * 60,
-      interval: parseInt(this.authservice.AuthToken.variables.minutos_para_presencia__c) * 1000 * 60
+      fastestInterval: 15000,
+      activitiesInterval: 15000,
+      interval: 15000
     };
     console.info('=rotoplas=configuracion geo:', config);
-    console.info('=rotoplas=iniciando');
 
     this.backgroundGeolocation
       .configure(config)
       .subscribe((location: BackgroundGeolocationResponse) => {
 
-        if (localStorage.getItem('presencia-planta-hora')) {
-          let hora = localStorage.getItem('presencia-planta-hora');
-          if (moment().isAfter(hora)) {
+        if (!localStorage.getItem('hora-ubicacion')) {
+          localStorage.setItem('hora-ubicacion', moment().add(parseInt(this.authservice.AuthToken.variables.minutos_para_ubicacion__c), 'minutes').format('YYYY-MM-DD HH:mm:ss'));
+        }
+
+        if (!localStorage.getItem('hora-presencia')) {
+          localStorage.setItem('hora-presencia', moment().add(parseInt(this.authservice.AuthToken.variables.minutos_para_presencia__c) + 15, 'minutes').format('YYYY-MM-DD HH:mm:ss'));
+        }
+
+        console.info('=rotoplas=localizacion:', location);
+        let horaUbicacion = moment(localStorage.getItem('hora-ubicacion'));
+        let horaPresencia = moment(localStorage.getItem('hora-presencia'));
+
+        //ubicaion geocerca
+        if (moment().isAfter(horaUbicacion)) {
+          console.log("Revisando ubicacion ====");
+          localStorage.removeItem('hora-ubicacion');
+          if (this.authservice.validaUbicacion(location.latitude, location.longitude) && !this.esAusenciaLaboral()) {
+            // enviar notificacion de que no esta en la planta
+            let data = {
+              'operador': this.authservice.AuthToken.usuario.name,
+              'sfid': this.authservice.AuthToken.usuario.sfid,
+              'geocerca': this.authservice.AuthToken.planta.radio__c,
+              'planta': this.authservice.AuthToken.planta.name,
+              'fecha': moment().format('MMMM DD YYYY, h:mm:ss a'),
+              'latitud': location.latitude,
+              'longitud': location.longitude
+            };
+            this._presencia.enviarUbicacionEmal(data).subscribe((resp: any) => {
+              console.info('=rotoplas=respuesta: ', resp);
+            });
+          }
+        }
+
+        //presencia laboral
+        if (moment().isAfter(horaPresencia)) {
+          console.log("Revisando presencia ====");
+          localStorage.removeItem('hora-presencia');
+          if (!localStorage.getItem('confirmarPresencia') && !this.esAusenciaLaboral()) {
             //PRESENCIA
             console.log('ejecutando interval');
             let data = {
@@ -295,24 +332,9 @@ export class AsistenciaPage {
             this._presencia.revisionPresenciaPlanta(data).subscribe((resp) => {
               console.log('respuesta presencia: ', resp);
             });
+          } else {
+            localStorage.removeItem('confirmarPresencia');
           }
-        }
-        localStorage.setItem('presencia-planta-hora', moment().format('YYYY-MM-DD HH:mm'));
-        console.info('=rotoplas=localizacion:', location);
-        if (this.authservice.validaUbicacion(location.latitude, location.longitude) && !this.esAusenciaLaboral()) {
-          // enviar notificacion de que no esta en la planta
-          let data = {
-            'operador': this.authservice.AuthToken.usuario.name,
-            'sfid': this.authservice.AuthToken.usuario.sfid,
-            'geocerca': this.authservice.AuthToken.planta.radio__c,
-            'planta': this.authservice.AuthToken.planta.name,
-            'fecha': moment().format('MMMM DD YYYY, h:mm:ss a'),
-            'latitud': location.latitude,
-            'longitud': location.longitude
-          };
-          this._presencia.enviarUbicacionEmal(data).subscribe((resp: any) => {
-            console.info('=rotoplas=respuesta: ', JSON.parse(resp));
-          });
         }
       });
     // start recording location

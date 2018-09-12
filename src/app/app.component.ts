@@ -66,7 +66,7 @@ export class MyApp {
 
     platform.ready().then(() => {
       this.revisarNotificaciones();
-      if (localStorage.getItem('presencia-planta-hora')) {
+      /* if (localStorage.getItem('presencia-planta-hora')) {
         this.alertCtrl.create({
           title: 'Presencia en planta',
           subTitle: 'Se ha confirmado su presencia',
@@ -74,7 +74,7 @@ export class MyApp {
         }).present();
         localStorage.removeItem('presencia-planta-hora');
       }
-
+      */
       if (localStorage.getItem('hora-laboral')) {
         this.revisionUbicacion();
       }
@@ -317,27 +317,57 @@ export class MyApp {
   revisarNotificaciones() {
     this.fcm.onNotification().subscribe((data: any) => {
       if (data.wasTapped) {
+        localStorage.setItem('confirmarPresencia', '1');
         console.log("Received in background");
         this.alertCtrl.create({
           title: 'Presencia en planta',
           subTitle: 'Se ha confirmado su presencia',
           buttons: ['Aceptar']
         }).present();;
-        localStorage.removeItem('presencia-planta-hora');
+        //localStorage.removeItem('presencia-planta-hora');
       } else {
         console.log("Received in foreground");
-        this.alertCtrl.create({
+        if (!this.esAusenciaLaboral()) {
+          let alert = this.alertCtrl.create({
+            title: 'Control de presencia',
+            subTitle: 'Confirmar presencia',
+            buttons: [
+              {
+                text: 'No',
+                role: 'cancel',
+                handler: () => {
+                  console.log('Cancel clicked');
+                  localStorage.removeItem('confirmarPresencia');
+                }
+              },
+              {
+                text: 'Si',
+                handler: () => {
+                  localStorage.setItem('confirmarPresencia', '1');
+                  this.alertCtrl.create({
+                    title: 'Presencia en planta',
+                    subTitle: 'Se ha confirmado su presencia',
+                    buttons: ['Aceptar']
+                  }).present();
+                }
+              }
+            ]
+          });
+          alert.present();
+        }
+
+        /* this.alertCtrl.create({
           title: 'Presencia en planta',
           subTitle: 'Se ha confirmado su presencia',
           buttons: ['Aceptar']
-        }).present();;
-        localStorage.removeItem('presencia-planta-hora');
+        }).present(); */
+        //localStorage.removeItem('presencia-planta-hora');
       };
     });
 
   }
 
-  revisionUbicacion() {
+  /* revisionUbicacion() {
     const config: BackgroundGeolocationConfig = {
       desiredAccuracy: 10,
       stationaryRadius: 100000,
@@ -394,6 +424,87 @@ export class MyApp {
           this._presencia.enviarUbicacionEmal(data).subscribe((resp: any) => {
             console.info('=rotoplas=respuesta: ', JSON.parse(resp));
           });
+        }
+      });
+    // start recording location
+    this.backgroundGeolocation.start();
+  } */
+
+  revisionUbicacion() {
+    localStorage.setItem('hora-laboral', '1');
+    const config: BackgroundGeolocationConfig = {
+      desiredAccuracy: 10,
+      stationaryRadius: 0,
+      distanceFilter: 0,
+      debug: false,
+      stopOnTerminate: false,
+      notificationTitle: 'Rastreo activado',
+      notificationText: 'Ubicación establecida',
+      fastestInterval: 15000,
+      activitiesInterval: 15000,
+      interval: 15000
+    };
+    console.info('=rotoplas=configuracion geo:', config);
+
+    this.backgroundGeolocation
+      .configure(config)
+      .subscribe((location: BackgroundGeolocationResponse) => {
+
+        if (!localStorage.getItem('hora-ubicacion')) {
+          localStorage.setItem('hora-ubicacion', moment().add(parseInt(this.authservice.AuthToken.variables.minutos_para_ubicacion__c), 'minutes').format('YYYY-MM-DD HH:mm:ss'));
+        }
+
+        if (!localStorage.getItem('hora-presencia')) {
+          localStorage.setItem('hora-presencia', moment().add(parseInt(this.authservice.AuthToken.variables.minutos_para_presencia__c) + 15, 'minutes').format('YYYY-MM-DD HH:mm:ss'));
+        }
+
+        console.info('=rotoplas=localizacion:', location);
+        let horaUbicacion = moment(localStorage.getItem('hora-ubicacion'));
+        let horaPresencia = moment(localStorage.getItem('hora-presencia'));
+        //ubicaion geocerca
+        console.log('=== moment=== ', moment());
+        console.log('=== horaubicacion===', horaUbicacion);
+        console.log("=", moment().isAfter(horaUbicacion));
+        if (moment().isAfter(horaUbicacion)) {
+          console.log("Revisando ubicacion ====");
+          localStorage.removeItem('hora-ubicacion');
+          if (this.authservice.validaUbicacion(location.latitude, location.longitude) && !this.esAusenciaLaboral()) {
+            // enviar notificacion de que no esta en la planta
+            let data = {
+              'operador': this.authservice.AuthToken.usuario.name,
+              'sfid': this.authservice.AuthToken.usuario.sfid,
+              'geocerca': this.authservice.AuthToken.planta.radio__c,
+              'planta': this.authservice.AuthToken.planta.name,
+              'fecha': moment().format('MMMM DD YYYY, h:mm:ss a'),
+              'latitud': location.latitude,
+              'longitud': location.longitude
+            };
+            this._presencia.enviarUbicacionEmal(data).subscribe((resp: any) => {
+              console.info('=rotoplas=respuesta: ', resp);
+            });
+          }
+        }
+
+        //presencia laboral
+        if (moment().isAfter(horaPresencia)) {
+          console.log("Revisando presencia ====");
+          localStorage.removeItem('hora-presencia');
+          if (!localStorage.getItem('confirmarPresencia') && !this.esAusenciaLaboral()) {
+            //PRESENCIA
+            console.log('ejecutando interval');
+            let data = {
+              'operador': this.authservice.AuthToken.usuario.name,
+              'sfid': this.authservice.AuthToken.usuario.sfid,
+              'geocerca': this.authservice.AuthToken.planta.radio__c,
+              'planta': this.authservice.AuthToken.planta.name,
+              'fecha': moment().format('MMMM DD YYYY, h:mm:ss a')
+            };
+            this._presencia.revisionPresenciaPlanta(data).subscribe((resp) => {
+              console.log('respuesta presencia: ', resp);
+            });
+          } else {
+            localStorage.removeItem('confirmarPresencia');
+          }
         }
       });
     // start recording location
