@@ -65,16 +65,9 @@ export class MyApp {
   ) {
 
     platform.ready().then(() => {
+
       this.revisarNotificaciones();
-      /* if (localStorage.getItem('presencia-planta-hora')) {
-        this.alertCtrl.create({
-          title: 'Presencia en planta',
-          subTitle: 'Se ha confirmado su presencia',
-          buttons: ['Aceptar']
-        }).present();
-        localStorage.removeItem('presencia-planta-hora');
-      }
-      */
+
       if (localStorage.getItem('hora-laboral')) {
         this.revisionUbicacion();
       }
@@ -327,7 +320,7 @@ export class MyApp {
         //localStorage.removeItem('presencia-planta-hora');
       } else {
         console.log("Received in foreground");
-        if (!this.esAusenciaLaboral()) {
+        if (!this.esAusenciaLaboral() && localStorage.getItem('hora-laboral')) {
           let alert = this.alertCtrl.create({
             title: 'Control de presencia',
             subTitle: 'Confirmar presencia',
