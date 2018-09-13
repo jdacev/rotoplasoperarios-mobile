@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-navbar hideBackButton color="blueRotoplas">
+    <ion-buttons left>
+      <button ion-button icon-only menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title text-center style="padding-right:60px">
+      Ausencia laboral
+    </ion-title>
+    <ion-buttons end (click)="verAusencia()">
+      <button ion-button outline outline item-end icon-start>
+        <ion-icon name="clock"></ion-icon>
+        Ver
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ion-list>
+
+    <ion-item>
+      <ion-label fixed>Fecha</ion-label>
+      <ion-input type="text" [(ngModel)]="ausencia.fecha" disabled></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Inicio</ion-label>
+      <ion-datetime displayFormat="hh:mm A" [(ngModel)]="ausencia.inicio" doneText="Aceptar" cancelText="Cancelar">
+      </ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>Fin</ion-label>
+      <ion-datetime displayFormat="hh:mm A" [(ngModel)]="ausencia.fin" doneText="Aceptar" cancelText="Cancelar">
+      </ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label floating>Motivo de ausencia</ion-label>
+      <ion-textarea [(ngModel)]="ausencia.motivo"></ion-textarea>
+    </ion-item>
+  </ion-list>
+
+  <ion-row>
+    <ion-col text-center>
+      <button ion-button color="blueRotoplas" (click)="crearAusencia()" [disabled]="validarCreacion()">Crear</button>
+    </ion-col>
+  </ion-row>
+
+</ion-content>
