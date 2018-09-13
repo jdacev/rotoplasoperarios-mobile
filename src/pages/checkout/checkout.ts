@@ -87,11 +87,14 @@ export class CheckoutPage {
   //Método para capturar imágenes con el dispositivo.
   capturar() {
     const options: CameraOptions = {
-      quality: 50,
+      quality: 40,
+      correctOrientation: true,
       destinationType: this.camera.DestinationType.FILE_URI,
       sourceType: this.camera.PictureSourceType.CAMERA,
       encodingType: this.camera.EncodingType.JPEG,
-      mediaType: this.camera.MediaType.PICTURE
+      mediaType: this.camera.MediaType.PICTURE,
+      targetWidth: 1024,
+      targetHeight: 1280
     }
 
     this.camera.getPicture(options).then((imagePath) => {
@@ -340,12 +343,16 @@ export class CheckoutPage {
       });
       alert.present();
     } else {
-      localStorage.removeItem('ausencia');
-      localStorage.removeItem('hora-laboral');
       this.dbService.syncOportunidades();
       this.dbService.syncRutinas();
       this.postAsistencia();
       this.backgroundGeolocation.stop();
+
+      localStorage.removeItem('ausencia');
+      localStorage.removeItem('hora-laboral');
+      localStorage.removeItem('hora-ubicacion');
+      localStorage.removeItem('hora-presencia');
+      localStorage.removeItem('confirmarPresencia');
     }
 
   }
@@ -406,8 +413,6 @@ export class CheckoutPage {
     // console.log("Options:", options);
     // console.log("Options: "+ options);
     // console.log("Options: "+ JSON.stringify(options));
-
-
 
   }
 

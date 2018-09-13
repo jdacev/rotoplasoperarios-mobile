@@ -1,27 +1,27 @@
 {
   "project_info": {
-    "project_number": "866815175815",
-    "firebase_url": "https://rotoplas-6db6a.firebaseio.com",
-    "project_id": "rotoplas-6db6a",
-    "storage_bucket": "rotoplas-6db6a.appspot.com"
+    "project_number": "970528679679",
+    "firebase_url": "https://sytesa-1527721452403.firebaseio.com",
+    "project_id": "sytesa-1527721452403",
+    "storage_bucket": "sytesa-1527721452403.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:866815175815:android:0ca6405b29b24d6f",
+        "mobilesdk_app_id": "1:970528679679:android:0ca6405b29b24d6f",
         "android_client_info": {
           "package_name": "rotoplas.app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "866815175815-r7s7cggguc94ioilu6kgbesfrtgl1rid.apps.googleusercontent.com",
+          "client_id": "970528679679-g16e4d4kggb7vqtrl38qbgpmgpm6ci9h.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyD9XSkUeePOMR1-uGWjG2qqZGQXCC33SbM"
+          "current_key": "AIzaSyBnezWQBLuP2D9uC5VDRp5iejLbGaNwSTc"
         }
       ],
       "services": {

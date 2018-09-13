@@ -102,8 +102,10 @@ export class DetalleRutinaPage {
     this.imagesFiltro = this.images.filter((item) => {
       console.log(item);
       for (let i = 1; i <= this.authservice.AuthToken.variables.fotos_por_actividad_rutina__c; i++) {
-        if (item.indexOf(this.respuestas[idx][`foto${i}__c`]) > 0) {
-          return true;
+        if (this.respuestas[idx][`foto${i}__c`] != null) {
+          if (item.indexOf(this.respuestas[idx][`foto${i}__c`].substring(this.respuestas[idx][`foto${i}__c`].lastIndexOf('/') + 1, this.respuestas[idx][`foto${i}__c`].length)) > 0) {
+            return true;
+          }
         }
       }
     });
