@@ -382,13 +382,15 @@ export class CheckoutPage {
   }
 
   uploadImages(images, id) {
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+
     let options: FileUploadOptions = {
       fileKey: 'azureupload',
       // fileName: fileName,
       chunkedMode: false,
       mimeType: "image/jpeg",
       // mimeType: 'multipart/form-data',
-      // headers: {},
+      headers: { 'Authorization': 'Bearer ' + token },
       params: { 'containername': "salida" + id.toString() }
     }
     // console.log("Options: " + JSON.stringify(options))
