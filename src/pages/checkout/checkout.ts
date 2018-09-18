@@ -361,6 +361,7 @@ export class CheckoutPage {
   //Realizo la entrada laboral del operador, indicando latitud y longitud actual.
   postAsistencia() {
     this.asistenciaProv.postAsistencia('Salida', this.operador.sfid, this.lat, this.lng).then(response => {
+      console.log('respuesta:', response);
       if (response) {
         // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid);
         this.authservice.AuthToken.asistencia.tipo__c = 'Salida';

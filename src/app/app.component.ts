@@ -184,7 +184,7 @@ export class MyApp {
           // this.storeUserCredentials(data);   //CAMBIAR ESTO POR EL TOKEN
           this.plantasProv.getClientesByPlanta(selected.sfid).subscribe(response => {
             this.userData = this.authservice.AuthToken;
-            var userData = window.localStorage.getItem('currentUser');
+            var userData: any = window.localStorage.getItem('currentUser');
             userData = JSON.parse(userData);
             console.log('selected: ', selected)
             // console.log('userData: ', JSON.parse(userData))
@@ -197,6 +197,7 @@ export class MyApp {
             this.userData.planta.name = selected.name;
             this.userData.planta.sfid = selected.sfid;
             this.userData.clientes = response.data;
+            this.userData.token = userData.token;
             localStorage.setItem('currentUser', JSON.stringify(this.userData));
             this.authservice.loadUserCredentials();
             return;
@@ -210,7 +211,16 @@ export class MyApp {
       alert.present();
 
     }, error => {
-
+      if (error.json().nuevoToken) {
+        let u = JSON.parse(localStorage.getItem('currentUser'));
+        u.token = error.json().nuevoToken;
+        localStorage.setItem('currentUser', JSON.stringify(u));
+        this.alertCtrl.create({
+          title: 'Aviso',
+          subTitle: 'Sesión expirada, por favor intente nuevamente',
+          buttons: ['Aceptar']
+        }).present();
+      }
     })
   }
 

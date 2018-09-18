@@ -4,6 +4,7 @@ import 'rxjs/add/operator/map';
 
 import { URL_SERVICIOS } from "../../config/url.services";
 import { AuthService } from "../auth-service/auth-service";
+import { AlertController } from 'ionic-angular';
 
 
 @Injectable()
@@ -12,6 +13,7 @@ export class AsistenciaProvider {
   asistencia: any;
 
   constructor(public http: Http,
+    private alertCtrl: AlertController,
     private authservice: AuthService) {
   }
 
@@ -53,6 +55,18 @@ export class AsistenciaProvider {
 
         resolve(response);
       }, error => {
+        if (error.json().nuevoToken) {
+          let u = JSON.parse(localStorage.getItem('currentUser'));
+          u.token = error.json().nuevoToken;
+          localStorage.setItem('currentUser', JSON.stringify(u));
+          this.authservice.AuthToken.token = u.token;
+
+          this.alertCtrl.create({
+            title: 'Aviso',
+            subTitle: 'Sesión expirada, por favor intente nuevamente',
+            buttons: ['Aceptar']
+          }).present();
+        }
         resolve(false)
       });
     });
