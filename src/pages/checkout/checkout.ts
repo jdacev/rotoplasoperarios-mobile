@@ -343,16 +343,7 @@ export class CheckoutPage {
       });
       alert.present();
     } else {
-      this.dbService.syncOportunidades();
-      this.dbService.syncRutinas();
       this.postAsistencia();
-      this.backgroundGeolocation.stop();
-
-      localStorage.removeItem('ausencia');
-      localStorage.removeItem('hora-laboral');
-      localStorage.removeItem('hora-ubicacion');
-      localStorage.removeItem('hora-presencia');
-      localStorage.removeItem('confirmarPresencia');
     }
 
   }
@@ -362,18 +353,25 @@ export class CheckoutPage {
   postAsistencia() {
     this.asistenciaProv.postAsistencia('Salida', this.operador.sfid, this.lat, this.lng).then(response => {
       if (response) {
-        // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid);
+        console.log('Saliendo y offline');
+        this.dbService.syncOportunidades();
+        this.dbService.syncRutinas();
+        this.backgroundGeolocation.stop();
+        localStorage.removeItem('ausencia');
+        localStorage.removeItem('hora-laboral');
+        localStorage.removeItem('hora-ubicacion');
+        localStorage.removeItem('hora-presencia');
+        localStorage.removeItem('confirmarPresencia');
+
         this.authservice.AuthToken.asistencia.tipo__c = 'Salida';
         localStorage.setItem('currentUser', JSON.stringify(this.authservice.AuthToken));
         this.authservice.loadUserCredentials();
         if (this.images.length > 0) {
-          // this.moverArchivo(this.images);
-          // console.log("response: " + response);
-          // var id = JSON.stringify(response);
-          // console.log("ID: " + id)
           this.uploadImages(this.images, response);
         }
         this.showAlert("Salida Laboral", "Salida Exitosa", 'HomePage');
+
+
       }
     }, error => {
       console.log('error: ' + error)
@@ -382,13 +380,15 @@ export class CheckoutPage {
   }
 
   uploadImages(images, id) {
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+
     let options: FileUploadOptions = {
       fileKey: 'azureupload',
       // fileName: fileName,
       chunkedMode: false,
       mimeType: "image/jpeg",
       // mimeType: 'multipart/form-data',
-      // headers: {},
+      headers: { 'Authorization': 'Bearer ' + token },
       params: { 'containername': "salida" + id.toString() }
     }
     // console.log("Options: " + JSON.stringify(options))

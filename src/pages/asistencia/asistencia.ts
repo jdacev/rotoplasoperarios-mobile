@@ -269,12 +269,14 @@ export class AsistenciaPage {
       stationaryRadius: 0,
       distanceFilter: 0,
       debug: false,
+      locationProvider: 1,
+      startForeground: true,
       stopOnTerminate: false,
       notificationTitle: 'Rastreo activado',
       notificationText: 'Ubicación establecida',
-      fastestInterval: 15000,
-      activitiesInterval: 15000,
-      interval: 15000
+      fastestInterval: 1500,
+      activitiesInterval: 1500,
+      interval: 1500
     };
     console.info('=rotoplas=configuracion geo:', config);
 

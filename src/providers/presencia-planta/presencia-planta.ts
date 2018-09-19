@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Http, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { LocalNotifications } from '@ionic-native/local-notifications';
 import { AuthService } from '../auth-service/auth-service';
@@ -22,6 +22,10 @@ export class PresenciaPlantaProvider {
   }
 
   ausenciaLaborar(data) {
+    let headers = new Headers();
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+    headers.append('Authorization', 'Bearer ' + token);
+
     let parametros = {
       operador: this.usuario.AuthToken.usuario.name,
       planta: this.usuario.AuthToken.planta.name,
@@ -31,18 +35,26 @@ export class PresenciaPlantaProvider {
       horafin: data.fin
     };
     localStorage.setItem('ausencia', JSON.stringify(parametros));
-    return this.http.post(URL_SERVICIOS + '/control-presencia/ausencia', parametros)
+    return this.http.post(URL_SERVICIOS + '/control-presencia/ausencia', parametros, { headers: headers })
       .map(resp => {
         return resp.json()
       });
   }
 
   enviarUbicacionEmal(data) {
-    return this.http.post(URL_SERVICIOS + '/control-presencia/abandono', data);
+    let headers = new Headers();
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+    headers.append('Authorization', 'Bearer ' + token);
+
+    return this.http.post(URL_SERVICIOS + '/control-presencia/abandono', data, { headers: headers });
   }
 
   revisionPresenciaPlanta(data) {
-    return this.http.post(URL_SERVICIOS + '/control-presencia/presencia', data);
+    let headers = new Headers();
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+    headers.append('Authorization', 'Bearer ' + token);
+
+    return this.http.post(URL_SERVICIOS + '/control-presencia/presencia', data, { headers: headers });
   }
 
 }
