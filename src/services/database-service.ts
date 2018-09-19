@@ -176,9 +176,9 @@ export class DatabaseService {
             })
         }
       }).then(() => {
-
-
-      }).catch((err) => console.log("error detected creating tables" + JSON.stringify(err)));
+      }).catch(err => {
+        console.log('Error tablas: ', err);
+      });
   }
 
   private isReady() {
@@ -597,14 +597,14 @@ export class DatabaseService {
         console.log("BORRE rutina: " + rutina.id_rutina_sqllite);
 
         if (images.length > 0) {
-
+          let token = JSON.parse(localStorage.getItem('currentUser')).token;
           let options: FileUploadOptions = {
             fileKey: 'azureupload',
             // fileName: fileName,
             chunkedMode: false,
             mimeType: "image/jpeg",
             // mimeType: 'multipart/form-data',
-            // headers: {},
+            headers: { 'Authorization': 'Bearer ' + token },
             params: { 'containername': "rutina" + id.toString() }
           }
 
@@ -717,14 +717,14 @@ export class DatabaseService {
         console.log("BORRE case: " + oportunidad.id_case_sqllite);
 
         if (images.length > 0) {
-
+          let token = JSON.parse(localStorage.getItem('currentUser')).token;
           let options: FileUploadOptions = {
             fileKey: 'azureupload',
             // fileName: fileName,
             chunkedMode: false,
             mimeType: "image/jpeg",
             // mimeType: 'multipart/form-data',
-            // headers: {},
+            headers: { 'Authorization': 'Bearer ' + token },
             params: { 'containername': "oportunidad" + id.toString() }
           }
 
@@ -781,13 +781,14 @@ export class DatabaseService {
   }
 
   uploadImages(images, id) {
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
     let options: FileUploadOptions = {
       fileKey: 'azureupload',
       // fileName: fileName,
       chunkedMode: false,
       mimeType: "image/jpeg",
       // mimeType: 'multipart/form-data',
-      // headers: {},
+      headers: { 'Authorization': 'Bearer ' + token },
       params: { 'containername': "oportunidad" + id.toString() }
     }
 

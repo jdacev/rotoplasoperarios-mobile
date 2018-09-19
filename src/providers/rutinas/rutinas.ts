@@ -1,54 +1,71 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Http, Headers } from '@angular/http';
 import 'rxjs/add/operator/map';
 import { AlertController } from 'ionic-angular';
 import { AuthService } from "../../providers/auth-service/auth-service";
 import { URL_SERVICIOS } from "../../config/url.services";
 
-/*
-  Generated class for the RutinasProvider provider.
 
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class RutinasProvider {
 
   constructor(public http: Http,
     private alertCtrl: AlertController,
     public authservice: AuthService) {
-    // console.log('Hello RutinasProvider Provider');
   }
 
   getPreguntasTipoRutina(idTipoRutina: string, turno: string) {
-    return this.http.get(URL_SERVICIOS + '/preguntastiporutina/' + idTipoRutina + '/' + turno)
+    let headers = new Headers();
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+    headers.append('Authorization', 'Bearer ' + token);
+
+    return this.http.get(URL_SERVICIOS + '/preguntastiporutina/' + idTipoRutina + '/' + turno, { headers: headers })
       .map(resp => resp.json())
   }
 
   getRespuestasActividades(idRutina: string) {
-    return this.http.get(URL_SERVICIOS + '/actividadesrutinas/' + idRutina)
+    let headers = new Headers();
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+    headers.append('Authorization', 'Bearer ' + token);
+
+    return this.http.get(URL_SERVICIOS + '/actividadesrutinas/' + idRutina, { headers: headers })
       .map(resp => resp.json())
   }
 
   getRutinasUsuario(idPlanta: number, idUsuario: string) {
-    return this.http.get(URL_SERVICIOS + '/rutinasusuario/' + idPlanta + '/' + idUsuario)
+    let headers = new Headers();
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+    headers.append('Authorization', 'Bearer ' + token);
+
+    return this.http.get(URL_SERVICIOS + '/rutinasusuario/' + idPlanta + '/' + idUsuario, { headers: headers })
       .map(resp => resp.json())
   }
 
   getTipoRutinas() {
-    return this.http.get(URL_SERVICIOS + '/tiporutinas')
+    let headers = new Headers();
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+    headers.append('Authorization', 'Bearer ' + token);
+
+    return this.http.get(URL_SERVICIOS + '/tiporutinas', { headers: headers })
       .map(resp => resp.json())
   }
 
   getImagenes(id: string) {
-    console.log("URL: " + URL_SERVICIOS + '/azurelistarimagenesporcontenedor/rutina' + id.toString())
-    return this.http.get(URL_SERVICIOS + '/azurelistarimagenesporcontenedor/rutina' + id.toString())
+    let headers = new Headers();
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+    headers.append('Authorization', 'Bearer ' + token);
+
+    return this.http.get(URL_SERVICIOS + '/azurelistarimagenesporcontenedor/rutina' + id.toString(), { headers: headers })
       .map(resp => resp.json())
   }
 
   crearRutina(data) {
+    let headers = new Headers();
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+    headers.append('Authorization', 'Bearer ' + token);
+
     return new Promise(resolve => {
-      this.http.post(URL_SERVICIOS + '/rutina', data).subscribe(response => {
+      this.http.post(URL_SERVICIOS + '/rutina', data, { headers: headers }).subscribe(response => {
         if (this.authservice.AuthToken.asistencia.tipo__c == 'Entrada') {
           this.showAlert("Crear Rutina", response.json().message);
           resolve(response.json().id_rutina_heroku__c);

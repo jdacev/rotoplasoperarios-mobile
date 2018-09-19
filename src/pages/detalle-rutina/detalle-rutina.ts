@@ -115,7 +115,7 @@ export class DetalleRutinaPage {
 
   //Abre la imagen en un visor al seleccionarla
   abrirImagen(path: string) {
-    this.photoViewer.show(path);
+    this.photoViewer.show(path, '', { share: true });
   }
 
 }

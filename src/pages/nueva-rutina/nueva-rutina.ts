@@ -461,13 +461,15 @@ export class NuevaRutinaPage {
   }
 
   uploadImages(images, id) {
+    let token = JSON.parse(localStorage.getItem('currentUser')).token;
+
     let options: FileUploadOptions = {
       fileKey: 'azureupload',
       // fileName: fileName,
       chunkedMode: false,
       mimeType: "image/jpeg",
       // mimeType: 'multipart/form-data',
-      // headers: {},
+      headers: { 'Authorization': 'Bearer ' + token },
       params: { 'containername': "rutina" + id.toString() }
     }
 
