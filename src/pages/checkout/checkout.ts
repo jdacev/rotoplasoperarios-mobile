@@ -343,16 +343,7 @@ export class CheckoutPage {
       });
       alert.present();
     } else {
-      this.dbService.syncOportunidades();
-      this.dbService.syncRutinas();
       this.postAsistencia();
-      this.backgroundGeolocation.stop();
-
-      localStorage.removeItem('ausencia');
-      localStorage.removeItem('hora-laboral');
-      localStorage.removeItem('hora-ubicacion');
-      localStorage.removeItem('hora-presencia');
-      localStorage.removeItem('confirmarPresencia');
     }
 
   }
@@ -361,20 +352,26 @@ export class CheckoutPage {
   //Realizo la entrada laboral del operador, indicando latitud y longitud actual.
   postAsistencia() {
     this.asistenciaProv.postAsistencia('Salida', this.operador.sfid, this.lat, this.lng).then(response => {
-      console.log('respuesta:', response);
       if (response) {
-        // this.asistenciaProv.getAsistencia(this.authservice.AuthToken.usuario.sfid);
+        console.log('Saliendo y offline');
+        this.dbService.syncOportunidades();
+        this.dbService.syncRutinas();
+        this.backgroundGeolocation.stop();
+        localStorage.removeItem('ausencia');
+        localStorage.removeItem('hora-laboral');
+        localStorage.removeItem('hora-ubicacion');
+        localStorage.removeItem('hora-presencia');
+        localStorage.removeItem('confirmarPresencia');
+
         this.authservice.AuthToken.asistencia.tipo__c = 'Salida';
         localStorage.setItem('currentUser', JSON.stringify(this.authservice.AuthToken));
         this.authservice.loadUserCredentials();
         if (this.images.length > 0) {
-          // this.moverArchivo(this.images);
-          // console.log("response: " + response);
-          // var id = JSON.stringify(response);
-          // console.log("ID: " + id)
           this.uploadImages(this.images, response);
         }
         this.showAlert("Salida Laboral", "Salida Exitosa", 'HomePage');
+
+
       }
     }, error => {
       console.log('error: ' + error)

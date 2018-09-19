@@ -370,69 +370,6 @@ export class MyApp {
 
   }
 
-  /* revisionUbicacion() {
-    const config: BackgroundGeolocationConfig = {
-      desiredAccuracy: 10,
-      stationaryRadius: 100000,
-      distanceFilter: 100000,
-      debug: false,
-      stopOnTerminate: false,
-      notificationTitle: 'Rastreo activado',
-      notificationText: 'Ubicación establecida',
-      // Android only section
-      startOnBoot: true,
-      startForeground: true,
-      activitiesInterval: parseInt(this.authservice.AuthToken.variables.minutos_para_presencia__c) * 1000 * 60,
-      interval: parseInt(this.authservice.AuthToken.variables.minutos_para_presencia__c) * 1000 * 60
-    };
-    console.info('=rotoplas=configuracion geo:', config);
-    console.info('=rotoplas=iniciando');
-
-    this.backgroundGeolocation
-      .configure(config)
-      .subscribe((location: BackgroundGeolocationResponse) => {
-
-        if (localStorage.getItem('presencia-planta-hora')) {
-          let hora = localStorage.getItem('presencia-planta-hora');
-          if (moment().isAfter(hora)) {
-            //PRESENCIA
-            console.log('ejecutando interval');
-            let data = {
-              'operador': this.authservice.AuthToken.usuario.name,
-              'sfid': this.authservice.AuthToken.usuario.sfid,
-              'geocerca': this.authservice.AuthToken.planta.radio__c,
-              'planta': this.authservice.AuthToken.planta.name,
-              'fecha': moment().format('MMMM DD YYYY, h:mm:ss a')
-            };
-            this._presencia.revisionPresenciaPlanta(data).subscribe((resp) => {
-              console.log('respuesta presencia: ', resp);
-            });
-          }
-        }
-        localStorage.setItem('presencia-planta-hora', moment().format('YYYY-MM-DD HH:mm'));
-
-
-        console.info('=rotoplas=localizacion:', location);
-        if (this.authservice.validaUbicacion(location.latitude, location.longitude) && !this.esAusenciaLaboral()) {
-          // enviar notificacion de que no esta en la planta
-          let data = {
-            'operador': this.authservice.AuthToken.usuario.name,
-            'sfid': this.authservice.AuthToken.usuario.sfid,
-            'geocerca': this.authservice.AuthToken.planta.radio__c,
-            'planta': this.authservice.AuthToken.planta.name,
-            'fecha': moment().format('MMMM DD YYYY, h:mm:ss a'),
-            'latitud': location.latitude,
-            'longitud': location.longitude
-          };
-          this._presencia.enviarUbicacionEmal(data).subscribe((resp: any) => {
-            console.info('=rotoplas=respuesta: ', JSON.parse(resp));
-          });
-        }
-      });
-    // start recording location
-    this.backgroundGeolocation.start();
-  } */
-
   revisionUbicacion() {
     localStorage.setItem('hora-laboral', '1');
     const config: BackgroundGeolocationConfig = {
@@ -440,12 +377,14 @@ export class MyApp {
       stationaryRadius: 0,
       distanceFilter: 0,
       debug: false,
+      locationProvider: 1,
+      startForeground: true,
       stopOnTerminate: false,
       notificationTitle: 'Rastreo activado',
       notificationText: 'Ubicación establecida',
-      fastestInterval: 15000,
-      activitiesInterval: 15000,
-      interval: 15000
+      fastestInterval: 1500,
+      activitiesInterval: 1500,
+      interval: 1500
     };
     console.info('=rotoplas=configuracion geo:', config);
 

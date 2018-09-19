@@ -176,9 +176,9 @@ export class DatabaseService {
             })
         }
       }).then(() => {
-
-
-      }).catch((err) => console.log("error detected creating tables" + JSON.stringify(err)));
+      }).catch(err => {
+        console.log('Error tablas: ', err);
+      });
   }
 
   private isReady() {

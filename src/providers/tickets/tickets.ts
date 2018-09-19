@@ -35,11 +35,11 @@ export class TicketsProvider {
   }
 
   getMotivosOportunidades() {
-    let headers = new Headers();
+    /* let headers = new Headers();
     let token = JSON.parse(localStorage.getItem('currentUser')).token;
-    headers.append('Authorization', 'Bearer ' + token);
+    headers.append('Authorization', 'Bearer ' + token); */
 
-    return this.http.get(URL_SERVICIOS + '/motivosoportunidades', { headers: headers })
+    return this.http.get(URL_SERVICIOS + '/motivosoportunidades')
       .map(resp => resp.json())
   }
 
@@ -80,20 +80,20 @@ export class TicketsProvider {
   }
 
   getTodasDescripcionesFallas() {
-    let headers = new Headers();
+    /* let headers = new Headers();
     let token = JSON.parse(localStorage.getItem('currentUser')).token;
-    headers.append('Authorization', 'Bearer ' + token);
+    headers.append('Authorization', 'Bearer ' + token); */
 
-    return this.http.get(URL_SERVICIOS + '/descripcionesfallas/', { headers: headers })
+    return this.http.get(URL_SERVICIOS + '/descripcionesfallas/')
       .map(resp => resp.json())
   }
 
   getTodasMotivosDesestabilizaciones() {
-    let headers = new Headers();
+    /* let headers = new Headers();
     let token = JSON.parse(localStorage.getItem('currentUser')).token;
-    headers.append('Authorization', 'Bearer ' + token);
+    headers.append('Authorization', 'Bearer ' + token); */
 
-    return this.http.get(URL_SERVICIOS + '/desestabilizaciones/', { headers: headers })
+    return this.http.get(URL_SERVICIOS + '/desestabilizaciones/')
       .map(resp => resp.json())
   }
 

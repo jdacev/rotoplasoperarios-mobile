@@ -11,21 +11,21 @@ export class SyncProvider {
   }
 
   getPreguntasRutinas() {
-    let headers = new Headers();
+    /* let headers = new Headers();
     let token = JSON.parse(localStorage.getItem('currentUser')).token;
-    headers.append('Authorization', 'Bearer ' + token);
+    headers.append('Authorization', 'Bearer ' + token); */
 
-    return this.http.get(URL_SERVICIOS + '/sync-preguntasrutina/', { headers: headers })
+    return this.http.get(URL_SERVICIOS + '/sync-preguntasrutina/')
       .map(resp => resp.json());
 
   }
 
   getTipoRutinas() {
-    let headers = new Headers();
+    /* let headers = new Headers();
     let token = JSON.parse(localStorage.getItem('currentUser')).token;
-    headers.append('Authorization', 'Bearer ' + token);
+    headers.append('Authorization', 'Bearer ' + token); */
 
-    return this.http.get(URL_SERVICIOS + '/sync-tiporutinas/', { headers: headers })
+    return this.http.get(URL_SERVICIOS + '/sync-tiporutinas/')
       .map(resp => resp.json());
 
   }
